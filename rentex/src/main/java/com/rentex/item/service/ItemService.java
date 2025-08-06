@@ -1,5 +1,6 @@
 package com.rentex.item.service;
 
+import com.rentex.common.upload.FileUploadService;
 import com.rentex.item.domain.Item;
 import com.rentex.item.domain.Item.ItemStatus;
 import com.rentex.item.dto.ItemRequestDTO;
@@ -17,6 +18,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final PartnerRepository partnerRepository;
+    private final FileUploadService fileUploadService;
 
     public void registerItem(ItemRequestDTO dto, MultipartFile thumbnail) {
         Partner partner = partnerRepository.findById(dto.getPartnerId())
