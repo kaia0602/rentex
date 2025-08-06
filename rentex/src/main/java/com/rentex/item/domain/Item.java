@@ -32,6 +32,9 @@ public class Item extends BaseTimeEntity {
     @JoinColumn(name = "partner_id", nullable = false)
     private Partner partner;
 
+    @Column(length = 500)
+    private String thumbnailUrl;
+
     public enum ItemStatus {
         AVAILABLE,
         UNAVAILABLE
