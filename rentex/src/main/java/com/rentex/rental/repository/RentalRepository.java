@@ -1,9 +1,9 @@
 package com.rentex.rental.repository;
 
+
 import com.rentex.penalty.dto.PartnerStatisticsDto;
 import com.rentex.item.domain.Item;
 import com.rentex.rental.domain.Rental;
-import org.springframework.data.jpa.repository.*;
 import com.rentex.rental.domain.RentalStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,24 +24,25 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     Page<Rental> findByUserIdAndStatus(Long userId, RentalStatus status, Pageable pageable);
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
 
+
     @Query("SELECT r FROM Rental r WHERE r.status = 'RENTED' AND r.endDate < :today AND r.isOverdue = false")
     List<Rental> findOverdueRentals(@Param("today") LocalDate today);
 
-    @Query("""
-    SELECT new com.rentex.penalty.dto.PartnerStatisticsDto(
-        p.name,
-        COUNT(r.id),
-        SUM(r.quantity),
-        SUM(DATEDIFF(r.endDate, r.startDate) + 1),
-        SUM(r.quantity * (DATEDIFF(r.endDate, r.startDate) + 1) * i.dailyPrice)
-    )
-    FROM Rental r
-    JOIN r.item i
-    JOIN i.partner p
-    WHERE r.status = 'RETURNED'
-    GROUP BY p.name
-    """)
+    @Query(value = """
+        SELECT 
+            p.name AS partnerName,
+            COUNT(r.id) AS totalRentals,
+            SUM(r.quantity) AS totalQuantity,
+            SUM(DATEDIFF(r.end_date, r.start_date) + 1) AS totalDays,
+            SUM(r.quantity * (DATEDIFF(r.end_date, r.start_date) + 1) * i.daily_price) AS totalAmount
+        FROM rental r
+        JOIN item i ON r.item_id = i.id
+        JOIN partner p ON i.partner_id = p.id
+        WHERE r.status = 'RETURNED'
+        GROUP BY p.name
+    """, nativeQuery = true)
     List<PartnerStatisticsDto> getPartnerStatistics();
+
 
     @Query("""
     SELECT COUNT(r) > 0
@@ -54,4 +55,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     boolean existsConflictingRental(@Param("itemId") Long itemId,
                                     @Param("startDate") LocalDate startDate,
                                     @Param("endDate") LocalDate endDate);
+
+
 }
