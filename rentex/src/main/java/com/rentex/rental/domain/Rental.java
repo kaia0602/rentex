@@ -9,6 +9,19 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@SqlResultSetMapping(
+        name = "PartnerStatisticsMapping",
+        classes = @ConstructorResult(
+                targetClass = com.rentex.penalty.dto.PartnerStatisticsDto.class,
+                columns = {
+                        @ColumnResult(name = "partnerName", type = String.class),
+                        @ColumnResult(name = "totalRentals", type = Long.class),
+                        @ColumnResult(name = "totalQuantity", type = Long.class),
+                        @ColumnResult(name = "totalDays", type = Long.class),
+                        @ColumnResult(name = "totalRevenue", type = Long.class)
+                }
+        )
+)
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -61,6 +74,16 @@ public class Rental extends BaseTimeEntity {
     // 파트너가 반납 검수한 시각
     private LocalDateTime partnerReturnCheckedAt;
 
+    // 연체 여부
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isOverdue = false;
+
+    // 연체 처리 메서드
+    public void markAsOverdue() {
+        this.isOverdue = true;
+    }
+
     // 엔티티 저장 전, 상태가 없으면 기본값으로 REQUESTED 설정
     @PrePersist
     public void prePersist() {
@@ -79,21 +102,7 @@ public class Rental extends BaseTimeEntity {
         if (this.status != RentalStatus.APPROVED) {
             throw new IllegalStateException("승인된 상태여야 수령할 수 있습니다.");
         }
-
         this.status = RentalStatus.RENTED;
         this.rentedAt = LocalDateTime.now();
     }
-<<<<<<< HEAD
-
-    @Column(nullable = false)
-    private boolean isOverdue = false;
-=======
->>>>>>> feature/penalty-payment
-
-    public void markAsOverdue() {
-    }
-<<<<<<< HEAD
-
-=======
->>>>>>> feature/penalty-payment
 }
