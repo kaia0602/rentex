@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/rentals")
+@RequestMapping("/api/admin/rentals")
 public class AdminRentalController {
 
     private final RentalService rentalService;

@@ -14,8 +14,8 @@ import java.util.List;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
     boolean existsByItemAndStatusIn(Item item, List<RentalStatus> statuses);
-    List<Rental> findByUserId(Long userId);
-    List<Rental> findByUserIdAndStatus(Long userId, RentalStatus status);
+    Page<Rental> findByUserId(Long userId, Pageable pageable);
+    Page<Rental> findByUserIdAndStatus(Long userId, RentalStatus status, Pageable pageable);
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
 
     @Query("""

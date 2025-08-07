@@ -7,6 +7,8 @@ import com.rentex.user.domain.User;
 import com.rentex.user.repository.UserRepository;
 // import com.rentex.user.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rentals")
+@RequestMapping("/api/rentals")
 public class RentalController {
 
     private final RentalService rentalService;
@@ -30,7 +32,7 @@ public class RentalController {
     // 처리: Rental 생성, RentalHistory 기록
     // 현재는 인증 미적용 상태로 id = 1 유저 강제 주입
     // TODO: JWT 인증 적용 후 @AuthenticationPrincipal로 로그인 사용자 주입
-      @PostMapping("/request")
+    @PostMapping("/request")
     public ResponseEntity<Void> requestRental(@RequestBody RentalRequestDto requestDto) {
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("테스트용 유저가 없습니다."));
@@ -80,16 +82,28 @@ public class RentalController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<List<RentalResponseDto>> getMyRentals(
-            @RequestParam(required = false) RentalStatus status
+    public ResponseEntity<Page<RentalResponseDto>> getMyRentals(
+            @RequestParam(required = false) RentalStatus status,
+            Pageable pageable
     ) {
-        // TODO: 인증 붙기 전까지 더미 유저 사용
+        // 지금은 하드코딩 유저 사용
         User user = userRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("테스트 유저 없음"));
 
-        List<RentalResponseDto> result = rentalService.getMyRentals(user, status);
+        Page<RentalResponseDto> result = rentalService.getMyRentals(user, status, pageable);
         return ResponseEntity.ok(result);
     }
+    /*
+    @GetMapping("/me")
+    public ResponseEntity<Page<RentalResponseDto>> getMyRentals(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) RentalStatus status,
+            Pageable pageable
+    ) {
+        Page<RentalResponseDto> result = rentalService.getMyRentals(user, status, pageable);
+        return ResponseEntity.ok(result);
+    }
+    */
 
     @GetMapping("/{id}")
     public RentalDetailResponseDto getRentalDetail(

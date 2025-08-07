@@ -178,24 +178,14 @@ public class RentalService {
         rentalHistoryRepository.save(history);
     }
 
-    public List<RentalResponseDto> getMyRentals(User user, RentalStatus status) {
-        List<Rental> rentals = (status != null) ?
-                rentalRepository.findByUserIdAndStatus(user.getId(), status) :
-                rentalRepository.findByUserId(user.getId());
+    public Page<RentalResponseDto> getMyRentals(User user, RentalStatus status, Pageable pageable) {
+        Page<Rental> rentals = (status != null) ?
+                rentalRepository.findByUserIdAndStatus(user.getId(), status, pageable) :
+                rentalRepository.findByUserId(user.getId(), pageable);
 
-        return rentals.stream()
-                .map(rental -> new RentalResponseDto(
-                        rental.getId(),
-                        rental.getItem().getName(),
-                        rental.getQuantity(),
-                        rental.getStatus(),
-                        rental.getStartDate(),
-                        rental.getEndDate(),
-                        rental.getRentedAt(),
-                        rental.getReturnedAt()
-                ))
-                .toList();
+        return rentals.map(RentalResponseDto::from);
     }
+
 
     @Transactional(readOnly = true)
     public RentalDetailResponseDto getRentalDetail(Long rentalId, User user) {
@@ -247,16 +237,7 @@ public class RentalService {
                 ? rentalRepository.findAllByStatus(status, pageable)
                 : rentalRepository.findAll(pageable);
 
-        return rentals.map(rental -> new RentalResponseDto(
-                rental.getId(),
-                rental.getItem().getName(),
-                rental.getQuantity(),
-                rental.getStatus(),
-                rental.getStartDate(),
-                rental.getEndDate(),
-                rental.getRentedAt(),
-                rental.getReturnedAt()
-        ));
+        return rentals.map(RentalResponseDto::from);
     }
 
 }
