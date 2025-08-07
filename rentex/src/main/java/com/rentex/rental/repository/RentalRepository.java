@@ -33,6 +33,8 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
         SUM(DATEDIFF(r.endDate, r.startDate) + 1),
         SUM(r.quantity * (DATEDIFF(r.endDate, r.startDate) + 1) * i.dailyPrice)
     )
+    
+    
     SELECT COUNT(r) > 0
     FROM Rental r
     JOIN r.item i
