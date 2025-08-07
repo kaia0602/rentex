@@ -51,7 +51,7 @@ import Icon from "@mui/material/Icon";
 const routes = [
   {
     type: "collapse",
-    name: "Dashboard",
+    name: "Home",
     key: "dashboard",
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
@@ -59,7 +59,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Tables",
+    name: "장비대여",
     key: "tables",
     icon: <Icon fontSize="small">table_view</Icon>,
     route: "/tables",
@@ -67,7 +67,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Billing",
+    name: "결제관리",
     key: "billing",
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/billing",
@@ -83,7 +83,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Notifications",
+    name: "공지사항",
     key: "notifications",
     icon: <Icon fontSize="small">notifications</Icon>,
     route: "/notifications",
@@ -91,7 +91,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Profile",
+    name: "프로필",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
@@ -99,7 +99,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Sign In",
+    name: "로그인",
     key: "sign-in",
     icon: <Icon fontSize="small">login</Icon>,
     route: "/authentication/sign-in",
@@ -107,7 +107,7 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Sign Up",
+    name: "회원가입",
     key: "sign-up",
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/sign-up",
