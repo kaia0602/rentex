@@ -17,7 +17,9 @@ import java.util.List;
 
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Long> {
+
     boolean existsByItemAndStatusIn(Item item, List<RentalStatus> statuses);
+
     Page<Rental> findByUserId(Long userId, Pageable pageable);
     Page<Rental> findByUserIdAndStatus(Long userId, RentalStatus status, Pageable pageable);
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
@@ -33,22 +35,23 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
         SUM(DATEDIFF(r.endDate, r.startDate) + 1),
         SUM(r.quantity * (DATEDIFF(r.endDate, r.startDate) + 1) * i.dailyPrice)
     )
-    
-    
-    SELECT COUNT(r) > 0
     FROM Rental r
     JOIN r.item i
     JOIN i.partner p
     WHERE r.status = 'RETURNED'
     GROUP BY p.name
+    """)
+    List<PartnerStatisticsDto> getPartnerStatistics();
+
+    @Query("""
+    SELECT COUNT(r) > 0
+    FROM Rental r
     WHERE r.item.id = :itemId
       AND r.status IN ('APPROVED', 'RENTED', 'RETURN_REQUESTED')
       AND r.startDate <= :endDate
       AND r.endDate >= :startDate
-""")
-    List<PartnerStatisticsDto> getPartnerStatistics();
+    """)
     boolean existsConflictingRental(@Param("itemId") Long itemId,
                                     @Param("startDate") LocalDate startDate,
                                     @Param("endDate") LocalDate endDate);
-
 }

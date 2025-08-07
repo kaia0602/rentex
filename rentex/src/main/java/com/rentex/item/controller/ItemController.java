@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/items")
+@RequestMapping("/api/admin/items")
 public class ItemController {
 
     private final ItemService itemService;
