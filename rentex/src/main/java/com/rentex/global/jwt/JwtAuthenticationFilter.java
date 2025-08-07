@@ -1,7 +1,7 @@
 package com.rentex.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rentex.user.dto.LoginRequestDto;
+import com.rentex.user.dto.LoginRequestDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,10 +25,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
             ObjectMapper om = new ObjectMapper();
-            LoginRequestDto loginRequestDto = om.readValue(request.getInputStream(), LoginRequestDto.class);
+            LoginRequestDTO loginRequestDTO = om.readValue(request.getInputStream(), LoginRequestDTO.class);
 
             UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+                    new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
 
             // UserDetailsService의 loadUserByUsername()이 호출되어 인증을 시도
             return authenticationManager.authenticate(authenticationToken);

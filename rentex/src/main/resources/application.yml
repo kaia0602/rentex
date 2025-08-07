@@ -25,3 +25,11 @@ spring:
 
 server:
   port: 8080
+
+jwt:
+  secret: "your-very-secret-key-that-is-long-enough-for-hs256-and-should-be-changed"
+  expiration-in-seconds: 3600 # 토큰 유효 시간 (초 단위, 예: 1시간)
+
+logging:
+  level:
+    org.springframework.security: DEBUG
