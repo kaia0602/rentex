@@ -34,7 +34,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
         SUM(r.quantity * (DATEDIFF(r.endDate, r.startDate) + 1) * i.dailyPrice)
     )
     
-    
+    @Query(
     SELECT COUNT(r) > 0
     FROM Rental r
     JOIN r.item i
@@ -45,7 +45,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
       AND r.status IN ('APPROVED', 'RENTED', 'RETURN_REQUESTED')
       AND r.startDate <= :endDate
       AND r.endDate >= :startDate
-""")
+    """)
     List<PartnerStatisticsDto> getPartnerStatistics();
     boolean existsConflictingRental(@Param("itemId") Long itemId,
                                     @Param("startDate") LocalDate startDate,
