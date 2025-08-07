@@ -49,4 +49,12 @@ public class Rental extends BaseTimeEntity {
             this.status = RentalStatus.REQUESTED;
         }
     }
+
+    @Column(nullable = false)
+    private boolean isOverdue = false;
+
+    public void markAsOverdue() {
+        this.isOverdue = true;
+    }
+
 }

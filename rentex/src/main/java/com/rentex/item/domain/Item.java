@@ -36,4 +36,8 @@ public class Item extends BaseTimeEntity {
         AVAILABLE,
         UNAVAILABLE
     }
+
+    @Column(nullable = false)
+    private int dailyPrice; // 하루 단가
+
 }

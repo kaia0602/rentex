@@ -20,9 +20,8 @@ public class Penalty extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private int point; // 누적 벌점
-
-    private boolean paid; // 패널티 결제 여부
+    private int point;
+    private boolean paid;
 
     public void addPoint(int score) {
         this.point += score;
