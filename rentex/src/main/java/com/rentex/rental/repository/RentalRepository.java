@@ -1,6 +1,7 @@
 package com.rentex.rental.repository;
 
 import com.rentex.item.domain.Item;
+import com.rentex.penalty.dto.PartnerStatisticsDto;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
 import org.springframework.data.domain.Page;
@@ -30,4 +31,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
                                     @Param("startDate") LocalDate startDate,
                                     @Param("endDate") LocalDate endDate);
 
+    List<PartnerStatisticsDto> getPartnerStatistics();
+
+    List<Rental> findOverdueRentals(LocalDate now);
 }
