@@ -21,13 +21,13 @@ public class Partner {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    @Column(length = 20, unique = true)
+    @Column(name = "business_no", length = 20, unique = true)
     private String businessNo;
 
-    @Column(length = 100)
+    @Column(name = "contact_email", length = 100)
     private String contactEmail;
 
-    @Column(length = 20)
+    @Column(name = "contact_phone", length = 20)
     private String contactPhone;
 
     @CreationTimestamp
