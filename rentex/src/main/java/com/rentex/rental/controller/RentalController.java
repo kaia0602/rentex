@@ -27,6 +27,17 @@ public class RentalController {
     private final RentalService rentalService;
     private final UserRepository userRepository; // 테스트용 유저 주입용 (임시)
 
+    // 대여 가능 여부 확인 API
+    @GetMapping("/items/{itemId}/availability")
+    public ResponseEntity<AvailabilityResponseDto> checkAvailability(
+            @PathVariable Long itemId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        AvailabilityResponseDto dto = rentalService.checkAvailability(itemId, startDate, endDate);
+        return ResponseEntity.ok(dto);
+    }
+
     // 대여 요청 생성 API
     // 상태: 생성 시 REQUESTED
     // 처리: Rental 생성, RentalHistory 기록
@@ -114,15 +125,6 @@ public class RentalController {
                 .orElseThrow(() -> new IllegalArgumentException("테스트 유저 없음"));
 
         return rentalService.getRentalDetail(id, user);
-    }
-
-    @GetMapping("/items/{itemId}/availability")
-    public AvailabilityResponseDto checkItemAvailability(
-            @PathVariable Long itemId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        return rentalService.checkItemAvailability(itemId, startDate, endDate);
     }
 
     @GetMapping("/{id}/history")

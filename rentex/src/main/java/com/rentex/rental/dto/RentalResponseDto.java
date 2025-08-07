@@ -12,6 +12,8 @@ public record RentalResponseDto(
         String itemName,
         int quantity,
         RentalStatus status,
+        String statusLabel,     // 상태 이름 (ex. 대여중)
+        String badgeColor,      // 상태 색상 (ex. green)
         LocalDate startDate,
         LocalDate endDate,
         LocalDateTime rentedAt,
@@ -25,6 +27,8 @@ public record RentalResponseDto(
                 rental.getItem().getName(),
                 rental.getQuantity(),
                 rental.getStatus(),
+                rental.getStatus().getLabel(),        // 한글 라벨 추가
+                rental.getStatus().getBadgeColor(),   // 상태 색상 추가
                 rental.getStartDate(),
                 rental.getEndDate(),
                 rental.getRentedAt(),
