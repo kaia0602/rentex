@@ -60,4 +60,8 @@ public class Item extends BaseTimeEntity {
         this.stockQuantity += quantity;
     }
 
+
+    @Column(nullable = false)
+    private int dailyPrice; // 하루 단가
+
 }

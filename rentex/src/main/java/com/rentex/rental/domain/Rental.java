@@ -83,4 +83,12 @@ public class Rental extends BaseTimeEntity {
         this.status = RentalStatus.RENTED;
         this.rentedAt = LocalDateTime.now();
     }
+
+    @Column(nullable = false)
+    private boolean isOverdue = false;
+
+    public void markAsOverdue() {
+        this.isOverdue = true;
+    }
+
 }
