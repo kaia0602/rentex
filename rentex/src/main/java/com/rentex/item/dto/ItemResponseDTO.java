@@ -18,6 +18,8 @@ public class ItemResponseDTO {
     private String thumbnailUrl;
     private int dailyPrice;
 
+
+
     public static ItemResponseDTO fromEntity(Item item) {
         return ItemResponseDTO.builder()
                 .id(item.getId())

@@ -1,22 +1,10 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect, useMemo } from "react";
 
+import ItemEdit from "./layouts/profile/ItemEdit"; // 수정 페이지 컴포넌트
+import ItemList from "./layouts/authentication/sign-in/index";
+
 // react-router components
-import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles";
@@ -167,7 +155,10 @@ export default function App() {
         {layout === "vr" && <Configurator />}
         <Routes>
           {getRoutes(routes)}
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+
+          <Route path="/admin/items" element={<ItemList />} />
+          <Route path="/admin/items/:id" element={<ItemEdit />} />
+          {/* <Route path="*" element={<Navigate to="/dashboard" />} /> */}
         </Routes>
       </ThemeProvider>
     </CacheProvider>

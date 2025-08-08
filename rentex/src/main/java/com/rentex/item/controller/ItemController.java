@@ -34,9 +34,20 @@ public class ItemController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateItem(@PathVariable Long id, @RequestBody ItemRequestDTO dto) {
-        itemService.updateItem(id, dto);
+    @GetMapping("/{id}")
+    public ResponseEntity<ItemResponseDTO> getItem(@PathVariable Long id) {
+        ItemResponseDTO dto = itemService.getItemById(id);
+        return ResponseEntity.ok(dto);
+    }
+
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> updateItem(
+            @PathVariable Long id,
+            @RequestPart("item") ItemRequestDTO dto, // JSON 데이터
+            @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail // 이미지 파일
+    ) {
+        itemService.updateItem(id, dto, thumbnail);
         return ResponseEntity.ok().build();
     }
 

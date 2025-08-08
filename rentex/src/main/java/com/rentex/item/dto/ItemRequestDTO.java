@@ -2,6 +2,7 @@ package com.rentex.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -16,5 +17,5 @@ public class ItemRequestDTO {
     private int dailyPrice;
     private String status; // 예: "AVAILABLE", "UNAVAILABLE"
     private Long partnerId;
-//  private String thumbnailUrl; // S3 업로드 후 URL
+//    private MultipartFile thumbnailUrl;
 }

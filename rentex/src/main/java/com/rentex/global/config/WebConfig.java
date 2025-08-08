@@ -11,7 +11,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/");
+                .addResourceLocations("file:///C:/rentex/uploads/");
+//                .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/");
     }
 
     @Override

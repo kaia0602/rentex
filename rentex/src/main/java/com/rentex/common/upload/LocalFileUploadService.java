@@ -10,8 +10,8 @@ import java.util.UUID;
 @Service
 public class LocalFileUploadService implements FileUploadService {
 
-    private final String uploadDir = System.getProperty("user.dir") + File.separator + "uploads";// 프로젝트 루트에 uploads 폴더 생성해도 OK
-
+//    private final String uploadDir = System.getProperty("user.dir") + File.separator + "uploads";// 프로젝트 루트에 uploads 폴더 생성해도 OK
+    private final String uploadDir = "C:\\rentex" + File.separator + "uploads";
     @Override
     public String upload(MultipartFile file) {
         if (file.isEmpty()) {

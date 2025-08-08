@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ItemList = () => {
   const [items, setItems] = useState([]);
   const [editingItem, setEditingItem] = useState(null);
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -18,34 +19,34 @@ const ItemList = () => {
       });
   }, []);
 
-  const handleEdit = (item) => {
-  setEditingItem(item);
-};
+  const handleEdit = (id) => {
+    navigate(`/admin/items/${id}`);
+  };
 
-// 수정 폼에서 완료 후 호출할 함수
-const handleUpdate = async (updatedItem) => {
-  try {
-    await axios.put(`/api/admin/items/${updatedItem.id}`, updatedItem);
-    alert("수정 성공!");
-    // 목록 갱신
-    setItems(items.map(item => item.id === updatedItem.id ? updatedItem : item));
-    setEditingItem(null); // 수정 모드 종료
-  } catch (error) {
-    console.error("수정 실패:", error);
-    alert("수정 실패!");
-  }
-};
+  // 수정 폼에서 완료 후 호출할 함수
+  const handleUpdate = async (updatedItem) => {
+    try {
+      await axios.put(`/api/admin/items/${updatedItem.id}`, updatedItem);
+      alert("수정 성공!");
+      // 목록 갱신
+      setItems(items.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
+      setEditingItem(null); // 수정 모드 종료
+    } catch (error) {
+      console.error("수정 실패:", error);
+      alert("수정 실패!");
+    }
+  };
 
-const handleDelete = async (id) => {
-  try {
-    await axios.delete(`/api/admin/items/${id}`);
-    alert("삭제 성공!");
-    setItems(items.filter(item => item.id !== id)); // 화면에서 삭제 반영
-  } catch (error) {
-    console.error("삭제 실패:", error);
-    alert("삭제 실패!");
-  }
-};
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/api/admin/items/${id}`);
+      alert("삭제 성공!");
+      setItems(items.filter((item) => item.id !== id)); // 화면에서 삭제 반영
+    } catch (error) {
+      console.error("삭제 실패:", error);
+      alert("삭제 실패!");
+    }
+  };
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
@@ -72,7 +73,7 @@ const handleDelete = async (id) => {
           <p>일일 대여료: {item.dailyPrice.toLocaleString()}원</p>
           <p>상태: {item.status === "AVAILABLE" ? "사용 가능" : "사용 불가"}</p>
 
-          <button onClick={() => handleEdit(item)}>수정</button>
+          <button onClick={() => handleEdit(item.id)}>수정</button>
           <button onClick={() => handleDelete(item.id)}>삭제</button>
         </div>
       ))}

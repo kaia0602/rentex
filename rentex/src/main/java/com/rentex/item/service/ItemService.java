@@ -13,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +57,7 @@ public class ItemService {
     }
 
     @Transactional
-    public void updateItem(Long id, ItemRequestDTO dto) {
+    public void updateItem(Long id, ItemRequestDTO dto, MultipartFile thumbnail) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + id));
 
@@ -68,11 +72,37 @@ public class ItemService {
         item.setStatus(ItemStatus.valueOf(dto.getStatus()));
         item.setPartner(partner);
 
+        // 썸네일 이미지 업데이트
+        if (thumbnail != null && !thumbnail.isEmpty()) {
+            String uploadDir = "C:/rentex/uploads"; // 저장할 경로
+            String fileName = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, fileName);
+
+            try {
+                Files.createDirectories(filePath.getParent());
+                thumbnail.transferTo(filePath.toFile());
+
+                // DB 저장용 URL 또는 경로 갱신
+                String fileUrl = "/uploads/" + fileName;
+                item.setThumbnailUrl(fileUrl);
+
+            } catch (IOException e) {
+                throw new RuntimeException("썸네일 업로드 실패", e);
+            }
+        }
+
         // 썸네일 수정은 별도 API나 로직 필요할 수 있음. 여기서는 dto에 이미지 없으면 변경 안 함 처리 가능
         // 필요하면 파일 업로드 처리 로직 추가
         // 예) if(dto.getThumbnail() != null) { ... }
 
         itemRepository.save(item);
+    }
+
+    @Transactional(readOnly = true)
+    public ItemResponseDTO getItemById(Long id) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + id));
+        return ItemResponseDTO.fromEntity(item);
     }
 
     @Transactional
@@ -82,4 +112,6 @@ public class ItemService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + id));
         itemRepository.delete(item);
     }
+
+
 }

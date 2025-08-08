@@ -1,203 +1,118 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+const ItemEdit = () => {
+  const { id } = useParams(); // URL에서 아이템 ID 가져옴
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    stockQuantity: 0,
+    dailyPrice: 0,
+    status: "AVAILABLE",
+    thumbnail: null,
+  });
+  const [preview, setPreview] = useState(null);
 
-Coded by www.creative-tim.com
+  // 기존 아이템 데이터 불러오기
+  useEffect(() => {
+    axios.get(`/api/admin/items/${id}`)
+      .then(res => {
+        const item = res.data;
+        setFormData({
+          name: item.name,
+          description: item.description,
+          stockQuantity: item.stockQuantity,
+          dailyPrice: item.dailyPrice,
+          status: item.status,
+          thumbnail: null,
+        });
+        setPreview(item.thumbnailUrl); // 기존 이미지 미리보기
+      })
+      .catch(err => console.error("아이템 불러오기 실패:", err));
+  }, [id]);
 
- =========================================================
+  // 입력값 변경 핸들러
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
+  // 이미지 선택
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData(prev => ({ ...prev, thumbnail: file }));
+    setPreview(URL.createObjectURL(file)); // 새 이미지 미리보기
+  };
 
-// @mui material components
-import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
+  // 수정 요청
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const data = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null) data.append(key, formData[key]);
+    });
 
-// @mui icons
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import InstagramIcon from "@mui/icons-material/Instagram";
+    axios.put(`/api/admin/items/${id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" }
+    })
+    .then(() => {
+      alert("수정 완료!");
+      navigate("/items"); // 목록으로 이동
+    })
+    .catch(err => console.error("수정 실패:", err));
+  };
 
-// Material Dashboard 2 React components
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-
-// Material Dashboard 2 React example components
-import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
-import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
-import ProfilesList from "examples/Lists/ProfilesList";
-import DefaultProjectCard from "examples/Cards/ProjectCards/DefaultProjectCard";
-
-// Overview page components
-import Header from "layouts/profile/components/Header";
-import PlatformSettings from "layouts/profile/components/PlatformSettings";
-
-// Data
-import profilesListData from "layouts/profile/data/profilesListData";
-
-// Images
-import homeDecor1 from "assets/images/home-decor-1.jpg";
-import homeDecor2 from "assets/images/home-decor-2.jpg";
-import homeDecor3 from "assets/images/home-decor-3.jpg";
-import homeDecor4 from "assets/images/home-decor-4.jpeg";
-import team1 from "assets/images/team-1.jpg";
-import team2 from "assets/images/team-2.jpg";
-import team3 from "assets/images/team-3.jpg";
-import team4 from "assets/images/team-4.jpg";
-
-function Overview() {
   return (
-    <DashboardLayout>
-      <DashboardNavbar />
-      <MDBox mb={2} />
-      <Header>
-        <MDBox mt={5} mb={3}>
-          <Grid container spacing={1}>
-            <Grid item xs={12} md={6} xl={4}>
-              <PlatformSettings />
-            </Grid>
-            <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
-              <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
-              <ProfileInfoCard
-                title="profile information"
-                description="Hi, I’m Alec Thompson, Decisions: If you can’t decide, the answer is no. If two equally difficult paths, choose the one more painful in the short term (pain avoidance is creating an illusion of equality)."
-                info={{
-                  fullName: "Alec M. Thompson",
-                  mobile: "(44) 123 1234 123",
-                  email: "alecthompson@mail.com",
-                  location: "USA",
-                }}
-                social={[
-                  {
-                    link: "https://www.facebook.com/CreativeTim/",
-                    icon: <FacebookIcon />,
-                    color: "facebook",
-                  },
-                  {
-                    link: "https://twitter.com/creativetim",
-                    icon: <TwitterIcon />,
-                    color: "twitter",
-                  },
-                  {
-                    link: "https://www.instagram.com/creativetimofficial/",
-                    icon: <InstagramIcon />,
-                    color: "instagram",
-                  },
-                ]}
-                action={{ route: "", tooltip: "Edit Profile" }}
-                shadow={false}
-              />
-              <Divider orientation="vertical" sx={{ mx: 0 }} />
-            </Grid>
-            <Grid item xs={12} xl={4}>
-              <ProfilesList title="conversations" profiles={profilesListData} shadow={false} />
-            </Grid>
-          </Grid>
-        </MDBox>
-        <MDBox pt={2} px={2} lineHeight={1.25}>
-          <MDTypography variant="h6" fontWeight="medium">
-            Projects
-          </MDTypography>
-          <MDBox mb={1}>
-            <MDTypography variant="button" color="text">
-              Architects design houses
-            </MDTypography>
-          </MDBox>
-        </MDBox>
-        <MDBox p={2}>
-          <Grid container spacing={6}>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor1}
-                label="project #2"
-                title="modern"
-                description="As Uber works through a huge amount of internal management turmoil."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team1, name: "Elena Morison" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team4, name: "Peterson" },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor2}
-                label="project #1"
-                title="scandinavian"
-                description="Music is something that everyone has their own specific opinion about."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team4, name: "Peterson" },
-                  { image: team1, name: "Elena Morison" },
-                  { image: team2, name: "Ryan Milly" },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor3}
-                label="project #3"
-                title="minimalist"
-                description="Different people have different taste, and various types of music."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team4, name: "Peterson" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team1, name: "Elena Morison" },
-                ]}
-              />
-            </Grid>
-            <Grid item xs={12} md={6} xl={3}>
-              <DefaultProjectCard
-                image={homeDecor4}
-                label="project #4"
-                title="gothic"
-                description="Why would anyone pick blue over pink? Pink is obviously a better color."
-                action={{
-                  type: "internal",
-                  route: "/pages/profile/profile-overview",
-                  color: "info",
-                  label: "view project",
-                }}
-                authors={[
-                  { image: team4, name: "Peterson" },
-                  { image: team3, name: "Nick Daniel" },
-                  { image: team2, name: "Ryan Milly" },
-                  { image: team1, name: "Elena Morison" },
-                ]}
-              />
-            </Grid>
-          </Grid>
-        </MDBox>
-      </Header>
-      <Footer />
-    </DashboardLayout>
-  );
-}
+    <form onSubmit={handleSubmit} style={{ maxWidth: "500px", margin: "0 auto" }}>
+      <h2>아이템 수정</h2>
+      <input
+        type="text"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        placeholder="이름"
+        required
+      />
+      <textarea
+        name="description"
+        value={formData.description}
+        onChange={handleChange}
+        placeholder="설명"
+        required
+      />
+      <input
+        type="number"
+        name="stockQuantity"
+        value={formData.stockQuantity}
+        onChange={handleChange}
+        placeholder="수량"
+        required
+      />
+      <input
+        type="number"
+        name="dailyPrice"
+        value={formData.dailyPrice}
+        onChange={handleChange}
+        placeholder="일일 대여료"
+        required
+      />
+      <select
+        name="status"
+        value={formData.status}
+        onChange={handleChange}
+      >
+        <option value="AVAILABLE">사용 가능</option>
+        <option value="UNAVAILABLE">사용 불가</option>
+      </select>
 
-export default Overview;
+      <input type="file" onChange={handleFileChange} />
+      {preview && <img src={preview} alt="미리보기" style={{ width: "150px", marginTop: "10px" }} />}
+
+      <button type="submit">수정하기</button>
+    </form>
+  );
+};
+
+export default ItemEdit;
