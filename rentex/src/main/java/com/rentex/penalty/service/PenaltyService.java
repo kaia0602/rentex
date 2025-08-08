@@ -44,4 +44,11 @@ public class PenaltyService {
                         .build()
                 ));
     }
+
+    public void resetPenalty(User user) {
+        Penalty penalty = penaltyRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("벌점 정보가 존재하지 않습니다."));
+
+        penalty.reset();
+    }
 }

@@ -97,6 +97,15 @@ const routes = [
     route: "/profile",
     component: <Profile />,
   },
+  // 패널티 용
+  {
+    type: "collapse",
+    name: "penalty",
+    key: "penalty",
+    icon: <Icon fontSize="small">person</Icon>,
+    route: "/penalty",
+    component: <Profile />,
+  },
   {
     type: "collapse",
     name: "Sign In",
