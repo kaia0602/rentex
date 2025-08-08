@@ -23,7 +23,21 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     Page<Rental> findByUserId(Long userId, Pageable pageable);
     Page<Rental> findByUserIdAndStatus(Long userId, RentalStatus status, Pageable pageable);
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
+    List<Rental> findByUserId(Long userId);
 
+    @Query("""
+    SELECT r FROM Rental r
+    WHERE r.item.id = :itemId
+      AND r.status IN ('REQUESTED', 'APPROVED', 'RENTED')
+      AND (
+            (r.startDate <= :endDate AND r.endDate >= :startDate)
+          )
+""")
+    List<Rental> findConflictingRentals(
+            @Param("itemId") Long itemId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 
     @Query("SELECT r FROM Rental r WHERE r.status = 'RENTED' AND r.endDate < :today AND r.isOverdue = false")
     List<Rental> findOverdueRentals(@Param("today") LocalDate today);

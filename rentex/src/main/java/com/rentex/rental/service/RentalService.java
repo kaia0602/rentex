@@ -7,6 +7,7 @@ import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalHistory;
 import com.rentex.rental.domain.RentalStatus;
 import com.rentex.rental.dto.*;
+import com.rentex.rental.exception.*;
 import com.rentex.rental.repository.RentalHistoryRepository;
 import com.rentex.rental.repository.RentalRepository;
 import com.rentex.user.domain.User;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,28 +32,37 @@ public class RentalService {
     private final RentalRepository rentalRepository;
     private final RentalHistoryRepository rentalHistoryRepository;
 
+    // 대여 가능 여부 확인 API 처리
+    public AvailabilityResponseDto checkAvailability(Long itemId, LocalDate startDate, LocalDate endDate) {
+        List<Rental> conflicts = rentalRepository.findConflictingRentals(itemId, startDate, endDate);
+
+        boolean isAvailable = conflicts.isEmpty();
+
+        return new AvailabilityResponseDto(isAvailable, conflicts.stream()
+                .map(r -> new AvailabilityResponseDto.ConflictPeriodDto(
+                        r.getId(), r.getStartDate(), r.getEndDate()))
+                .toList());
+    }
+
     // 대여 요청 생성
     // 상태: REQUESTED
     // 처리: 재고 확인 → 중복 예약 확인 → Rental 저장 → 이력 저장
     public void requestRental(RentalRequestDto requestDto, User user) {
         Item item = itemRepository.findById(requestDto.itemId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 장비가 존재하지 않습니다."));
+                .orElseThrow(() -> new ItemNotFoundException("해당 장비가 존재하지 않습니다."));
 
-        // 재고 확인
         if (item.getStockQuantity() < requestDto.quantity()) {
-            throw new IllegalStateException("재고가 부족합니다.");
+            throw new ItemUnavailableException("재고가 부족합니다.");
         }
 
-        // 중복 예약 확인
         boolean isOverlapping = rentalRepository.existsByItemAndStatusIn(
                 item,
                 List.of(RentalStatus.REQUESTED, RentalStatus.APPROVED, RentalStatus.RENTED)
         );
         if (isOverlapping) {
-            throw new IllegalStateException("이미 대여 중이거나 승인 대기 중인 장비입니다.");
+            throw new ItemUnavailableException("이미 대여 중이거나 승인 대기 중인 장비입니다.");
         }
 
-        // Rental 저장
         Rental rental = Rental.builder()
                 .user(user)
                 .item(item)
@@ -60,10 +71,9 @@ public class RentalService {
                 .build();
         rentalRepository.save(rental);
 
-        // RentalHistory 저장
         RentalHistory history = RentalHistory.of(
                 rental,
-                null, // 최초 요청이므로 이전 상태는 없음
+                null,
                 RentalStatus.REQUESTED,
                 ActionActor.USER,
                 "사용자가 대여 요청함"
@@ -76,25 +86,23 @@ public class RentalService {
     // 처리: 재고 확인 → 재고 차감 → 상태 변경 → 이력 저장
     public void approveRental(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 대여 요청이 존재하지 않습니다."));
+                .orElseThrow(() -> new RentalNotFoundException("해당 대여 요청이 존재하지 않습니다."));
 
         if (rental.getStatus() != RentalStatus.REQUESTED) {
-            throw new IllegalStateException("승인할 수 없는 상태입니다.");
+            throw new InvalidRentalStateException("승인할 수 없는 상태입니다.");
         }
 
         Item item = rental.getItem();
 
         if (item.getStockQuantity() < rental.getQuantity()) {
-            throw new IllegalStateException("재고가 부족하여 승인할 수 없습니다.");
+            throw new ItemUnavailableException("재고가 부족하여 승인할 수 없습니다.");
         }
 
-        // 재고 차감
         item.decreaseStock(rental.getQuantity());
 
         RentalStatus from = rental.getStatus();
         rental.changeStatus(RentalStatus.APPROVED);
 
-        // 이력 저장
         RentalHistory history = RentalHistory.of(
                 rental,
                 from,
@@ -110,9 +118,9 @@ public class RentalService {
     // 처리: 수령 시간 기록, 상태 변경, 이력 저장
     public void startRental(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 대여 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RentalNotFoundException("해당 대여 정보를 찾을 수 없습니다."));
 
-        rental.start(); // Rental 엔티티의 수령 처리 메서드
+        rental.start();
 
         rentalHistoryRepository.save(
                 RentalHistory.of(
@@ -130,10 +138,10 @@ public class RentalService {
     // 처리: 상태 변경, 이력 저장
     public void requestReturn(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 대여가 없습니다."));
+                .orElseThrow(() -> new RentalNotFoundException("해당 대여가 없습니다."));
 
         if (rental.getStatus() != RentalStatus.RENTED) {
-            throw new IllegalStateException("대여중 상태여야 반납 요청이 가능합니다.");
+            throw new InvalidRentalStateException("대여중 상태여야 반납 요청이 가능합니다.");
         }
 
         RentalStatus from = rental.getStatus();
@@ -151,23 +159,19 @@ public class RentalService {
     // 반납 확정 처리 (관리자)
     // 상태: RETURN_REQUESTED → RETURNED
     // 처리: 반납 시간 기록, 상태 변경, 재고 복구, 이력 저장
-    // TODO: adminUser는 현재 컨트롤러에서 강제 주입되고 있음 → 추후 인증 연동 시 SecurityContext에서 가져오도록 변경
     public void returnRental(Long rentalId, User adminUser) {
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("대여 내역이 존재하지 않습니다."));
+                .orElseThrow(() -> new RentalNotFoundException("대여 내역이 존재하지 않습니다."));
 
         if (rental.getStatus() != RentalStatus.RETURN_REQUESTED) {
-            throw new IllegalStateException("반납 요청 상태가 아닙니다.");
+            throw new InvalidRentalStateException("반납 요청 상태가 아닙니다.");
         }
 
-        // 상태 전이
         rental.changeStatus(RentalStatus.RETURNED);
         rental.setReturnedAt(LocalDateTime.now());
 
-        // 재고 복구
         rental.getItem().increaseStock(rental.getQuantity());
 
-        // 이력 저장
         RentalHistory history = RentalHistory.of(
                 rental,
                 RentalStatus.RETURN_REQUESTED,
@@ -178,6 +182,7 @@ public class RentalService {
         rentalHistoryRepository.save(history);
     }
 
+    // 사용자 본인의 대여 목록 조회 (필터 가능)
     public Page<RentalResponseDto> getMyRentals(User user, RentalStatus status, Pageable pageable) {
         Page<Rental> rentals = (status != null) ?
                 rentalRepository.findByUserIdAndStatus(user.getId(), status, pageable) :
@@ -186,13 +191,11 @@ public class RentalService {
         return rentals.map(RentalResponseDto::from);
     }
 
-
-    @Transactional(readOnly = true)
+    // 대여 상세 조회 (본인만 가능)
     public RentalDetailResponseDto getRentalDetail(Long rentalId, User user) {
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("대여 내역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new RentalNotFoundException("대여 내역을 찾을 수 없습니다."));
 
-        // 본인 것이 아니면 예외
         if (!rental.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
@@ -209,15 +212,19 @@ public class RentalService {
         );
     }
 
+    // 대여 가능 여부 단순 확인 (빈 리스트 반환용)
     public AvailabilityResponseDto checkItemAvailability(Long itemId, LocalDate startDate, LocalDate endDate) {
         boolean existsConflict = rentalRepository.existsConflictingRental(itemId, startDate, endDate);
-        return new AvailabilityResponseDto(!existsConflict); // 예약 겹치면 false
+        return new AvailabilityResponseDto(
+                !existsConflict,
+                Collections.emptyList()
+        );
     }
 
-    @Transactional(readOnly = true)
+    // 특정 대여의 히스토리 리스트 조회
     public List<RentalHistoryResponseDto> getRentalHistory(Long rentalId) {
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 대여가 존재하지 않습니다."));
+                .orElseThrow(() -> new RentalNotFoundException("해당 대여가 존재하지 않습니다."));
 
         return rentalHistoryRepository.findByRentalOrderByCreatedAtAsc(rental)
                 .stream()
@@ -231,7 +238,7 @@ public class RentalService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
+    // 전체 대여 목록 조회 (관리자용)
     public Page<RentalResponseDto> getAllRentals(RentalStatus status, Pageable pageable) {
         Page<Rental> rentals = (status != null)
                 ? rentalRepository.findAllByStatus(status, pageable)
@@ -239,5 +246,4 @@ public class RentalService {
 
         return rentals.map(RentalResponseDto::from);
     }
-
 }

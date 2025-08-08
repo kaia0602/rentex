@@ -31,7 +31,4 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
-    public enum Role {
-        USER, ADMIN, PARTNER
-    }
 }
