@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -74,7 +75,8 @@ public class ItemService {
 
         // 썸네일 이미지 업데이트
         if (thumbnail != null && !thumbnail.isEmpty()) {
-            String uploadDir = "C:/rentex/uploads"; // 저장할 경로
+            String uploadDir = System.getProperty("user.home") +  File.separator + "uploads";
+//            String uploadDir = "C:/rentex/uploads"; // 저장할 경로
             String fileName = System.currentTimeMillis() + "_" + thumbnail.getOriginalFilename();
             Path filePath = Paths.get(uploadDir, fileName);
 
@@ -85,6 +87,9 @@ public class ItemService {
                 // DB 저장용 URL 또는 경로 갱신
                 String fileUrl = "/uploads/" + fileName;
                 item.setThumbnailUrl(fileUrl);
+
+
+                // 기존 이미지 삭제
 
             } catch (IOException e) {
                 throw new RuntimeException("썸네일 업로드 실패", e);

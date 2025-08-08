@@ -1,84 +1,131 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+/**
+=========================================================
+* Material Dashboard 2 React - v2.2.0
+=========================================================
 
-const ItemList = () => {
-  const [items, setItems] = useState([]);
-  const [editingItem, setEditingItem] = useState(null);
-  const navigate = useNavigate();
+* Product Page: https://www.creative-tim.com/product/material-dashboard-react
+* Copyright 2023 Creative Tim (https://www.creative-tim.com)
 
-  useEffect(() => {
-    axios
-      .get("/api/admin/items") // <- 실제 API 엔드포인트로 수정
-      .then((res) => {
-        console.log("응답 데이터:", res.data);
-        setItems(res.data);
-      })
-      .catch((err) => {
-        console.error("장비 목록 불러오기 실패:", err);
-      });
-  }, []);
+Coded by www.creative-tim.com
 
-  const handleEdit = (id) => {
-    navigate(`/admin/items/${id}`);
-  };
+ =========================================================
 
-  // 수정 폼에서 완료 후 호출할 함수
-  const handleUpdate = async (updatedItem) => {
-    try {
-      await axios.put(`/api/admin/items/${updatedItem.id}`, updatedItem);
-      alert("수정 성공!");
-      // 목록 갱신
-      setItems(items.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
-      setEditingItem(null); // 수정 모드 종료
-    } catch (error) {
-      console.error("수정 실패:", error);
-      alert("수정 실패!");
-    }
-  };
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*/
 
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`/api/admin/items/${id}`);
-      alert("삭제 성공!");
-      setItems(items.filter((item) => item.id !== id)); // 화면에서 삭제 반영
-    } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제 실패!");
-    }
-  };
+import { useState } from "react";
+
+// react-router-dom components
+import { Link } from "react-router-dom";
+
+// @mui material components
+import Card from "@mui/material/Card";
+import Switch from "@mui/material/Switch";
+import Grid from "@mui/material/Grid";
+import MuiLink from "@mui/material/Link";
+
+// @mui icons
+import FacebookIcon from "@mui/icons-material/Facebook";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import GoogleIcon from "@mui/icons-material/Google";
+
+// Material Dashboard 2 React components
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+import MDInput from "components/MDInput";
+import MDButton from "components/MDButton";
+
+// Authentication layout components
+import BasicLayout from "layouts/authentication/components/BasicLayout";
+
+// Images
+import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+
+function Basic() {
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-      {items.map((item) => (
-        <div
-          key={item.id}
-          style={{
-            border: "1px solid #ccc",
-            padding: "10px",
-            width: "200px",
-            textAlign: "center",
-          }}
+    <BasicLayout image={bgImage}>
+      <Card>
+        <MDBox
+          variant="gradient"
+          bgColor="info"
+          borderRadius="lg"
+          coloredShadow="info"
+          mx={2}
+          mt={-3}
+          p={2}
+          mb={1}
+          textAlign="center"
         >
-          {item.thumbnailUrl && (
-            <img
-              src={item.thumbnailUrl}
-              alt={item.name}
-              style={{ width: "150px", height: "auto", borderRadius: "8px" }}
-            />
-          )}
-          <h3>{item.name}</h3>
-          <p>{item.description}</p>
-          <p>수량: {item.stockQuantity}</p>
-          <p>일일 대여료: {item.dailyPrice.toLocaleString()}원</p>
-          <p>상태: {item.status === "AVAILABLE" ? "사용 가능" : "사용 불가"}</p>
-
-          <button onClick={() => handleEdit(item.id)}>수정</button>
-          <button onClick={() => handleDelete(item.id)}>삭제</button>
-        </div>
-      ))}
-    </div>
+          <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
+            Sign in
+          </MDTypography>
+          <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
+            <Grid item xs={2}>
+              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
+                <FacebookIcon color="inherit" />
+              </MDTypography>
+            </Grid>
+            <Grid item xs={2}>
+              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
+                <GitHubIcon color="inherit" />
+              </MDTypography>
+            </Grid>
+            <Grid item xs={2}>
+              <MDTypography component={MuiLink} href="#" variant="body1" color="white">
+                <GoogleIcon color="inherit" />
+              </MDTypography>
+            </Grid>
+          </Grid>
+        </MDBox>
+        <MDBox pt={4} pb={3} px={3}>
+          <MDBox component="form" role="form">
+            <MDBox mb={2}>
+              <MDInput type="email" label="Email" fullWidth />
+            </MDBox>
+            <MDBox mb={2}>
+              <MDInput type="password" label="Password" fullWidth />
+            </MDBox>
+            <MDBox display="flex" alignItems="center" ml={-1}>
+              <Switch checked={rememberMe} onChange={handleSetRememberMe} />
+              <MDTypography
+                variant="button"
+                fontWeight="regular"
+                color="text"
+                onClick={handleSetRememberMe}
+                sx={{ cursor: "pointer", userSelect: "none", ml: -1 }}
+              >
+                &nbsp;&nbsp;Remember me
+              </MDTypography>
+            </MDBox>
+            <MDBox mt={4} mb={1}>
+              <MDButton variant="gradient" color="info" fullWidth>
+                sign in
+              </MDButton>
+            </MDBox>
+            <MDBox mt={3} mb={1} textAlign="center">
+              <MDTypography variant="button" color="text">
+                Don&apos;t have an account?{" "}
+                <MDTypography
+                  component={Link}
+                  to="/authentication/sign-up"
+                  variant="button"
+                  color="info"
+                  fontWeight="medium"
+                  textGradient
+                >
+                  Sign up
+                </MDTypography>
+              </MDTypography>
+            </MDBox>
+          </MDBox>
+        </MDBox>
+      </Card>
+    </BasicLayout>
   );
-};
+}
 
-export default ItemList;
+export default Basic;

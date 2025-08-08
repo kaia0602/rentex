@@ -1,8 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
 
-import ItemEdit from "./layouts/profile/ItemEdit"; // 수정 페이지 컴포넌트
-import ItemList from "./layouts/authentication/sign-in/index";
-
 // react-router components
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 
@@ -156,9 +153,7 @@ export default function App() {
         <Routes>
           {getRoutes(routes)}
 
-          <Route path="/admin/items" element={<ItemList />} />
-          <Route path="/admin/items/:id" element={<ItemEdit />} />
-          {/* <Route path="*" element={<Navigate to="/dashboard" />} /> */}
+          <Route path="*" element={<Navigate to="/dashboard" />} />
         </Routes>
       </ThemeProvider>
     </CacheProvider>
