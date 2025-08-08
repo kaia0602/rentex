@@ -25,7 +25,7 @@ public class PenaltyScheduler {
 
         for (Rental rental : overdueList) {
             rental.markAsOverdue();
-            penaltyService.addPenalty(rental.getUser().getId(), 1);
+            penaltyService.increasePenalty(rental.getUser().getId(), 1);
         }
 
     }

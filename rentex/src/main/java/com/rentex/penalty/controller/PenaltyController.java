@@ -1,34 +1,41 @@
 package com.rentex.penalty.controller;
 
+import com.rentex.penalty.dto.PenaltyResponseDTO;
 import com.rentex.penalty.service.PenaltyService;
+import com.rentex.user.domain.User;
+import com.rentex.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
+@RequestMapping("/penalties")
 @RequiredArgsConstructor
-@RequestMapping("/api/users/me")
 public class PenaltyController {
 
     private final PenaltyService penaltyService;
+    private final UserService userService;
 
-    @GetMapping("/penalties")
-    public ResponseEntity<Integer> getPenalty() {
-        Long userId = getCurrentUserId();
-        return ResponseEntity.ok(penaltyService.getPenaltyPoint(userId));
+    // 사용자 본인 벌점 조회
+    @GetMapping("/me")
+    public PenaltyResponseDTO getMyPenalty(Principal principal) {
+        User user = userService.getUserByEmail(principal.getName());
+        return PenaltyResponseDTO.from(penaltyService.getPenaltyByUser(user));
     }
 
-    @PostMapping("/pay-penalty")
-    public ResponseEntity<String> payPenalty() {
-        Long userId = getCurrentUserId();
-        penaltyService.payPenalty(userId);
-        return ResponseEntity.ok("벌점이 초기화되었습니다.");
+    // 관리자 벌점 초기화
+    @PostMapping("/reset/{userId}")
+    public ResponseEntity<Void> resetPenalty(@PathVariable Long userId) {
+        penaltyService.resetPenaltyByUserId(userId);
+        return ResponseEntity.ok().build();
     }
 
-    private Long getCurrentUserId() {
-        return 1L; // TODO: JWT 연동 시 실제 유저 ID로 대체
+    // 관리자 벌점 증가
+    @PostMapping("/increase/{userId}")
+    public ResponseEntity<Void> increasePenalty(@PathVariable Long userId, @RequestParam int score) {
+        penaltyService.increasePenalty(userId, score);
+        return ResponseEntity.ok().build();
     }
 }
