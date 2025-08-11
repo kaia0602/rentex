@@ -1,5 +1,8 @@
 package com.rentex.item.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rentex.category.domain.Category;
+import com.rentex.category.domain.SubCategory;
 import com.rentex.global.domain.BaseTimeEntity;
 import com.rentex.partner.domain.Partner;
 import jakarta.persistence.*;
@@ -41,6 +44,15 @@ public class Item extends BaseTimeEntity {
 
     @Column(length = 500)
     private String thumbnailUrl;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    @JsonIgnore
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sub_category_id")
+    private SubCategory subCategory;
 
     // 장비 상태 ENUM
     public enum ItemStatus {

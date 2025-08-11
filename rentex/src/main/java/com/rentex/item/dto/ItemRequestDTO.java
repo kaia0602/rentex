@@ -17,5 +17,7 @@ public class ItemRequestDTO {
     private int dailyPrice;
     private String status; // 예: "AVAILABLE", "UNAVAILABLE"
     private Long partnerId;
+    private Long categoryId;      // 대분류 카테고리 ID
+    private Long subCategoryId;   // 소분류 카테고리 ID
 //    private MultipartFile thumbnailUrl;
 }

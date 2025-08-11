@@ -1,5 +1,9 @@
 package com.rentex.item.service;
 
+import com.rentex.category.domain.Category;
+import com.rentex.category.domain.SubCategory;
+import com.rentex.category.repository.CategoryRepository;
+import com.rentex.category.repository.SubCategoryRepository;
 import com.rentex.common.upload.FileUploadService;
 import com.rentex.item.domain.Item;
 import com.rentex.item.domain.Item.ItemStatus;
@@ -28,6 +32,8 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final PartnerRepository partnerRepository;
     private final FileUploadService fileUploadService;
+    private final CategoryRepository categoryRepository;
+    private final SubCategoryRepository subCategoryRepository;
 
     public List<ItemResponseDTO> getAllItems() {
         return itemRepository.findAll().stream()
@@ -38,6 +44,19 @@ public class ItemService {
     public void registerItem(ItemRequestDTO dto, MultipartFile thumbnail) {
         Partner partner = partnerRepository.findById(dto.getPartnerId())
                 .orElseThrow(() -> new IllegalArgumentException("파트너 ID가 유효하지 않습니다."));
+
+        // 카테고리 존재 확인
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid category ID"));
+
+        // 서브카테고리 존재 확인 및 대분류 카테고리와 맞는지 확인
+        SubCategory subCategory = subCategoryRepository.findById(dto.getSubCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid subCategory ID"));
+
+
+        if (!subCategory.getCategory().getId().equals(category.getId())) {
+            throw new IllegalArgumentException("SubCategory does not belong to Category");
+        }
 
         String thumbnailUrl = null;
         if (thumbnail != null && !thumbnail.isEmpty()) {
@@ -52,6 +71,8 @@ public class ItemService {
                 .partner(partner)
                 .thumbnailUrl(thumbnailUrl)
                 .dailyPrice(dto.getDailyPrice())
+                .category(category)
+                .subCategory(subCategory)
                 .build();
 
         itemRepository.save(item);
@@ -65,6 +86,20 @@ public class ItemService {
         // Partner도 dto에 있는 partnerId로 변경 필요하면 처리
         Partner partner = partnerRepository.findById(dto.getPartnerId())
                 .orElseThrow(() -> new IllegalArgumentException("파트너 ID가 유효하지 않습니다."));
+
+        // 카테고리(대분류, 소분류) 조회 및 설정
+        if(dto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(dto.getCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("대분류 카테고리가 유효하지 않습니다."));
+            item.setCategory(category);
+        }
+
+        if(dto.getSubCategoryId() != null) {
+            SubCategory subCategory = subCategoryRepository.findById(dto.getSubCategoryId())
+                    .orElseThrow(() -> new IllegalArgumentException("소분류 카테고리가 유효하지 않습니다."));
+            item.setSubCategory(subCategory);
+        }
+
 
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());

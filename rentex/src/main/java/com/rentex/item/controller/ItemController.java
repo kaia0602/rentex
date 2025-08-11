@@ -14,7 +14,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin/items")
+@RequestMapping("/api/partner/items")
 public class ItemController {
 
     private final ItemService itemService;
@@ -47,6 +47,11 @@ public class ItemController {
             @RequestPart("item") ItemRequestDTO dto, // JSON 데이터
             @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnail // 이미지 파일
     ) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("id must not be null");
+        }
+
         itemService.updateItem(id, dto, thumbnail);
         return ResponseEntity.ok().build();
     }
