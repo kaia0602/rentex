@@ -67,6 +67,11 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 jwt:
   secret: ${JWT_SECRET_KEY}
