@@ -22,8 +22,8 @@ function PartnerItemDetail() {
   const { categories } = useCategories();
 
   const [subCategories, setSubCategories] = useState([]);
-  const [thumbnailPreview, setThumbnailPreview] = useState(null); // 미리보기 URL 상태
-  const [existingThumbnailUrl, setExistingThumbnailUrl] = useState(null); // 기존 이미지 URL
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -33,25 +33,23 @@ function PartnerItemDetail() {
     stockQuantity: 0,
     description: "",
     status: "AVAILABLE",
-    partnerId: null, // 또는 초기값 지정
+    partnerId: null,
   });
-
-  const [thumbnailFile, setThumbnailFile] = useState(null);
 
   // 상위 카테고리 변경 시 소분류 새로 불러오기
   useEffect(() => {
-    if (form.categoryId) {
-      axios
-        .get(`/api/categories/${form.categoryId}/subcategories`)
-        .then((res) => setSubCategories(res.data))
-        .catch(() => {
-          setSubCategories([]);
-          alert("소분류 정보를 불러오는데 실패했습니다.");
-        });
-    } else {
+    if (!form.categoryId) {
       setSubCategories([]);
       setForm((prev) => ({ ...prev, subCategoryId: "" }));
+      return;
     }
+    axios
+      .get(`/api/categories/${form.categoryId}/subcategories`)
+      .then((res) => setSubCategories(res.data))
+      .catch(() => {
+        setSubCategories([]);
+        alert("소분류 정보를 불러오는데 실패했습니다.");
+      });
   }, [form.categoryId]);
 
   // 아이템 상세 불러오기
@@ -64,70 +62,56 @@ function PartnerItemDetail() {
           name: data.name,
           categoryId: data.categoryId || "",
           subCategoryId: data.subCategoryId || "",
-          dailyPrice: data.dailyPrice || "",
-          stockQuantity: data.stockQuantity || "",
+          dailyPrice: data.dailyPrice || 0,
+          stockQuantity: data.stockQuantity || 0,
           description: data.description || "",
           status: data.status || "AVAILABLE",
-          partnerId: data.partnerId || someDefaultPartnerId, // 필요하면 지정
+          partnerId: data.partnerId || null,
         });
-        setExistingThumbnailUrl(data.thumbnailUrl || null); // 기존 이미지 URL 저장
+        setPreviewUrl(data.thumbnailUrl || null);
       })
       .catch(() => {
         alert("장비 상세 정보를 불러오는데 실패했습니다.");
       });
   }, [id]);
 
+  // input 변경 핸들러
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    // dailyPrice, stockQuantity는 숫자로 변환해서 저장
-    if (name === "dailyPrice" || name === "stockQuantity") {
-      setForm((prev) => ({
-        ...prev,
-        [name]: value === "" ? "" : Number(value), // 빈 값 허용, 아니면 숫자 변환
-      }));
-    } else {
-      setForm((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "number" && value !== "" ? Number(value) : value,
+    }));
+  };
+
+  // 파일 변경 핸들러
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setThumbnailFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setThumbnailFile(file);
-      setThumbnailPreview(URL.createObjectURL(file));
-    }
+  // FormData 빌드 함수
+  const buildFormData = () => {
+    const formToSend = { ...form };
+    const formData = new FormData();
+    formData.append("item", new Blob([JSON.stringify(formToSend)], { type: "application/json" }));
+    if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
+    return formData;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      // 백엔드 DTO 필드명에 맞게 form 데이터 변환
-      const formToSend = {
-        name: form.name,
-        description: form.description,
-        dailyPrice: Number(form.price), // price → dailyPrice
-        stockQuantity: Number(form.stock), // stock → stockQuantity
-        status: form.status,
-        partnerId: Number(form.partnerId),
-        categoryId: Number(form.categoryId),
-        subCategoryId: Number(form.subCategoryId),
-      };
-      const formData = new FormData();
-      formData.append("item", new Blob([JSON.stringify(formToSend)], { type: "application/json" }));
-
-      if (thumbnailFile) {
-        formData.append("thumbnail", thumbnailFile);
-      }
-
-      await axios.put(`/api/partner/items/${id}`, formData, {
+      await axios.put(`/api/partner/items/${id}`, buildFormData(), {
         headers: { "Content-Type": "multipart/form-data" },
       });
-
       alert("수정 성공!");
       navigate("/partner/items");
     } catch (error) {
-      console.error("수정 실패:", error.response ? error.response.data : error.message);
+      console.error("수정 실패:", error.response?.data || error.message);
       alert("수정 실패!");
     }
   };
@@ -146,9 +130,9 @@ function PartnerItemDetail() {
               <Grid container spacing={2}>
                 {/* 썸네일 미리보기 */}
                 <Grid item xs={12}>
-                  {(thumbnailPreview || existingThumbnailUrl) && (
+                  {previewUrl && (
                     <img
-                      src={thumbnailPreview || existingThumbnailUrl}
+                      src={previewUrl}
                       alt="썸네일 미리보기"
                       style={{
                         width: "100%",
@@ -166,6 +150,7 @@ function PartnerItemDetail() {
                     style={{ marginBottom: 16 }}
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <MDInput
                     label="장비명"
@@ -215,7 +200,7 @@ function PartnerItemDetail() {
                 <Grid item xs={12} md={6}>
                   <MDInput
                     label="대여 단가 (₩)"
-                    name="price"
+                    name="dailyPrice"
                     type="number"
                     value={form.dailyPrice}
                     onChange={handleChange}
@@ -227,7 +212,7 @@ function PartnerItemDetail() {
                 <Grid item xs={12} md={6}>
                   <MDInput
                     label="재고 수량"
-                    name="stock"
+                    name="stockQuantity"
                     type="number"
                     value={form.stockQuantity}
                     onChange={handleChange}
@@ -247,7 +232,7 @@ function PartnerItemDetail() {
                     fullWidth
                   />
                 </Grid>
-                {/* 사용 가능 여부 선택 */}
+
                 <Grid item xs={12} md={6}>
                   <select
                     name="status"

@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
@@ -6,6 +10,9 @@ import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
 function AdminPartners() {
+  const [rows, setRows] = useState([]);
+  const navigate = useNavigate();
+
   const columns = [
     { Header: "ID", accessor: "id", align: "center" },
     { Header: "업체명", accessor: "name", align: "center" },
@@ -15,16 +22,32 @@ function AdminPartners() {
     { Header: "액션", accessor: "actions", align: "center" },
   ];
 
-  const rows = [
-    {
-      id: "1",
-      name: "렌텍스테크",
-      businessNo: "123-45-67890",
-      email: "tech@rentex.com",
-      phone: "02-1234-5678",
-      actions: <MDTypography color="info">수정</MDTypography>,
-    },
-  ];
+  useEffect(() => {
+    axios
+      .get("/api/admin/partners")
+      .then((res) => {
+        const mappedRows = res.data.map((partner) => ({
+          id: partner.id,
+          name: partner.name,
+          businessNo: partner.businessNo,
+          email: partner.contactEmail,
+          phone: partner.contactPhone,
+          actions: (
+            <MDTypography
+              color="info"
+              sx={{ cursor: "pointer" }}
+              onClick={() => navigate(`/admin/partners/${partner.id}`)}
+            >
+              수정
+            </MDTypography>
+          ),
+        }));
+        setRows(mappedRows);
+      })
+      .catch((err) => {
+        console.error("업체 목록 불러오기 실패:", err);
+      });
+  }, []);
 
   return (
     <DashboardLayout>

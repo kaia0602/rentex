@@ -25,6 +25,12 @@ public class ItemController {
         return ResponseEntity.ok(items);
     }
 
+    @GetMapping("/partner/{partnerId}")
+    public ResponseEntity<List<ItemResponseDTO>> getItemsByPartner(@PathVariable Long partnerId) {
+        List<ItemResponseDTO> items = itemService.getItemsByPartnerId(partnerId);
+        return ResponseEntity.ok(items);
+    }
+
     @PostMapping(value = "/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> registerItem(
             @RequestPart ItemRequestDTO dto,

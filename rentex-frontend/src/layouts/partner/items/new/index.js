@@ -94,7 +94,7 @@ function NewItemForm() {
     }
 
     try {
-      await axios.post("/api/admin/items/new", formData, {
+      await axios.post("/api/partner/items/new", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("등록 성공!");
