@@ -41,6 +41,13 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
+    public List<ItemResponseDTO> getItemsByPartnerId(Long partnerId) {
+        List<Item> items = itemRepository.findItemsByPartnerIdNative(partnerId);
+        return items.stream()
+                .map(ItemResponseDTO::fromEntity) // Entity → DTO 변환
+                .collect(Collectors.toList());
+    }
+
     public void registerItem(ItemRequestDTO dto, MultipartFile thumbnail) {
         Partner partner = partnerRepository.findById(dto.getPartnerId())
                 .orElseThrow(() -> new IllegalArgumentException("파트너 ID가 유효하지 않습니다."));

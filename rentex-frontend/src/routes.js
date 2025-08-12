@@ -354,7 +354,7 @@ const routes = [
     name: "파트너 설정",
     key: "partner-edit",
     icon: <Icon fontSize="small">settings</Icon>,
-    route: "/partner/edit",
+    route: "/admin/partners",
     component: <PartnerDetail />,
   },
   {

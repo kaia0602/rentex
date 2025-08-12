@@ -45,6 +45,9 @@ public class Item extends BaseTimeEntity {
     @Column(length = 500)
     private String thumbnailUrl;
 
+    @Column(length = 500)
+    private String descriptionImg;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     @JsonIgnore
