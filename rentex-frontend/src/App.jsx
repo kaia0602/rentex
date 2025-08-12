@@ -1,35 +1,22 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
 
-function App() {
-  const [count, setCount] = useState(0)
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import TestDashboard from './components/TestDashboard';
+import OAuthRedirectPage from './components/OAuthRedirectPage';
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+const App = () => {
+    return (
+        <Router>
+            <Routes>
+                {/* 기본 경로는 테스트 대시보드를 보여줍니다. */}
+                <Route path="/" element={<TestDashboard />} />
 
-export default App
+                {/* 소셜 로그인 후 리디렉션될 경로입니다. */}
+                <Route path="/oauth-redirect" element={<OAuthRedirectPage />} />
+            </Routes>
+        </Router>
+    );
+};
+
+export default App;

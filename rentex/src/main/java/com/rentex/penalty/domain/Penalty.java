@@ -16,20 +16,16 @@ public class Penalty extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY) // ✅ OneToOne -> ManyToOne으로 변경
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private int point; // 누적 벌점
+    @Column(nullable = false)
+    private int points; // ✅ 이번에 부과된 벌점
 
-    private boolean paid; // 패널티 결제 여부
+    private String reason; // ✅ 벌점 부과 사유
 
-    public void addPoint(int score) {
-        this.point += score;
-    }
-
-    public void resetPoint() {
-        this.point = 0;
-        this.paid = true;
-    }
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isPaid = false; // 벌점 납부 여부
 }

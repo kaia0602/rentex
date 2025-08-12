@@ -7,7 +7,7 @@ import lombok.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "partners")
+@Table(name = "partner")
 @DiscriminatorValue("PARTNER") // 3. 이 엔티티는 역할(DTYPE)이 'PARTNER'인 경우
 public class Partner extends User {
 

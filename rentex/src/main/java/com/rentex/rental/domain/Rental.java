@@ -49,4 +49,12 @@ public class Rental extends BaseTimeEntity {
             this.status = RentalStatus.REQUESTED;
         }
     }
+
+    // ✅ 반납 요청 시 상태를 변경하는 메서드
+    public void requestReturn() {
+        if (this.status != RentalStatus.RENTED) {
+            throw new IllegalStateException("현재 '대여 중'인 상태가 아니면 반납 요청을 할 수 없습니다.");
+        }
+        this.status = RentalStatus.RETURN_REQUESTED;
+    }
 }
