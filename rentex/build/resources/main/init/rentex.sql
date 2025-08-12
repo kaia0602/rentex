@@ -227,3 +227,8 @@ INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (173, '블랙앤데커 점프팩', '차량용 보조배터리 장비 - 블랙앤데커 점프팩', 9, 'AVAILABLE', 2, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 32293, 'https://manuals.plus/wp-content/uploads/2021/08/BLACK-DECKER-Jump-Starter-featured-image.jpg');
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (174, 'LG 배터리팩', '차량용 보조배터리 장비 - LG 배터리팩', 3, 'AVAILABLE', 3, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 45442, 'https://e-power.co.kr/web/product/big/202412/7387993879ca1d292b37f8bfbbc1e144.jpg');
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (175, '루메나 차량용', '차량용 보조배터리 장비 - 루메나 차량용', 9, 'UNAVAILABLE', 4, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 12460, 'https://lumena.co.kr/web/product/big/202408/eeb8bff046c80fa095007b5bb270e587.png');
+
+-- 서버실행 후
+-- UPDATE item
+-- SET daily_price = ROUND(daily_price, -3);
+-- 쿼리문 이용해서 가격 단위 바꾸기
