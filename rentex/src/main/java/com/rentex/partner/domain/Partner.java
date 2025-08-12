@@ -1,7 +1,9 @@
 package com.rentex.partner.domain;
 
+import com.rentex.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,16 +12,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
-public class Partner {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true, length = 100)
-    private String name;
+@SuperBuilder // User 빌더 필드까지 상속
+@DiscriminatorValue("PARTNER") // JOINED 전략 구분값
+public class Partner extends User {
 
     @Column(name = "business_no", length = 20, unique = true)
     private String businessNo;

@@ -7,10 +7,10 @@
 
 -- 0. 카테고리
 
-ALTER TABLE category AUTO_INCREMENT = 1;
+-- ALTER TABLE category AUTO_INCREMENT = 1;
 ALTER TABLE category ADD UNIQUE (name);
 
-ALTER TABLE sub_category AUTO_INCREMENT = 1;
+-- ALTER TABLE sub_category AUTO_INCREMENT = 1;
 ALTER TABLE sub_category ADD UNIQUE (category_id, name);
 
 INSERT IGNORE INTO category (name) VALUES
@@ -23,33 +23,52 @@ INSERT IGNORE INTO sub_category (category_id, name) VALUES
                                                  (4, '노트북'), (4, '모니터'), (4, '청소기'), (4, '빔프로젝터'), (4, '에어컨/냉장고'), (4, '프린터'), (4, '의자/책상'),
                                                  (5, '공구세트'), (5, '디지털계측기'), (5, '보호장비'), (5, '차량용 보조배터리'), (5, '기타');
 
--- 1. 파트너
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (1, '카메라랜드', '641-40-98183', '카메라랜드@rentex.com', '010-2403-9141', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (2, '렌즈마켓', '234-60-36845', '렌즈마켓@rentex.com', '010-2984-7665', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (3, '삼각대월드', '321-54-82271', '삼각대월드@rentex.com', '010-3235-2235', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (4, '짐벌코리아', '910-78-68005', '짐벌코리아@rentex.com', '010-3522-4949', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (5, '조명프라자', '451-29-11457', '조명프라자@rentex.com', '010-3272-6701', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (6, '사운드렌탈', '662-85-98827', '사운드렌탈@rentex.com', '010-3476-1486', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (7, '드론익스프레스', '681-64-28328', '드론익스프레스@rentex.com', '010-6822-7826', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (8, '오디오샵', '788-22-25180', '오디오샵@rentex.com', '010-1193-4405', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (9, '모니터존', '291-31-89216', '모니터존@rentex.com', '010-7444-8971', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (10, '캠핑파크', '963-26-91658', '캠핑파크@rentex.com', '010-3935-3043', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (11, '캠핑스토리', '248-41-82882', '캠핑스토리@rentex.com', '010-7904-9164', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (12, '버너하우스', '236-15-47813', '버너하우스@rentex.com', '010-9538-1655', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (13, '쿨러월드', '524-13-83512', '쿨러월드@rentex.com', '010-4574-6264', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (14, '랜턴마켓', '173-16-19118', '랜턴마켓@rentex.com', '010-2093-8971', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (15, '행사렌탈컴퍼니', '820-60-32452', '행사렌탈컴퍼니@rentex.com', '010-1670-9465', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (16, '무대마스터', '774-13-73620', '무대마스터@rentex.com', '010-9395-5520', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (17, '전시스토어', '806-94-64563', '전시스토어@rentex.com', '010-3199-7326', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (18, '오피스렌트', '829-82-39334', '오피스렌트@rentex.com', '010-2219-1199', '2025-08-12 01:09:39');
-INSERT IGNORE INTO partner (id, name, business_no, contact_email, contact_phone, created_at) VALUES (19, '디지털툴스', '217-17-79952', '디지털툴스@rentex.com', '010-7136-4148', '2025-08-12 01:09:39');
+-- 1. 사용자 (파트너 먼저)
+INSERT IGNORE INTO user (id, email, password, name, nickname, role, created_at, updated_at) VALUES
+    (1,  'partner1@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '카메라랜드',   '파트너1', 'PARTNER', NOW(), NOW()),
+    (2,  'partner2@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '렌즈마켓',     '파트너2', 'PARTNER', NOW(), NOW()),
+    (3,  'partner3@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '삼각대월드',   '파트너3', 'PARTNER', NOW(), NOW()),
+    (4,  'partner4@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '짐벌코리아',   '파트너4', 'PARTNER', NOW(), NOW()),
+    (5,  'partner5@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '조명프라자',   '파트너5', 'PARTNER', NOW(), NOW()),
+    (6,  'partner6@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '사운드렌탈',   '파트너6', 'PARTNER', NOW(), NOW()),
+    (7,  'partner7@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '드론익스프레스','파트너7', 'PARTNER', NOW(), NOW()),
+    (8,  'partner8@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '오디오샵',     '파트너8', 'PARTNER', NOW(), NOW()),
+    (9,  'partner9@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '모니터존',     '파트너9', 'PARTNER', NOW(), NOW()),
+    (10, 'partner10@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '캠핑파크',     '파트너10','PARTNER', NOW(), NOW()),
+    (11, 'partner11@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '캠핑스토리',   '파트너11','PARTNER', NOW(), NOW()),
+    (12, 'partner12@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '버너하우스',   '파트너12','PARTNER', NOW(), NOW()),
+    (13, 'partner13@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '쿨러월드',     '파트너13','PARTNER', NOW(), NOW()),
+    (14, 'partner14@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '랜턴마켓',     '파트너14','PARTNER', NOW(), NOW()),
+    (15, 'partner15@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '행사렌탈컴퍼니','파트너15','PARTNER', NOW(), NOW()),
+    (16, 'partner16@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '무대마스터',   '파트너16','PARTNER', NOW(), NOW()),
+    (17, 'partner17@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '전시스토어',   '파트너17','PARTNER', NOW(), NOW()),
+    (18, 'partner18@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '오피스렌트',   '파트너18','PARTNER', NOW(), NOW()),
+    (19, 'partner19@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '디지털툴스',   '파트너19','PARTNER', NOW(), NOW()),
+    -- 일반 유저/관리자는 충돌 피하려고 100번대로
+    (100,'user1@rentex.com',     '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '홍길동', '길동이', 'USER',  NOW(), NOW()),
+    (101,'admin@rentex.com',     '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '관리자', '운영자', 'ADMIN', NOW(), NOW());
 
--- 2. 사용자
-INSERT IGNORE INTO user (id, email, password, name, nickname, role, created_at, updated_at)
-VALUES
-    (1, 'user1@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '홍길동', '길동이', 'USER', NOW(), NOW()),
-    (2, 'partner1@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '박파트너', '렌탈왕', 'PARTNER', NOW(), NOW()),
-    (3, 'admin@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '관리자', '운영자', 'ADMIN', NOW(), NOW());
+-- 2. 파트너 (name 컬럼 제거 / id는 위 user와 동일해야 함)
+INSERT IGNORE INTO partner (id, business_no, contact_email, contact_phone) VALUES
+(1,  '641-40-98183', '카메라랜드@rentex.com', '010-2403-9141'),
+(2,  '234-60-36845', '렌즈마켓@rentex.com',   '010-2984-7665'),
+(3,  '321-54-82271', '삼각대월드@rentex.com', '010-3235-2235'),
+(4,  '910-78-68005', '짐벌코리아@rentex.com', '010-3522-4949'),
+(5,  '451-29-11457', '조명프라자@rentex.com', '010-3272-6701'),
+(6,  '662-85-98827', '사운드렌탈@rentex.com', '010-3476-1486'),
+(7,  '681-64-28328', '드론익스프레스@rentex.com','010-6822-7826'),
+(8,  '788-22-25180', '오디오샵@rentex.com',   '010-1193-4405'),
+(9,  '291-31-89216', '모니터존@rentex.com',   '010-7444-8971'),
+(10, '963-26-91658', '캠핑파크@rentex.com',   '010-3935-3043'),
+(11, '248-41-82882', '캠핑스토리@rentex.com', '010-7904-9164'),
+(12, '236-15-47813', '버너하우스@rentex.com', '010-9538-1655'),
+(13, '524-13-83512', '쿨러월드@rentex.com',   '010-4574-6264'),
+(14, '173-16-19118', '랜턴마켓@rentex.com',   '010-2093-8971'),
+(15, '820-60-32452', '행사렌탈컴퍼니@rentex.com', '010-1670-9465'),
+(16, '774-13-73620', '무대마스터@rentex.com', '010-9395-5520'),
+(17, '806-94-64563', '전시스토어@rentex.com', '010-3199-7326'),
+(18, '829-82-39334', '오피스렌트@rentex.com', '010-2219-1199'),
+(19, '217-17-79952', '디지털툴스@rentex.com', '010-7136-4148');
 
 -- 3. 장비
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (1, 'Canon EOS R6', '카메라 장비 - Canon EOS R6', 9, 'AVAILABLE', 1, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 1, 1, 7373, 'https://upload.wikimedia.org/wikipedia/commons/4/47/Canon_EOS_R6_15.jpg');
