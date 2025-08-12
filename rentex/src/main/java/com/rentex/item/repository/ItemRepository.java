@@ -2,7 +2,11 @@ package com.rentex.item.repository;
 
 import com.rentex.item.domain.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * ⚠️ 임시용 ItemRepository
@@ -18,4 +22,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     // 필요 시 추가 예시
     // List<Item> findByStatus(ItemStatus status);
     // List<Item> findByPartnerId(Long partnerId);
+    @Query(value = "SELECT * FROM item WHERE partner_id = :partnerId", nativeQuery = true)
+    List<Item> findItemsByPartnerIdNative(@Param("partnerId") Long partnerId);
+
 }

@@ -30,4 +30,4 @@ server:
   spring:
     web:
       resources:
-        static-locations: classpath:/static/, file:uploads/
+        static-locations: classpath:/static/, file:///C:/rentex/
