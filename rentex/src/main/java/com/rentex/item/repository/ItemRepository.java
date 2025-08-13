@@ -1,6 +1,7 @@
 package com.rentex.item.repository;
 
 import com.rentex.item.domain.Item;
+import com.rentex.item.dto.ItemResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
