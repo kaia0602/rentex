@@ -1,7 +1,11 @@
 package com.rentex.user.repository;
 
+import com.rentex.admin.dto.UserResponseDTO;
 import com.rentex.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,4 +16,8 @@ import java.util.Optional;
  */
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(u.id, u.email, u.name, u.nickname,  u.role, u.createdAt, u.penaltyPoints) " +
+            "FROM User u " + "WHERE u.role = 'USER'")
+    List<UserResponseDTO> findAllUsers();
 }
