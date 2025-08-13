@@ -2,6 +2,7 @@ package com.rentex.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -15,6 +16,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/rentals/**").permitAll() // 대여 요청 테스트용 허용
                         .requestMatchers("/api/admin/**").permitAll()    // 관리자 API도 임시 허용
+                        .requestMatchers(HttpMethod.GET, "/api/penalties/**").authenticated()
                         .anyRequest().permitAll() // 테스트용 전체 오픈 (나중에 authenticated()로 바꿔도 됨)
 
                 );
