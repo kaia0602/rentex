@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -13,14 +12,19 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
+import api from "../../api.js";
+
 function PenaltyPage() {
   const navigate = useNavigate();
 
   const [rows, setRows] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState(null);
+  const [errStatus, setErrStatus] = useState(null);
   const [updatedAt, setUpdatedAt] = useState(null);
+
+  // 중복 네비게이션 방지용
+  const navigatingRef = useRef(false);
 
   const columns = useMemo(
     () => [
@@ -32,60 +36,84 @@ function PenaltyPage() {
   );
 
   useEffect(() => {
-    let alive = true;
-    (async () => {
+    const controller = new AbortController();
+    const run = async () => {
       try {
         setLoading(true);
-        setErr(null);
-        const res = await axios.get("/api/penalties/me", {
-          withCredentials: true,
-          validateStatus: () => true,
+        setErrStatus(null);
+
+        const res = await api.get("/penalties/me", {
+          signal: controller.signal,
         });
-        if (!alive) return;
-        if (res.status !== 200) throw Object.assign(new Error("fetch failed"), { response: res });
 
-        const data = res.data;
-        const histories = Array.isArray(data?.histories) ? data.histories : [];
+        // 401 → 로그인 페이지로
+        if (res.status === 401) {
+          setErrStatus(401);
+          navigate("/authentication/sign-in");
+          return;
+        }
 
-        const norm = (d) => {
+        if (res.status !== 200) {
+          setErrStatus(res.status || "ERR");
+          setRows([]);
+          setTotal(0);
+          return;
+        }
+
+        const data = res.data || {};
+        // 다양한 백엔드 스키마를 흡수: totalPoints | totalScore | points | histories
+        const histories = Array.isArray(data.histories) ? data.histories : [];
+        const totalFromApi = Number.isFinite(data.totalPoints)
+          ? data.totalPoints
+          : Number.isFinite(data.totalScore)
+          ? data.totalScore
+          : Number.isFinite(data.points)
+          ? data.points
+          : histories.length;
+
+        // 날짜 표준화
+        const normDate = (d) => {
           if (!d) return "";
           if (typeof d === "string" && /^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
           const dt = new Date(d);
           return Number.isNaN(dt.getTime()) ? "" : dt.toISOString().slice(0, 10);
         };
 
+        // history 객체 필드 다양성 대응: reason | cause, date | occurredAt | createdAt, note | memo
         const mapped = histories.map((h, i) => ({
-          reason: h.reason ?? "-",
-          date: norm(h.date),
-          note: h.note ?? "벌점 1점 부여",
+          reason: h.reason ?? h.cause ?? "-",
+          date: normDate(h.date ?? h.occurredAt ?? h.createdAt),
+          note: h.note ?? h.memo ?? "벌점 1점 부여",
           _idx: i,
         }));
-
-        const totalFromApi = Number.isFinite(data?.totalPoints)
-          ? data.totalPoints
-          : Number.isFinite(data?.totalScore)
-          ? data.totalScore
-          : mapped.length;
 
         setRows(mapped);
         setTotal(totalFromApi);
         setUpdatedAt(new Date());
       } catch (e) {
-        if (!alive) return;
-        console.error("GET /api/penalties/me error:", e?.response?.status, e?.response?.data);
-        setErr(e);
+        if (controller.signal.aborted) return; // 언마운트/취소
+        // 네트워크 오류 등
+        setErrStatus(e?.response?.status ?? "ERR");
         setRows([]);
         setTotal(0);
       } finally {
-        if (alive) setLoading(false);
+        if (!controller.signal.aborted) setLoading(false);
       }
-    })();
-    return () => {
-      alive = false;
     };
-  }, []);
+
+    run();
+    return () => controller.abort();
+  }, [navigate]);
 
   const isBlocked = total >= 3;
+
+  const gotoPayPenalty = () => {
+    if (navigatingRef.current) return;
+    navigatingRef.current = true;
+    navigate("/mypage/pay-penalty");
+    // 약간의 딜레이 후 해제(뒤로가기 직후 재클릭 방지)
+    setTimeout(() => (navigatingRef.current = false), 600);
+  };
 
   return (
     <DashboardLayout>
@@ -122,21 +150,21 @@ function PenaltyPage() {
                   size="small"
                   color="warning"
                   disabled={loading || total <= 0}
-                  onClick={() => navigate("/mypage/pay-penalty")}
+                  onClick={gotoPayPenalty}
                 >
                   벌점 결제/초기화
                 </MDButton>
               </MDBox>
 
               <MDBox px={3} pt={1} pb={0.5}>
-                {updatedAt && !loading && (
+                {!loading && updatedAt && (
                   <MDTypography variant="caption" color="text">
                     최근 업데이트: {updatedAt.toLocaleString()}
                   </MDTypography>
                 )}
-                {err && (
+                {errStatus && errStatus !== 401 && (
                   <MDTypography variant="caption" color="error">
-                    데이터를 불러오지 못했습니다. (상태 {err?.response?.status ?? "—"})
+                    데이터를 불러오지 못했습니다. (상태 {String(errStatus)})
                   </MDTypography>
                 )}
               </MDBox>

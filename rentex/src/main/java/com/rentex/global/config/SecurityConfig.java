@@ -72,6 +72,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/rentals/**").permitAll() // 대여 요청 테스트용 허용
                         .requestMatchers("/api/admin/**").permitAll()    // 관리자 API 임시 허용
+                        .requestMatchers("/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/penalties/**").authenticated()
                         .anyRequest().permitAll() // 테스트용 전체 오픈 (나중에 authenticated()로 변경 가능)
                 )
@@ -93,7 +94,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 허용할 클라이언트 출처 설정
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "https://accounts.google.com"));
         // 허용할 HTTP 메서드 설정
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // 허용할 HTTP 헤더 설정
