@@ -15,16 +15,24 @@ lerna-debug.log*
 node_modules/
 
 # ========================
-# ✅ 빌드 결과물 무시
+# ✅ 빌드 결과물 무시 (Java, JS 모두)
 # ========================
 dist
 dist-ssr
+target/
+**/build/
+out/
 
 # ========================
-# ✅ 환경 설정 파일 무시 (.env 등)
+# ✅ 환경 설정/시크릿 파일 무시
 # ========================
 .env
 *.local
+**/application-secret.properties
+/rentex/build/
+/rentex/.gradle/
+/rentex/src/main/resources/application-secret.properties
+
 
 # ========================
 # ✅ IDE/에디터 관련 파일 무시
@@ -33,7 +41,12 @@ dist-ssr
 !.vscode/extensions.json  # 공통 확장팩 추천은 포함
 .idea/
 .DS_Store
+
+# ========================
+# ✅ Gradle 캐시 무시
+# ========================
 .gradle/
+**/.gradle/
 
 # ========================
 # ✅ OS/에디터 기타 캐시 무시
@@ -43,5 +56,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-# application secret
-**/src/main/resources/application-secret.properties
