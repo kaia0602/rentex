@@ -20,8 +20,15 @@ node_modules/
 dist
 dist-ssr
 target/
-**/build/
 out/
+**/build/
+build/
+
+# ========================
+# ✅ Gradle 캐시 무시
+# ========================
+.gradle/
+**/.gradle/
 
 # ========================
 # ✅ 환경 설정/시크릿 파일 무시
@@ -29,10 +36,7 @@ out/
 .env
 *.local
 **/application-secret.properties
-/rentex/build/
-/rentex/.gradle/
 /rentex/src/main/resources/application-secret.properties
-
 
 # ========================
 # ✅ IDE/에디터 관련 파일 무시
@@ -41,12 +45,6 @@ out/
 !.vscode/extensions.json  # 공통 확장팩 추천은 포함
 .idea/
 .DS_Store
-
-# ========================
-# ✅ Gradle 캐시 무시
-# ========================
-.gradle/
-**/.gradle/
 
 # ========================
 # ✅ OS/에디터 기타 캐시 무시
