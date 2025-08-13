@@ -17,11 +17,11 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
     List<Penalty> findByUser(User user);  // ✅ 추가
     boolean existsByUserAndPaidFalse(User user);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Penalty p SET p.point = 0, p.paid = true WHERE p.user.id = :userId")
     void resetPenalty(@Param("userId") Long userId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Penalty p SET p.point = p.point + :score WHERE p.user.id = :userId")
     void increasePenalty(@Param("userId") Long userId, @Param("score") int score);
 

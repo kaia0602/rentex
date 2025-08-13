@@ -22,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 
 @Configuration
@@ -48,7 +49,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // JWT 인증 필터 생성 및 로그인 처리 URL 설정
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider);
+        JwtAuthenticationFilter jwtAuthenticationFilter =
+                new JwtAuthenticationFilter(authenticationManager(), jwtTokenProvider);
         jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
 
         http
@@ -66,25 +68,13 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
-//                // 경로별 인가(Authorization) 설정, 테스트 이후 활성화
-                .authorizeHttpRequests(authz -> authz
-                        .anyRequest().permitAll()
+                // 경로별 인가(Authorization) 설정 (penalty 브랜치 임시 설정 포함)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/rentals/**").permitAll() // 대여 요청 테스트용 허용
+                        .requestMatchers("/api/admin/**").permitAll()    // 관리자 API 임시 허용
+                        .requestMatchers(HttpMethod.GET, "/api/penalties/**").authenticated()
+                        .anyRequest().permitAll() // 테스트용 전체 오픈 (나중에 authenticated()로 변경 가능)
                 )
-//                .authorizeHttpRequests(authz -> authz
-//                        .requestMatchers(
-//                                "/api/auth/**",
-//                                "/api/login",
-//                                "/oauth2/**",
-//                                "/error",
-//                                "/swagger-ui/**",
-//                                "/v3/api-docs/**",
-//                                "/api/users/signup", // signup 경로를 여기에 포함
-//                                "/api/partner/items"
-//                        ).permitAll()
-//                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/api/partner/**").hasAnyRole("PARTNER", "ADMIN")
-//                        .anyRequest().authenticated()
-//                )
 
                 // OAuth2 소셜 로그인 설정
                 .oauth2Login(oauth2 -> oauth2

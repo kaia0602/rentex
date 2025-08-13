@@ -31,4 +31,10 @@ public class Penalty extends BaseTimeEntity {
         this.point = 0;
         this.paid = true;
     }
+
+    public void reset() {
+        this.point = 0;
+        this.paid = true;
+    }
+
 }
