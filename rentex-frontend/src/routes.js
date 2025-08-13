@@ -8,6 +8,8 @@ import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
+import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
+
 // 유저관련
 import UserDashboard from "layouts/user";
 import MyPageHome from "layouts/user/MyPageHome";
@@ -437,6 +439,13 @@ const routes = [
     icon: <i className="material-icons">picture_as_pdf</i>,
     component: <StatementPdfPage />,
     noCollapse: true,
+  },
+  {
+    type: "",
+    name: "OAuth Redirect",
+    key: "oauth-redirect",
+    route: "/oauth-redirect",
+    component: <OAuthRedirect />,
   },
 ];
 
