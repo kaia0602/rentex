@@ -33,3 +33,7 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/, file:///C:/rentex/
+
+# 🔽 spring 바깥 최상단에 선언, 배포할 때 https://rentex.com 이런식을 변경
+app:
+  frontend-url: http://localhost:3000
