@@ -33,6 +33,7 @@ dist-ssr
 !.vscode/extensions.json  # 공통 확장팩 추천은 포함
 .idea/
 .DS_Store
+.gradle/
 
 # ========================
 # ✅ OS/에디터 기타 캐시 무시
