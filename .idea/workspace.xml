@@ -5,11 +5,164 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/rentex/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/MailConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/JwtAuthenticationFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/JwtAuthorizationFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/JwtTokenProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/OAuth2LoginSuccessHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/OAuthAttributes.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/controller/PasswordResetController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/controller/TestController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/controller/UserController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/LoginRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/MyPageDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/ProfileUpdateRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/SignUpRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/CustomOAuth2UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/CustomUserDetailsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/EmailService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/VerificationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/.gradle/8.14.3/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/checksums/checksums.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/checksums/md5-checksums.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/checksums/sha1-checksums.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/executionHistory/executionHistory.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/executionHistory/executionHistory.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileChanges/last-build.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileHashes/fileHashes.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileHashes/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/fileHashes/resourceHashesCache.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/8.14.3/gc.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/file-system.probe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/.gradle/vcs-1/gc.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/RentexApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/admin/domain/Admin$AdminBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/admin/domain/Admin.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/admin/domain/AdminRole.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/controller/CategoryController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/domain/Category$CategoryBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/domain/Category.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/domain/SubCategory$SubCategoryBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/domain/SubCategory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/dto/SubCategoryDTO$SubCategoryDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/dto/SubCategoryDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/repository/CategoryRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/category/repository/SubCategoryRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/common/upload/FileUploadService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/common/upload/LocalFileUploadService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/config/JpaAuditingConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/config/SecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/config/WebConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/domain/BaseTimeEntity.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/exception/CustomException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/exception/ErrorCode.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/exception/ErrorResponse$ErrorResponseBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/exception/ErrorResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/exception/GlobalExceptionHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/controller/ItemController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/domain/Item$ItemBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/domain/Item$ItemStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/domain/Item.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/dto/ItemRequestDTO$ItemRequestDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/dto/ItemRequestDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/dto/ItemResponseDTO$ItemResponseDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/dto/ItemResponseDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/repository/ItemRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/item/service/ItemService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/controller/PartnerController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/domain/Partner$PartnerBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/domain/Partner.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/dto/PartnerRequestDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/dto/PartnerResponseDto$PartnerResponseDtoBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/dto/PartnerResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/repository/PartnerRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/partner/service/PartnerService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/controller/PaymentController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/domain/Payment$PaymentBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/domain/Payment$PaymentMethod.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/domain/Payment$PaymentStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/domain/Payment.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/dto/PaymentResponseDTO$PaymentResponseDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/dto/PaymentResponseDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/repository/PaymentRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/payment/service/PaymentService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/controller/PartnerStatisticsController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/controller/PenaltyController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/domain/Penalty$PenaltyBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/domain/Penalty.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/dto/PartnerStatisticsDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/dto/PenaltyResponseDTO$PenaltyResponseDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/dto/PenaltyResponseDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/repository/PenaltyRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/scheduler/PenaltyScheduler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/service/PartnerStatisticsService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/penalty/service/PenaltyService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/controller/AdminRentalController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/controller/RentalController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/domain/ActionActor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/domain/Rental$RentalBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/domain/Rental.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/domain/RentalHistory$RentalHistoryBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/domain/RentalHistory.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/domain/RentalStatus.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/dto/AvailabilityResponseDto$ConflictPeriodDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/dto/AvailabilityResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/dto/RentalDetailResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/dto/RentalHistoryResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/dto/RentalRequestDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/dto/RentalResponseDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/exception/InvalidRentalStateException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/exception/ItemNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/exception/ItemUnavailableException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/exception/RentalNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/repository/RentalHistoryRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/repository/RentalRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/rental/service/RentalService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/domain/Role.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/domain/User$UserBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/domain/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/repository/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/service/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/test/com/rentex/RentexApplicationTests.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/test/com/rentex/rental/service/RentalServiceTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/reports/problems/problems-report.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/reports/tests/test/classes/com.rentex.rental.service.RentalServiceTest.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/reports/tests/test/css/base-style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/reports/tests/test/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/reports/tests/test/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/reports/tests/test/js/report.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/reports/tests/test/packages/com.rentex.rental.service.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/resources/main/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/resources/main/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/resources/main/init/rentex.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/resources/main/uploads/1754633412291_coffee.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/test-results/test/TEST-com.rentex.rental.service.RentalServiceTest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/test-results/test/binary/output.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/test-results/test/binary/output.bin.idx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/test-results/test/binary/results.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/tmp/compileJava/compileTransaction/stash-dir/PenaltyController.class.uniqueId0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/tmp/compileTestJava/compileTransaction/stash-dir/RentalServiceTest.class.uniqueId0" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/tmp/compileTestJava/previous-compilation-data.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/RentexApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/RentexApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/domain/BaseTimeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/domain/BaseTimeEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/domain/Partner.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/domain/Partner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/repository/RentalRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/repository/RentalRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/domain/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/domain/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/test/java/com/rentex/rental/service/RentalServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/test/java/com/rentex/rental/service/RentalServiceTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,30 +208,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.rentex 빌드.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.소스 다운로드.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.RentexApplication.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature/penalty-payment&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/admin/Documents/rentex&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.rentex 빌드.executor": "Run",
+    "Gradle.소스 다운로드.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.RentexApplication.executor": "Run",
+    "git-widget-placeholder": "feature/penalty-payment 병합 중",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/admin/Documents/rentex",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\it\Documents\rentex\rentex\src\main\java\com\rentex\payment" />

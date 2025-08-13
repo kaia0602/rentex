@@ -15,16 +15,28 @@ lerna-debug.log*
 node_modules/
 
 # ========================
-# ✅ 빌드 결과물 무시
+# ✅ 빌드 결과물 무시 (Java, JS 모두)
 # ========================
 dist
 dist-ssr
+target/
+out/
+**/build/
+build/
 
 # ========================
-# ✅ 환경 설정 파일 무시 (.env 등)
+# ✅ Gradle 캐시 무시
+# ========================
+.gradle/
+**/.gradle/
+
+# ========================
+# ✅ 환경 설정/시크릿 파일 무시
 # ========================
 .env
 *.local
+**/application-secret.properties
+/rentex/src/main/resources/application-secret.properties
 
 # ========================
 # ✅ IDE/에디터 관련 파일 무시

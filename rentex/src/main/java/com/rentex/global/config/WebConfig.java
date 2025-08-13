@@ -7,14 +7,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-
-    @Override
-    public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**")
-//                .addResourceLocations("file:///C:/rentex/uploads/");
-                .addResourceLocations("file:" + System.getProperty("user.home") + "/uploads/");
-    }
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // 모든 경로
@@ -23,5 +15,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true); // 쿠키 허용 (로그인 세션 등)
     }
-
 }

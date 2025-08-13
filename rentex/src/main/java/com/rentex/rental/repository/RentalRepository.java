@@ -1,10 +1,10 @@
 package com.rentex.rental.repository;
 
-
 import com.rentex.penalty.dto.PartnerStatisticsDto;
 import com.rentex.item.domain.Item;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
+import com.rentex.user.domain.User; // ✅ 우리 도메인 User import
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,9 +20,17 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     boolean existsByItemAndStatusIn(Item item, List<RentalStatus> statuses);
 
+    // ✅ User 엔티티 기반 메서드 추가 (탈퇴 시 사용)
+    boolean existsByUserAndStatusNotIn(User user, List<RentalStatus> statuses);
+
+    List<Rental> findByUser(User user); // MyPage 조회용
+
     Page<Rental> findByUserId(Long userId, Pageable pageable);
+
     Page<Rental> findByUserIdAndStatus(Long userId, RentalStatus status, Pageable pageable);
+
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
+
     List<Rental> findByUserId(Long userId);
 
     @Query("""
@@ -57,7 +65,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     """, nativeQuery = true)
     List<PartnerStatisticsDto> getPartnerStatistics();
 
-
     @Query("""
     SELECT COUNT(r) > 0
     FROM Rental r
@@ -69,6 +76,5 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     boolean existsConflictingRental(@Param("itemId") Long itemId,
                                     @Param("startDate") LocalDate startDate,
                                     @Param("endDate") LocalDate endDate);
-
 
 }
