@@ -13,12 +13,6 @@
     "url": "git+https://github.com/creativetimofficial/material-dashboard-react.git"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "axios": "^1.11.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-router-dom": "^7.7.1"
-=======
     "@emotion/cache": "11.10.8",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -65,7 +59,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
->>>>>>> origin/feature/admin-items
   },
   "devDependencies": {
     "ajv": "^7.2.4",
@@ -76,7 +69,8 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
-    "prettier": "2.8.8"
+    "prettier": "2.8.8",
+    "vite": "^7.1.2"
   },
   "overrides": {
     "svgo": "3.0.2"

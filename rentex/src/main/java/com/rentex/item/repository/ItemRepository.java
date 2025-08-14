@@ -1,12 +1,6 @@
 package com.rentex.item.repository;
 
 import com.rentex.item.domain.Item;
-<<<<<<< HEAD
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface ItemRepository extends JpaRepository<Item, Long> {
-}
-=======
 import com.rentex.item.dto.ItemResponseDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,4 +27,3 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findItemsByPartnerIdNative(@Param("partnerId") Long partnerId);
 
 }
->>>>>>> origin/feature/admin-items

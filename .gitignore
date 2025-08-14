@@ -37,37 +37,8 @@ build/
 *.local
 **/application-secret.properties
 /rentex/src/main/resources/application-secret.properties
+/rentex/src/main/resources/application-secret.yml
 
-<<<<<<< HEAD
-# ===================
-# 백엔드 (Spring Boot)
-# ===================
-/rentex/.gradle/
-/rentex/.idea/
-/rentex/build/
-/rentex/out/
-/rentex/*.iml
-
-
-# ===================
-# 프론트엔드 (React + Vite)
-/rentex-frontend/node_modules/
-/rentex-frontend/dist/
-/rentex-frontend/.vite/
-/rentex-frontend/.eslintcache
-
-# ===================
-# OS/Tool 별
-# ===================
-*.swp
-*.tmp
-*.bak
-*.log
-
-# 스프링 부트 비밀 설정 파일
-application-secret.yml
-
-=======
 # ========================
 # ✅ IDE/에디터 관련 파일 무시
 # ========================
@@ -86,4 +57,3 @@ application-secret.yml
 *.sw?
 # application secret
 **/src/main/resources/application-secret.properties
->>>>>>> origin/feature/admin-items

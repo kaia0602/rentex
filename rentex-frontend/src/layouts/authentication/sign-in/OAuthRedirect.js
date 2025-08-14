@@ -10,7 +10,7 @@ function OAuthRedirect() {
 
     if (token) {
       localStorage.setItem("token", token);
-      alert("구글 로그인 성공!");
+      alert("로그인 성공!");
       nav("/"); // 로그인 후 이동할 경로
     } else {
       nav("/authentication/sign-in");

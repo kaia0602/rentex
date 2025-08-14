@@ -1,12 +1,5 @@
 package com.rentex.rental.repository;
 
-<<<<<<< HEAD
-import com.rentex.rental.domain.RentalHistory;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface RentalHistoryRepository extends JpaRepository<RentalHistory, Long> {
-}
-=======
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,4 +12,3 @@ public interface RentalHistoryRepository extends JpaRepository<RentalHistory, Lo
     List<RentalHistory> findByRentalOrderByCreatedAtAsc(Rental rental);
 
 }
->>>>>>> origin/feature/admin-items

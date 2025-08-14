@@ -4,33 +4,453 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="723c8df0-0e93-428b-ad69-5e3d2d6fe593" name="변경" comment="" />
+    <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.eslintrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.eslintrc.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.idea/rentex-frontend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.idea/rentex-frontend.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.npmrc" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.npmrc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/.prettierrc.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/.prettierrc.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/ISSUE_TEMPLATE.md" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/ISSUE_TEMPLATE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/LICENSE.md" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/LICENSE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/genezio.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/genezio.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/jsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/jsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/public/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/public/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/public/robots.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/api/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/api/client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/illustrations/pattern-tree.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/illustrations/pattern-tree.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-coinbase.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-coinbase.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-nasa.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-nasa.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-netflix.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-netflix.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-pinterest.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-pinterest.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-spotify.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-spotify.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-vodafone.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/logos/gray-logos/logo-vodafone.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/bootstrap.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/bootstrap.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/creative-tim.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/creative-tim.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/devto.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/devto.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/github.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/github.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/google-webdev.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/google-webdev.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/icon-bulb.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/icon-bulb.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-asana.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-asana.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-atlassian.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-atlassian.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-invision.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-invision.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-jira.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-jira.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-slack.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-slack.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-spotify.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-spotify.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-xd.svg" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/images/small-logos/logo-xd.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/borders.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/borders.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/boxShadows.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/boxShadows.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/breakpoints.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/breakpoints.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/colors.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/globals.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/globals.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/typography.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/base/typography.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/appBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/appBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/avatar.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/avatar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/breadcrumbs.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/breadcrumbs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/contained.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/contained.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/outlined.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/outlined.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/root.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/root.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/text.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/button/text.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/buttonBase.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/buttonBase.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/card/cardContent.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/card/cardContent.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/card/cardMedia.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/card/cardMedia.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/card/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/card/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/container.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/container.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogContent.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogContent.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogContentText.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogContentText.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogTitle.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/dialogTitle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/dialog/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/divider.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/divider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/autocomplete.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/autocomplete.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/checkbox.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/checkbox.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/formControlLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/formControlLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/formLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/formLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/input.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/input.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/inputLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/inputLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/inputOutlined.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/inputOutlined.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/radio.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/radio.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/select.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/select.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/switchButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/switchButton.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/textField.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/form/textField.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/icon.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/icon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/iconButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/iconButton.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/linearProgress.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/linearProgress.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/link.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/link.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/list/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/list/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/list/listItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/list/listItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/list/listItemText.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/list/listItemText.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/menu/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/menu/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/menu/menuItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/menu/menuItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/popover.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/popover.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/sidenav.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/sidenav.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/slider.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/slider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/step.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/step.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/stepConnector.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/stepConnector.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/stepIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/stepIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/stepLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/stepper/stepLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/svgIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/svgIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/table/tableCell.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/table/tableCell.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/table/tableContainer.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/table/tableContainer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/table/tableHead.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/table/tableHead.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/tabs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/tabs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/tabs/tab.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/tabs/tab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/tooltip.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/components/tooltip.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/boxShadow.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/boxShadow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/gradientChartLine.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/gradientChartLine.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/hexToRgb.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/hexToRgb.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/linearGradient.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/linearGradient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/pxToRem.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/pxToRem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/rgba.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/functions/rgba.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/theme-rtl.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme-dark/theme-rtl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/borders.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/borders.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/boxShadows.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/boxShadows.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/breakpoints.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/breakpoints.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/colors.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/globals.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/globals.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/typography.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/base/typography.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/appBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/appBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/avatar.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/avatar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/breadcrumbs.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/breadcrumbs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/contained.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/contained.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/outlined.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/outlined.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/root.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/root.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/text.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/button/text.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/buttonBase.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/buttonBase.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/card/cardContent.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/card/cardContent.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/card/cardMedia.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/card/cardMedia.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/card/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/card/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/container.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/container.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogContent.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogContent.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogContentText.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogContentText.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogTitle.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/dialogTitle.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/dialog/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/divider.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/divider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/flatpickr.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/flatpickr.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/autocomplete.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/autocomplete.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/checkbox.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/checkbox.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/formControlLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/formControlLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/formLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/formLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/input.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/input.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/inputLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/inputLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/inputOutlined.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/inputOutlined.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/radio.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/radio.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/select.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/select.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/switchButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/switchButton.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/textField.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/form/textField.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/icon.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/icon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/iconButton.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/iconButton.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/linearProgress.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/linearProgress.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/link.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/link.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/list/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/list/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/list/listItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/list/listItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/list/listItemText.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/list/listItemText.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/menu/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/menu/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/menu/menuItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/menu/menuItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/popover.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/popover.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/sidenav.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/sidenav.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/slider.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/slider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/step.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/step.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/stepConnector.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/stepConnector.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/stepIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/stepIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/stepLabel.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/stepper/stepLabel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/svgIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/svgIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/table/tableCell.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/table/tableCell.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/table/tableContainer.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/table/tableContainer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/table/tableHead.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/table/tableHead.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/tabs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/tabs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/tabs/tab.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/tabs/tab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/tooltip.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/components/tooltip.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/boxShadow.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/boxShadow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/gradientChartLine.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/gradientChartLine.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/hexToRgb.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/hexToRgb.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/linearGradient.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/linearGradient.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/pxToRem.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/pxToRem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/rgba.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/functions/rgba.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/theme-rtl.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/assets/theme/theme-rtl.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/Hooks/useCategories.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/Hooks/useCategories.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDAlert/MDAlertCloseIcon.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDAlert/MDAlertCloseIcon.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDAlert/MDAlertRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDAlert/MDAlertRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDAlert/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDAlert/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDAvatar/MDAvatarRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDAvatar/MDAvatarRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDAvatar/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDAvatar/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDBadge/MDBadgeRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDBadge/MDBadgeRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDBadge/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDBadge/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDBox/MDBoxRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDBox/MDBoxRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDBox/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDBox/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDButton/MDButtonRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDButton/MDButtonRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDButton/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDButton/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDInput/MDInputRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDInput/MDInputRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDInput/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDInput/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDPagination/MDPaginationItemRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDPagination/MDPaginationItemRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDPagination/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDPagination/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDProgress/MDProgressRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDProgress/MDProgressRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDProgress/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDProgress/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDSnackbar/MDSnackbarIconRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDSnackbar/MDSnackbarIconRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDSnackbar/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDSnackbar/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDTypography/MDTypographyRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDTypography/MDTypographyRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/components/MDTypography/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/components/MDTypography/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/context/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/context/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Breadcrumbs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Breadcrumbs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/BlogCards/SimpleBlogCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/BlogCards/SimpleBlogCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/InfoCards/DefaultInfoCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/InfoCards/DefaultInfoCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/InfoCards/ProfileInfoCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/InfoCards/ProfileInfoCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/MasterCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/MasterCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/ProjectCards/DefaultProjectCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/ProjectCards/DefaultProjectCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/StatisticsCards/ComplexStatisticsCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Cards/StatisticsCards/ComplexStatisticsCard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/HorizontalBarChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/HorizontalBarChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/HorizontalBarChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/HorizontalBarChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/ReportsBarChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/ReportsBarChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/ReportsBarChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/ReportsBarChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/VerticalBarChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/VerticalBarChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/VerticalBarChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BarCharts/VerticalBarChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BubbleChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BubbleChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BubbleChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/BubbleChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/DoughnutCharts/DefaultDoughnutChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/DoughnutCharts/DefaultDoughnutChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/DoughnutCharts/DefaultDoughnutChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/DoughnutCharts/DefaultDoughnutChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/DefaultLineChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/DefaultLineChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/DefaultLineChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/DefaultLineChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/GradientLineChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/GradientLineChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/GradientLineChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/GradientLineChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ProgressLineChart/config/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ProgressLineChart/config/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ProgressLineChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ProgressLineChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ReportsLineChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ReportsLineChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ReportsLineChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/LineCharts/ReportsLineChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/MixedChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/MixedChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/MixedChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/MixedChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PieChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PieChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PieChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PieChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PolarChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PolarChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PolarChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/PolarChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/RadarChart/configs/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/RadarChart/configs/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/RadarChart/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Charts/RadarChart/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Configurator/ConfiguratorRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Configurator/ConfiguratorRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Configurator/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Configurator/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Footer/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Footer/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Items/NotificationItem/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Items/NotificationItem/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Items/NotificationItem/styles.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Items/NotificationItem/styles.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/LayoutContainers/DashboardLayout/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/LayoutContainers/DashboardLayout/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/LayoutContainers/PageLayout/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/LayoutContainers/PageLayout/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Lists/ProfilesList/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Lists/ProfilesList/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DashboardNavbar/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DashboardNavbar/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DashboardNavbar/styles.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DashboardNavbar/styles.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DefaultNavbar/DefaultNavbarLink.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DefaultNavbar/DefaultNavbarLink.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DefaultNavbar/DefaultNavbarMobile.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DefaultNavbar/DefaultNavbarMobile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DefaultNavbar/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Navbars/DefaultNavbar/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/SidenavCollapse.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/SidenavCollapse.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/SidenavRoot.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/SidenavRoot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/styles/sidenav.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/styles/sidenav.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/styles/sidenavCollapse.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/styles/sidenavCollapse.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Tables/DataTable/DataTableBodyCell.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Tables/DataTable/DataTableBodyCell.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Tables/DataTable/DataTableHeadCell.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Tables/DataTable/DataTableHeadCell.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Tables/DataTable/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Tables/DataTable/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/TimelineItem/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/TimelineItem/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/TimelineItem/styles.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/TimelineItem/styles.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/TimelineList/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/TimelineList/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/context/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Timeline/context/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Items.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Items.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PartnerDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PartnerDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PartnerStatisticsDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PartnerStatisticsDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Partners.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Partners.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Penalties.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Penalties.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PenaltyDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PenaltyDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PenaltyForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PenaltyForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Receipts.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Receipts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Rentals.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Rentals.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Returns.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Returns.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/StatementPdf.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/StatementPdf.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/UserDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/UserDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Users.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Users.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/components/BasicLayout/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/components/BasicLayout/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/components/CoverLayout/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/components/CoverLayout/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/components/Footer/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/components/Footer/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/reset-password/cover/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/reset-password/cover/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-in/OAuthRedirect.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-in/OAuthRedirect.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-in/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-in/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-up/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-up/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Bill/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Bill/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/BillingInformation/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/BillingInformation/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Invoice/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Invoice/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Invoices/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Invoices/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/PaymentMethod/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/PaymentMethod/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Transaction/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Transaction/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Transactions/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/components/Transactions/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/billing/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/components/OrdersOverview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/components/OrdersOverview/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/components/Projects/data/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/components/Projects/data/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/components/Projects/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/components/Projects/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/data/reportsBarChartData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/data/reportsBarChartData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/data/reportsLineChartData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/data/reportsLineChartData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/notifications/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/notifications/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/items/ItemDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/items/ItemDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/items/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/items/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/items/new/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/items/new/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/notifications/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/notifications/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/rentals/RentalDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/rentals/RentalDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/rentals/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/rentals/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/settings/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/settings/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/components/Header/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/components/Header/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/components/PlatformSettings/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/components/PlatformSettings/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/data/profilesListData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/data/profilesListData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/profile/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/components/OrdersOverview/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/components/OrdersOverview/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/components/Projects/data/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/components/Projects/data/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/components/Projects/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/components/Projects/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/data/reportsBarChartData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/data/reportsBarChartData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/data/reportsLineChartData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/data/reportsLineChartData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/rtl/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/tables/data/authorsTableData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/tables/data/authorsTableData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/tables/data/projectsTableData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/tables/data/projectsTableData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/tables/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/tables/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/EditProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/EditProfile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/ItemDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/ItemDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/ItemList.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/ItemList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/MyPageHome.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/MyPageHome.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/MyRentals.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/MyRentals.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PayPenalty.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PayPenalty.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PaymentHistory.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PaymentHistory.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PenaltyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PenaltyPage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/RentalDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/RentalDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/RentalRequest.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/RentalRequest.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/components/Header/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/components/Header/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/components/PlatformSettings/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/components/PlatformSettings/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/data/profilesListData.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/data/profilesListData.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/penalty/profile/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/routes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/service/EmailService.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/service/EmailService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/RentexApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/RentexApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/controller/AdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/domain/Admin.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/domain/Admin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/dto/UserResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/dto/UserResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/service/AdminService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/admin/service/AdminService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/controller/CategoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/domain/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/domain/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/domain/SubCategory.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/domain/SubCategory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/dto/SubCategoryDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/dto/SubCategoryDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/repository/SubCategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/category/repository/SubCategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/common/upload/FileUploadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/common/upload/FileUploadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/common/upload/LocalFileUploadService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/common/upload/LocalFileUploadService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebsecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebsecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/domain/BaseTimeEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/domain/BaseTimeEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/JwtTokenProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/JwtTokenProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/OAuth2LoginSuccessHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/OAuth2LoginSuccessHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/OAuthAttributes.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/jwt/OAuthAttributes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/controller/ItemController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/controller/ItemController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/domain/Item.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/domain/Item.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/dto/ItemRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/dto/ItemRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/dto/ItemResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/dto/ItemResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/repository/ItemRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/repository/ItemRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/service/ItemService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/item/service/ItemService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/controller/PartnerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/controller/PartnerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/domain/Partner.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/domain/Partner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/dto/PartnerRequestDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/dto/PartnerRequestDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/dto/PartnerResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/dto/PartnerResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/repository/PartnerRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/repository/PartnerRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/service/PartnerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/partner/service/PartnerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/controller/PaymentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/domain/Payment.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/domain/Payment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/dto/PaymentResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/dto/PaymentResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/repository/PaymentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/repository/PaymentRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/service/PaymentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/service/PaymentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PartnerStatisticsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PartnerStatisticsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PenaltyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PenaltyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PartnerStatisticsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PartnerStatisticsDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PenaltyResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PenaltyResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/scheduler/PenaltyScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/scheduler/PenaltyScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/PartnerStatisticsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/PartnerStatisticsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/PenaltyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/PenaltyService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/controller/AdminRentalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/controller/AdminRentalController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/controller/RentalController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/controller/RentalController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/ActionActor.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/ActionActor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/Rental.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/Rental.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/RentalHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/RentalHistory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/RentalStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/domain/RentalStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/AvailabilityResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/AvailabilityResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalDetailResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalDetailResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalHistoryResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalHistoryResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalResponseDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalResponseDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/InvalidRentalStateException.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/InvalidRentalStateException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/ItemNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/ItemNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/ItemUnavailableException.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/ItemUnavailableException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/RentalNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/exception/RentalNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/repository/RentalHistoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/repository/RentalHistoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/repository/RentalRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/repository/RentalRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/service/RentalService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/service/RentalService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/controller/TestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/controller/TestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/domain/Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/domain/Role.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/domain/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/domain/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/LoginResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/LoginResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/MyPageDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/dto/MyPageDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/test/java/com/rentex/rental/service/RentalServiceTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/test/java/com/rentex/rental/service/RentalServiceTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
     <projectState path="$PROJECT_DIR$/rentex">
       <ProjectState />
     </projectState>
   </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <projects_view>
-          <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="rentex" type="f1a62948:ProjectNode" />
-              </path>
-            </expand>
-            <select />
-          </tree_state>
-        </projects_view>
-      </state>
-    </system>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -38,7 +458,7 @@
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
     &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;usernaaaaamelee&quot;
+    &quot;assignee&quot;: &quot;Haminhyuk&quot;
   }
 }</component>
   <component name="GithubPullRequestsUISettings">{
@@ -47,58 +467,65 @@
     &quot;accountId&quot;: &quot;53d18367-a245-4e81-a4e3-64e1a4dd59e7&quot;
   }
 }</component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" root0="FORCE_HIGHLIGHTING" />
-  </component>
-  <component name="PackageJsonUpdateNotifier">
-    <dismissed value="$PROJECT_DIR$/rentex/package.json" />
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 7
+  &quot;associatedIndex&quot;: 5
 }</component>
-  <component name="ProjectId" id="30teVMm8yTg2m0UWsHJVVViAG55" />
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectId" id="30tXwCgismkXyPZwDoNsArMDk3l" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.소스 다운로드.executor": "Run",
-    "JavaScript 디버그.index.html.executor": "Coverage",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feature/user-auth 병합 중",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "모듈",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.33103448",
-    "settings.editor.selected.configurable": "reference.projectsettings.compiler.excludes",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2025.1.2\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.rentex 빌드.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.소스 다운로드.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Node.js.TestDashboard.jsx.executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.RentexApplication.executor&quot;: &quot;Run&quot;,
+    &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/user-auth&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/admin/Documents/rentex&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.33103448&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;Errors&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2025.1.2\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\it\Desktop\Project\rentex\rentex\src\main\java\com\rentex\rental\controller" />
-      <recent name="C:\Users\it\Desktop\Project\rentex\rentex\src\main\java\com\rentex\penalty\repository" />
+      <recent name="C:\Users\it\Documents\rentex\rentex\src\main\java\com\rentex\payment" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Node.js.TestDashboard.jsx">
+    <configuration name="TestDashboard.jsx" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/rentex-frontend/src/components/TestDashboard.jsx" working-dir="$PROJECT_DIR$/rentex-frontend/src/components">
+      <method v="2" />
+    </configuration>
     <configuration name="RentexApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="SCHEDULED_DEBUGGER" value="true" />
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
       <module name="rentex.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.rentex.RentexApplication" />
@@ -106,6 +533,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Node.js.TestDashboard.jsx" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -117,25 +549,38 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="디폴트 작업">
-      <changelist id="723c8df0-0e93-428b-ad69-5e3d2d6fe593" name="변경" comment="" />
-      <created>1754451319952</created>
+      <changelist id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="" />
+      <created>1754448078897</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1754451319952</updated>
-      <workItem from="1754451322031" duration="6394000" />
-      <workItem from="1754464959314" duration="3228000" />
-      <workItem from="1754469706746" duration="12000" />
-      <workItem from="1754525316843" duration="2266000" />
-      <workItem from="1754527604343" duration="19282000" />
-      <workItem from="1754623504389" duration="10882000" />
-      <workItem from="1754957291335" duration="96000" />
-      <workItem from="1754957390638" duration="983000" />
-      <workItem from="1754958391267" duration="16891000" />
-      <workItem from="1755130049197" duration="729000" />
+      <updated>1754448078897</updated>
+      <workItem from="1754448080109" duration="978000" />
+      <workItem from="1754617068649" duration="10770000" />
+      <workItem from="1754976553776" duration="4659000" />
+      <workItem from="1755041502590" duration="8891000" />
+      <workItem from="1755134215349" duration="881000" />
+      <workItem from="1755135317015" duration="16105000" />
+      <workItem from="1755158671004" duration="682000" />
+      <workItem from="1755160260169" duration="30000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/PenaltyService.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

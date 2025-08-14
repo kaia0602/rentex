@@ -1,14 +1,5 @@
 package com.rentex.user.repository;
 
-<<<<<<< HEAD
-import com.rentex.user.domain.User;
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
-
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
-}
-=======
 import com.rentex.admin.dto.UserResponseDTO;
 import com.rentex.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +21,3 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "FROM User u " + "WHERE u.role = 'USER'")
     List<UserResponseDTO> findAllUsers();
 }
->>>>>>> origin/feature/admin-items

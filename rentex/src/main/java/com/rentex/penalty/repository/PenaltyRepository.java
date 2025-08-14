@@ -2,14 +2,6 @@ package com.rentex.penalty.repository;
 
 import com.rentex.penalty.domain.Penalty;
 import com.rentex.user.domain.User;
-<<<<<<< HEAD
-import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
-
-public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
-    List<Penalty> findByUser(User user);
-    boolean existsByUserAndIsPaidFalse(User user);
-=======
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -34,5 +26,4 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
     void increasePenalty(@Param("userId") Long userId, @Param("score") int score);
 
 
->>>>>>> origin/feature/admin-items
 }

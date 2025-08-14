@@ -27,7 +27,6 @@ public class EmailService {
 
             emailSender.send(mimeMessage);
         } catch (MessagingException e) {
-            // 실제 운영에서는 로깅 프레임워크 사용을 권장합니다 (e.g., log.error(...))
             throw new RuntimeException("HTML 이메일 발송에 실패했습니다.", e);
         }
     }
