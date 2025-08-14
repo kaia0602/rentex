@@ -33,6 +33,8 @@ import brandDark from "assets/images/logo-ct-dark.png";
 // Pages
 import PartnerItemDetail from "layouts/partner/items/ItemDetail";
 import PartnerDetail from "layouts/admin/PartnerDetail";
+import AdminUsers from "layouts/admin/Users";
+import AdminUserDetail from "layouts/admin/UserDetail";
 import PublicItemDetail from "layouts/rentals/publicItemDetail";
 
 export default function App() {
@@ -51,22 +53,25 @@ export default function App() {
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
 
-  // RTL Cache
+  // Cache for the rtl
   useMemo(() => {
     const cacheRtl = createCache({
       key: "rtl",
       stylisPlugins: [rtlPlugin],
     });
+
     setRtlCache(cacheRtl);
   }, []);
 
-  // Mouse events for sidenav
+  // Open sidenav when mouse enter on mini sidenav
   const handleOnMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {
       setMiniSidenav(dispatch, false);
       setOnMouseEnter(true);
     }
   };
+
+  // Close sidenav when mouse leave mini sidenav
   const handleOnMouseLeave = () => {
     if (onMouseEnter) {
       setMiniSidenav(dispatch, true);
@@ -74,29 +79,30 @@ export default function App() {
     }
   };
 
-  // Configurator toggle
+  // Change the openConfigurator state
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
 
-  // Set direction
+  // Setting the dir attribute for the body element
   useEffect(() => {
     document.body.setAttribute("dir", direction);
   }, [direction]);
 
-  // Scroll to top on route change
+  // Setting page scroll to 0 when changing the route
   useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
-  // ✅ exact 제거 → 동적 경로 매칭 가능
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
+
       if (route.route) {
-        return <Route path={route.route} element={route.component} key={route.key} />;
+        return <Route exact path={route.route} element={route.component} key={route.key} />;
       }
+
       return null;
     });
 
@@ -178,6 +184,14 @@ export default function App() {
         </>
       )}
       {layout === "vr" && <Configurator />}
+      <Routes>
+        {getRoutes(routes)}
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
+        <Route path="/admin/partners/:id" element={<PartnerDetail />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+      </Routes>
       {renderRoutes}
     </ThemeProvider>
   );

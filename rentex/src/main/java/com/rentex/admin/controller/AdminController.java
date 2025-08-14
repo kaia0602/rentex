@@ -23,4 +23,12 @@ public class AdminController {
         return adminService.getAllUsers();
     }
 
+    // 단일 사용자 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long id) {
+        UserResponseDTO user = adminService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
+
+
 }
