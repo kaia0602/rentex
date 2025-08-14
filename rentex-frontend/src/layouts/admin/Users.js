@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -11,6 +12,7 @@ import MDButton from "components/MDButton";
 
 function AdminUsers() {
   const [rows, setRows] = useState([]);
+  const navigate = useNavigate();
 
   const columns = [
     { Header: "ID", accessor: "id", align: "center" },
@@ -38,7 +40,7 @@ function AdminUsers() {
           createdAt: user.createdAt,
           pp: user.pp || 0,
           actions: (
-            <MDButton color="info" size="small" onClick={() => alert(`${user.name} 상세 보기`)}>
+            <MDButton color="info" size="small" onClick={() => navigate(`/admin/users/${user.id}`)}>
               상세
             </MDButton>
           ),

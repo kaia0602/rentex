@@ -1,19 +1,24 @@
-// src/layouts/admin/UserDetail.js
+import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
+import axios from "axios";
 
 function UserDetail() {
-  // TODO: 유저 상세 정보 fetch (임시 데이터 사용)
-  const user = {
-    name: "홍길동",
-    email: "user@example.com",
-    nickname: "길동쓰",
-    role: "USER",
-    penaltyPoints: 2,
-  };
+  const { id } = useParams();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get(`/api/admin/users/${id}`)
+      .then((res) => setUser(res.data))
+      .catch((err) => console.error(err));
+  }, [id]);
+
+  if (!user) return <DashboardLayout>Loading...</DashboardLayout>;
 
   return (
     <DashboardLayout>
@@ -32,7 +37,6 @@ function UserDetail() {
           <Divider sx={{ my: 3 }} />
 
           <MDTypography variant="h6">대여 내역</MDTypography>
-          {/* TODO: 대여 리스트 컴포넌트 or 테이블 삽입 */}
           <MDBox mt={2}>
             <em>대여 목록 연동 예정</em>
           </MDBox>

@@ -22,4 +22,6 @@ public class AdminService {
     public List<UserResponseDTO> getAllUsers() {
         return userRepository.findAllUsers();
     }
+
+
 }
