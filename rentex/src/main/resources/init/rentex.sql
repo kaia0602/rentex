@@ -7,11 +7,13 @@
 
 -- 0. 카테고리
 
--- ALTER TABLE category AUTO_INCREMENT = 1;
-ALTER TABLE category ADD UNIQUE (name);
+-- 카테고리: name 유니크
+CREATE UNIQUE INDEX IF NOT EXISTS uq_category_name
+    ON category (name);
 
--- ALTER TABLE sub_category AUTO_INCREMENT = 1;
-ALTER TABLE sub_category ADD UNIQUE (category_id, name);
+-- 서브카테고리: (category_id, name) 복합 유니크
+CREATE UNIQUE INDEX IF NOT EXISTS uq_sub_category_catid_name
+    ON sub_category (category_id, name);
 
 INSERT IGNORE INTO category (name) VALUES
                                 ('촬영/미디어'), ('캠핑/레저'), ('행사/전시/무대'), ('가전/생활/사무'), ('기타/기타장비');
