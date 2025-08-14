@@ -131,8 +131,8 @@ public class UserService {
      * 존재하지 않을 경우 IllegalArgumentException 발생.
      */
     @Transactional(readOnly = true)
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + id));
     }
 }

@@ -29,8 +29,8 @@ public class PenaltyController {
                     "message", "로그인이 필요합니다."
             ));
         }
-        String email = auth.getName(); // 기본값: 인증 주체의 name
-        User user = userService.getUserByEmail(email);
+        Long id = Long.parseLong(auth.getName()); // 기본값: 인증 주체의 name
+        User user = userService.getUserById(id);
         return ResponseEntity.ok(PenaltyResponseDTO.from(penaltyService.getPenaltyByUser(user)));
     }
 

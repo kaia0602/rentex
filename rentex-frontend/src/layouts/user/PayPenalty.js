@@ -17,6 +17,7 @@ import MDButton from "components/MDButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import api from "api";
 
 function PayPenalty() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function PayPenalty() {
       try {
         setLoading(true);
         setErr(null);
-        const res = await axios.get("/api/penalties/me", {
+        const res = await api.get("/penalties/me", {
           withCredentials: true,
           validateStatus: () => true,
         });
@@ -159,7 +160,7 @@ function PayPenalty() {
 
                     <MDBox mt={2} display="flex" gap={1}>
                       <MDButton color="warning" onClick={handlePay} disabled={disablePay}>
-                        {paying ? "결제 중…" : "가짜 결제 진행"}
+                        {paying ? "결제 중…" : " 결제 진행"}
                       </MDButton>
                       <MDButton
                         variant="outlined"

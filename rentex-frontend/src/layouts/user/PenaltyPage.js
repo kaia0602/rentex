@@ -28,9 +28,9 @@ function PenaltyPage() {
 
   const columns = useMemo(
     () => [
-      { Header: "사유", accessor: "reason" },
-      { Header: "부여일", accessor: "date", align: "center" },
-      { Header: "비고", accessor: "note", align: "left" },
+      { Header: "렌탈 물품", accessor: "item" },
+      { Header: "대여일", accessor: "rentedAt", align: "center" },
+      { Header: "만료일", accessor: "endDate", align: "left" },
     ],
     []
   );
@@ -54,7 +54,7 @@ function PenaltyPage() {
         }
 
         if (res.status !== 200) {
-          setErrStatus(res.status || "ERR");
+          setErrStatus(res.data.message || "ERR");
           setRows([]);
           setTotal(0);
           return;
@@ -63,13 +63,13 @@ function PenaltyPage() {
         const data = res.data || {};
         // 다양한 백엔드 스키마를 흡수: totalPoints | totalScore | points | histories
         const histories = Array.isArray(data.histories) ? data.histories : [];
-        const totalFromApi = Number.isFinite(data.totalPoints)
-          ? data.totalPoints
-          : Number.isFinite(data.totalScore)
-          ? data.totalScore
-          : Number.isFinite(data.points)
-          ? data.points
-          : histories.length;
+        // const totalFromApi = Number.isFinite(data.totalPoints)
+        // ? data.totalPoints
+        // : Number.isFinite(data.totalScore)
+        // ? data.totalScore
+        // : Number.isFinite(data.points)
+        // ? data.points
+        // : histories.length;
 
         // 날짜 표준화
         const normDate = (d) => {
@@ -79,21 +79,20 @@ function PenaltyPage() {
           return Number.isNaN(dt.getTime()) ? "" : dt.toISOString().slice(0, 10);
         };
 
-        // history 객체 필드 다양성 대응: reason | cause, date | occurredAt | createdAt, note | memo
         const mapped = histories.map((h, i) => ({
-          reason: h.reason ?? h.cause ?? "-",
-          date: normDate(h.date ?? h.occurredAt ?? h.createdAt),
-          note: h.note ?? h.memo ?? "벌점 1점 부여",
+          item: h.reason ?? h.cause ?? "-",
+          rentedAt: normDate(h.date ?? h.occurredAt ?? h.createdAt),
+          endDate: data.createdAt,
           _idx: i,
         }));
 
         setRows(mapped);
-        setTotal(totalFromApi);
+        setTotal(data.point);
         setUpdatedAt(new Date());
       } catch (e) {
         if (controller.signal.aborted) return; // 언마운트/취소
         // 네트워크 오류 등
-        setErrStatus(e?.response?.status ?? "ERR");
+        setErrStatus(e?.response?.message);
         setRows([]);
         setTotal(0);
       } finally {

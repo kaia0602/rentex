@@ -24,7 +24,7 @@ public class PaymentController {
 
     @GetMapping("/payments")
     public List<PaymentResponseDTO> getPayments(Principal principal) {
-        User user = userService.getUserByEmail(principal.getName());
+        User user = userService.getUserById(Long.parseLong(principal.getName()));
         return paymentService.getPaymentHistory(user).stream()
                 .map(PaymentResponseDTO::from)
                 .collect(Collectors.toList());
@@ -34,7 +34,7 @@ public class PaymentController {
     public PaymentResponseDTO payPenalty(@RequestParam int amount,
                                       @RequestParam PaymentMethod method,
                                       Principal principal) {
-        User user = userService.getUserByEmail(principal.getName());
+        User user = userService.getUserById(Long.parseLong(principal.getName()));
         Payment payment = paymentService.processPenaltyPayment(user, amount, method);
         return PaymentResponseDTO.from(payment);
     }

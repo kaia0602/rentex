@@ -6,8 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/api.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PenaltyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PenaltyPage.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/controller/PaymentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PenaltyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PenaltyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PenaltyResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PenaltyResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,13 +65,15 @@
     "Gradle.rentex 빌드.executor": "Run",
     "Gradle.소스 다운로드.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found": "데이터베이스 연결 매개변수가 발견됨",
+    "Notification.DoNotAsk-DatabaseConfigFileWatcher.found": "true",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.RentexApplication.executor": "Debug",
+    "Spring Boot.RentexApplication.executor": "Run",
     "git-widget-placeholder": "feature/penalty-payment",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/admin/Documents/rentex",
@@ -112,26 +121,11 @@
       <workItem from="1754617068649" duration="10770000" />
       <workItem from="1754976553776" duration="4659000" />
       <workItem from="1755041502590" duration="8891000" />
+      <workItem from="1755129717892" duration="13248000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/PenaltyService.java</url>
-          <line>21</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PenaltyController.java</url>
-          <line>25</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
