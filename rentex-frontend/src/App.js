@@ -30,7 +30,7 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 
-// Pages
+// Pages (직접 매핑용)
 import PartnerItemDetail from "layouts/partner/items/ItemDetail";
 import PartnerDetail from "layouts/admin/PartnerDetail";
 import AdminUsers from "layouts/admin/Users";
@@ -59,7 +59,6 @@ export default function App() {
       key: "rtl",
       stylisPlugins: [rtlPlugin],
     });
-
     setRtlCache(cacheRtl);
   }, []);
 
@@ -98,11 +97,9 @@ export default function App() {
       if (route.collapse) {
         return getRoutes(route.collapse);
       }
-
       if (route.route) {
         return <Route exact path={route.route} element={route.component} key={route.key} />;
       }
-
       return null;
     });
 
@@ -130,20 +127,6 @@ export default function App() {
     </MDBox>
   );
 
-  const renderRoutes = (
-    <Routes>
-      {getRoutes(routes)}
-
-      {/* 동적 라우트 직접 추가 (안전차원) */}
-      <Route path="/rentals/:id" element={<PublicItemDetail />} />
-      <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
-      <Route path="/admin/partners/:id" element={<PartnerDetail />} />
-
-      {/* catch-all */}
-      <Route path="*" element={<Navigate to="/dashboard" />} />
-    </Routes>
-  );
-
   return direction === "rtl" ? (
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
@@ -163,7 +146,17 @@ export default function App() {
           </>
         )}
         {layout === "vr" && <Configurator />}
-        {renderRoutes}
+        <Routes>
+          {getRoutes(routes)}
+          {/* 동적 라우트 직접 추가 */}
+          <Route path="/rentals/:id" element={<PublicItemDetail />} />
+          <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
+          <Route path="/admin/partners/:id" element={<PartnerDetail />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+          {/* catch-all */}
+          <Route path="*" element={<Navigate to="/dashboard" />} />
+        </Routes>
       </ThemeProvider>
     </CacheProvider>
   ) : (
@@ -186,13 +179,15 @@ export default function App() {
       {layout === "vr" && <Configurator />}
       <Routes>
         {getRoutes(routes)}
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        {/* 동적 라우트 직접 추가 */}
+        <Route path="/rentals/:id" element={<PublicItemDetail />} />
         <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
         <Route path="/admin/partners/:id" element={<PartnerDetail />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+        {/* catch-all */}
+        <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
-      {renderRoutes}
     </ThemeProvider>
   );
 }
