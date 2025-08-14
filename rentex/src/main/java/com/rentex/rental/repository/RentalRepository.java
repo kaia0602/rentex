@@ -31,7 +31,13 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
 
-    List<Rental> findByUserId(Long userId);
+    /**
+     * 특정 유저가 대여한 Rental 목록 조회
+     * @param userId 유저 ID
+     * @return 해당 유저의 Rental 목록
+     */
+    @Query("SELECT r FROM Rental r WHERE r.user.id = :userId")
+    List<Rental> findByUserId(@Param("userId") Long userId);
 
     @Query("""
     SELECT r FROM Rental r

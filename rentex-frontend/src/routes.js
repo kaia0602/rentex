@@ -1,6 +1,7 @@
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
+import PublicItems from "layouts/rentals/publicItems";
+import PublicItemDetail from "layouts/rentals/publicItemDetail";
 import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
@@ -66,10 +67,19 @@ const routes = [
   {
     type: "collapse",
     name: "장비대여",
-    key: "tables",
+    key: "rentals",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
-    component: <Tables />,
+    route: "/rentals",
+    component: <PublicItems />, // 변경
+  },
+  {
+    type: "collapse",
+    name: "장비 상세 (공용)",
+    key: "public-item-detail",
+    route: "/rentals/:id",
+    component: <PublicItemDetail />,
+    noCollapse: true,
+    display: false,
   },
   {
     type: "collapse",
@@ -160,23 +170,23 @@ const routes = [
     noCollapse: true,
     display: false,
   },
-  {
-    type: "collapse",
-    name: "장비 목록(사용자)",
-    key: "user-items",
-    icon: <Icon fontSize="small">inventory</Icon>,
-    route: "/items",
-    component: <ItemList />,
-  },
-  {
-    type: "collapse",
-    name: "장비 상세 (숨김용)",
-    key: "item-detail",
-    route: "/items/:id",
-    component: <ItemDetail />,
-    noCollapse: true,
-    display: false,
-  },
+  // {
+  //   type: "collapse",
+  //   name: "장비 목록(사용자)",
+  //   key: "user-items",
+  //   icon: <Icon fontSize="small">inventory</Icon>,
+  //   route: "/items",
+  //   component: <ItemList />,
+  // },
+  // {
+  //   type: "collapse",
+  //   name: "장비 상세 (숨김용)",
+  //   key: "item-detail",
+  //   route: "/items/:id",
+  //   component: <ItemDetail />,
+  //   noCollapse: true,
+  //   display: false,
+  // },
   {
     type: "collapse",
     name: "대여 요청 (숨김용)",
