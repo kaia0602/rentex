@@ -20,6 +20,7 @@ public class Penalty extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+<<<<<<< HEAD
     @Column(nullable = false)
     private int points; // ✅ 이번에 부과된 벌점
 
@@ -28,4 +29,23 @@ public class Penalty extends BaseTimeEntity {
     @Column(nullable = false)
     @Builder.Default
     private boolean isPaid = false; // 벌점 납부 여부
+=======
+    private int point;
+    private boolean paid;
+
+    public void addPoint(int score) {
+        this.point += score;
+    }
+
+    public void resetPoint() {
+        this.point = 0;
+        this.paid = true;
+    }
+
+    public void reset() {
+        this.point = 0;
+        this.paid = true;
+    }
+
+>>>>>>> origin/feature/admin-items
 }

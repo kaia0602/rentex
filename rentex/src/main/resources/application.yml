@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 # rentex/src/main/resources/application.yml
+=======
+server:
+  port: 8080
+>>>>>>> origin/feature/admin-items
 
 spring:
   application:
@@ -44,6 +49,10 @@ spring:
           starttls:
             enable: true
 
+  # ✅ secret 파일을 classpath와 로컬 파일 둘 다에서 찾게 설정
+  config:
+    import: optional:classpath:application-secret.properties,optional:file:./application-secret.properties
+
   datasource:
     url: jdbc:mariadb://localhost:3307/rentex?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: ${DB_USERNAME}
@@ -65,6 +74,7 @@ spring:
       mode: always
       schema-locations: classpath:init/rentex.sql
 
+<<<<<<< HEAD
 server:
   port: 8080
   servlet:
@@ -80,3 +90,12 @@ jwt:
 logging:
   level:
     org.springframework.security: DEBUG
+=======
+  web:
+    resources:
+      static-locations: classpath:/static/, file:///C:/rentex/
+
+# 🔽 spring 바깥 최상단에 선언, 배포할 때 https://rentex.com 이런식을 변경
+app:
+  frontend-url: http://localhost:3000
+>>>>>>> origin/feature/admin-items

@@ -10,8 +10,13 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+<<<<<<< HEAD
 @Getter
 @Builder
+=======
+@Builder
+@Getter
+>>>>>>> origin/feature/admin-items
 public class MyPageDTO {
     private String email, name, nickname, role;
     private int penaltyPoints;
@@ -20,18 +25,33 @@ public class MyPageDTO {
 
     public static MyPageDTO from(User user, List<Rental> rentals, List<Penalty> penalties) {
         return MyPageDTO.builder()
+<<<<<<< HEAD
                 .email(user.getEmail()).name(user.getName()).nickname(user.getNickname())
                 .role(user.getRole()).penaltyPoints(user.getPenaltyPoints())
+=======
+                .email(user.getEmail())
+                .name(user.getName())
+                .nickname(user.getNickname())
+                .role(user.getRole())
+                .penaltyPoints(user.getPenaltyPoints()) // ✅ User 엔티티에서 바로 가져옴
+>>>>>>> origin/feature/admin-items
                 .rentalHistory(rentals.stream().map(RentalInfo::from).collect(Collectors.toList()))
                 .penaltyHistory(penalties.stream().map(PenaltyInfo::from).collect(Collectors.toList()))
                 .build();
     }
+<<<<<<< HEAD
     @Getter @Builder
+=======
+
+    @Getter
+    @Builder
+>>>>>>> origin/feature/admin-items
     private static class RentalInfo {
         private Long rentalId;
         private String itemName;
         private LocalDate startDate, endDate;
         private String status;
+<<<<<<< HEAD
         public static RentalInfo from(Rental rental) {
             return RentalInfo.builder().rentalId(rental.getId()).itemName(rental.getItem().getName())
                     .startDate(rental.getStartDate()).endDate(rental.getEndDate())
@@ -39,13 +59,42 @@ public class MyPageDTO {
         }
     }
     @Getter @Builder
+=======
+
+        public static RentalInfo from(Rental rental) {
+            return RentalInfo.builder()
+                    .rentalId(rental.getId())
+                    .itemName(rental.getItem().getName())
+                    .startDate(rental.getStartDate())
+                    .endDate(rental.getEndDate())
+                    .status(rental.getStatus().toString())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+>>>>>>> origin/feature/admin-items
     private static class PenaltyInfo {
         private int points;
         private String reason;
         private boolean isPaid;
+<<<<<<< HEAD
         public static PenaltyInfo from(Penalty penalty) {
             return PenaltyInfo.builder().points(penalty.getPoints())
                     .reason(penalty.getReason()).isPaid(penalty.isPaid()).build();
         }
     }
 }
+=======
+
+        public static PenaltyInfo from(Penalty penalty) {
+            return PenaltyInfo.builder()
+                    .points(penalty.getPoint())
+//                    .reason(penalty.getReason()) 나중에 패널티 사유 사용할꺼면 패널티 엔티티에 추가하고 활성화
+                    .isPaid(penalty.isPaid())
+                    .build();
+        }
+    }
+}
+>>>>>>> origin/feature/admin-items

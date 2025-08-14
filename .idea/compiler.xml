@@ -11,9 +11,12 @@
         <module name="rentex.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17" />
   </component>
   <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="rentex" options="-parameters" />
+      <module name="rentex.main" options="-parameters" />
+      <module name="rentex.test" options="-parameters" />
+    </option>
   </component>
 </project>
