@@ -39,6 +39,8 @@ import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import PartnerItemDetail from "layouts/partner/items/ItemDetail";
 import PartnerDetail from "layouts/admin/PartnerDetail";
+import AdminUsers from "layouts/admin/Users";
+import AdminUserDetail from "layouts/admin/UserDetail";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -182,6 +184,8 @@ export default function App() {
         <Route path="*" element={<Navigate to="/dashboard" />} />
         <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
         <Route path="/admin/partners/:id" element={<PartnerDetail />} />
+        <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/users/:id" element={<AdminUserDetail />} />
       </Routes>
     </ThemeProvider>
   );

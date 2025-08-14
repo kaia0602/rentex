@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+import { useCategories } from "components/Hooks/useCategories";
+
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
@@ -28,16 +30,8 @@ function NewItemForm() {
   });
 
   const [thumbnail, setThumbnail] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
 
-  useEffect(() => {
-    // 대분류 카테고리 불러오기
-    axios
-      .get("/api/categories")
-      .then((res) => setCategories(res.data))
-      .catch(console.error);
-  }, []);
+  const { categories, subCategories, fetchSubCategories } = useCategories();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,29 +41,16 @@ function NewItemForm() {
     }));
   };
 
+  // 대분류 선택
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
-    setItemData((prev) => ({
-      ...prev,
-      categoryId,
-      subCategoryId: "",
-    }));
-    if (!categoryId) {
-      setSubCategories([]);
-      return;
-    }
-    axios
-      .get(`/api/categories/${categoryId}/subcategories`)
-      .then((res) => setSubCategories(res.data))
-      .catch(console.error);
+    setItemData((prev) => ({ ...prev, categoryId, subCategoryId: "" }));
+    fetchSubCategories(categoryId);
   };
 
+  // 소분류 선택
   const handleSubCategoryChange = (e) => {
-    const subCategoryId = e.target.value;
-    setItemData((prev) => ({
-      ...prev,
-      subCategoryId,
-    }));
+    setItemData((prev) => ({ ...prev, subCategoryId: e.target.value }));
   };
 
   const handleFileChange = (e) => {
