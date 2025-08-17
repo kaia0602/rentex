@@ -32,6 +32,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 // 4. 인증 정보 세팅
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
             }
         }
 

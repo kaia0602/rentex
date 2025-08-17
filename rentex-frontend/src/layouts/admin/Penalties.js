@@ -1,47 +1,138 @@
+// src/layouts/admin/AdminPenalties.jsx
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import TextField from "@mui/material/TextField";
+import CircularProgress from "@mui/material/CircularProgress";
+import MDBox from "components/MDBox";
+import MDTypography from "components/MDTypography";
+import MDButton from "components/MDButton";
+import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import MDBox from "components/MDBox";
-import MDTypography from "components/MDTypography";
-import DataTable from "examples/Tables/DataTable";
+import api from "../../api";
 
-function AdminPenalties() {
-  const columns = [
-    { Header: "ID", accessor: "id", align: "center" },
-    { Header: "사용자", accessor: "user", align: "center" },
-    { Header: "이메일", accessor: "email", align: "center" },
-    { Header: "벌점", accessor: "penalty", align: "center" },
-    { Header: "액션", accessor: "actions", align: "center" },
-  ];
+const nf = new Intl.NumberFormat("ko-KR");
 
-  const rows = [
-    {
-      id: "1",
-      user: "홍길동",
-      email: "hong@rentex.com",
-      penalty: 2,
-      actions: <MDTypography color="error">+1 벌점</MDTypography>,
-    },
-  ];
+export default function AdminPenalties() {
+  const navigate = useNavigate();
+  const [q, setQ] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rowsData, setRowsData] = useState([]);
+  const [composing, setComposing] = useState(false);
+
+  const columns = useMemo(
+    () => [
+      { Header: "ID", accessor: "id", align: "center" },
+      { Header: "사용자", accessor: "user", align: "center" },
+      { Header: "이메일", accessor: "email", align: "center" },
+      { Header: "벌점", accessor: "penalty", align: "center" },
+      { Header: "최근 부여일", accessor: "last", align: "center" },
+      { Header: "상세보기", accessor: "actions", align: "center" },
+    ],
+    [],
+  );
+
+  const refresh = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get("/admin/penalties", { params: { q: q.trim(), page: 0, size: 50 } });
+      const list = Array.isArray(res.data) ? res.data : [];
+      setRowsData(list);
+    } catch (e) {
+      console.error(e);
+      alert("벌점 목록을 불러오지 못했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    if (composing) return;
+    const id = setTimeout(() => {
+      refresh();
+    }, 200);
+    return () => clearTimeout(id);
+  }, [q, composing]);
+
+  useEffect(() => {
+    refresh(); /* eslint-disable-next-line */
+  }, []);
+
+  const rows = useMemo(
+    () =>
+      rowsData.map((u) => ({
+        id: u.userId,
+        user: u.name,
+        email: u.email,
+        penalty: u.penaltyPoints,
+        last: u.lastGivenAt ? new Date(u.lastGivenAt).toLocaleString("ko-KR") : "-",
+        actions: (
+          <MDBox display="flex" gap={1} justifyContent="center">
+            <MDButton
+              color="dark"
+              size="small"
+              variant="outlined"
+              onClick={() => navigate(`/admin/penaltyDetail/${u.userId}`)}
+            >
+              상세
+            </MDButton>
+          </MDBox>
+        ),
+      })),
+    [rowsData, navigate],
+  );
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3}>
-        <MDTypography variant="h5" mb={2}>
-          벌점 관리
-        </MDTypography>
-        <DataTable
-          table={{ columns, rows }}
-          isSorted={false}
-          entriesPerPage={true}
-          showTotalEntries={true}
-          noEndBorder
-        />
+        <Grid container spacing={2} alignItems="center" mb={2}>
+          <Grid item>
+            <MDTypography variant="h5">벌점 관리</MDTypography>
+          </Grid>
+          <Grid item>
+            <TextField
+              size="small"
+              placeholder="이름/이메일 검색"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onCompositionStart={() => setComposing(true)}
+              onCompositionEnd={() => {
+                setComposing(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") refresh();
+              }}
+            />
+          </Grid>
+          <Grid item>
+            <MDButton variant="outlined" onClick={refresh}>
+              검색
+            </MDButton>
+          </Grid>
+        </Grid>
+
+        <Card>
+          <MDBox p={2}>
+            {loading ? (
+              <MDBox display="flex" justifyContent="center" py={4}>
+                <CircularProgress />
+              </MDBox>
+            ) : (
+              <DataTable
+                table={{ columns, rows }}
+                isSorted={false}
+                entriesPerPage={false}
+                showTotalEntries={false}
+                noEndBorder
+              />
+            )}
+          </MDBox>
+        </Card>
       </MDBox>
       <Footer />
     </DashboardLayout>
   );
 }
-
-export default AdminPenalties;

@@ -14,4 +14,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (res) => {
+    if (res.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/authentication/sign-in";
+    }
+    return res;
+  },
+  (err) => Promise.reject(err),
+);
+
 export default api;
