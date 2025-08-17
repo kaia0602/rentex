@@ -45,7 +45,7 @@ function SignUp() {
         }
         try {
             setLoading(true);
-            await api.post("/users/signup", {
+            await api.post("/api/users/signup", {
                 email: form.email,
                 password: form.password,
                 name: form.name,

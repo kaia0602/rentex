@@ -99,7 +99,25 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         user.updateNickname(requestDTO.getNickname());
+
+        // ✅ 이름 (name) 업데이트 로직 추가
+        if (requestDTO.getName() != null && !requestDTO.getName().isBlank()) {
+            user.setName(requestDTO.getName());
+        }
+
+        // ✅ 닉네임 (nickname) 업데이트
+        if (requestDTO.getNickname() != null && !requestDTO.getNickname().isBlank()) {
+            user.setNickname(requestDTO.getNickname());
+        }
+
+        // ✅ 전화번호 업데이트
+        if (requestDTO.getPhone() != null && !requestDTO.getPhone().isBlank()) {
+            if (user instanceof Partner partner) {
+                partner.setContactPhone(requestDTO.getPhone());
+            }
+        }
     }
+
 
     @Transactional
     public void withdrawUser(Long userId) {
@@ -135,6 +153,4 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
     }
-
-
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Grid from "@mui/material/Grid";
@@ -10,7 +11,40 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-// 대여 상태 더미 enum
+// --- API 요청을 처리하는 전용 클라이언트 ---
+const apiClient = {
+  get: async (url) => {
+    // [중요] 로그인 시 토큰을 저장하는 key 이름입니다. 다를 경우 이 부분만 수정해주세요.
+    const tokenKey = "accessToken";
+    const token = localStorage.getItem(tokenKey);
+
+    if (!token) {
+      // 토큰이 없으면 로그인 페이지로 보내고 에러를 발생시켜 중단합니다.
+      window.location.href = "/authentication/sign-in";
+      throw new Error("Authentication token not found.");
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // 401 Unauthorized 에러 발생 시 로그인 페이지로 보냅니다.
+        window.location.href = "/authentication/sign-in";
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  },
+};
+// -----------------------------------------
+
+// 대여 상태에 따라 적절한 색상의 뱃지를 반환하는 컴포넌트
 const getStatusBadge = (status) => {
   const colorMap = {
     REQUESTED: "secondary",
@@ -19,16 +53,17 @@ const getStatusBadge = (status) => {
     RETURN_REQUESTED: "warning",
     RETURNED: "success",
   };
-
+  const badgeColor = colorMap[status] || "default";
   return (
-    <MDTypography variant="caption" color={colorMap[status]} fontWeight="bold">
-      {status}
+    <MDTypography variant="caption" color={badgeColor} fontWeight="bold">
+      {status || "N/A"}
     </MDTypography>
   );
 };
 
 function MyRentals() {
   const navigate = useNavigate();
+  const [rentalRows, setRentalRows] = useState([]);
 
   const columns = [
     { Header: "장비명", accessor: "item" },
@@ -38,44 +73,39 @@ function MyRentals() {
     { Header: "상세", accessor: "detail", align: "center" },
   ];
 
-  const rows = [
-    {
-      item: "캐논 DSLR",
-      period: "2025-08-10 ~ 2025-08-13",
-      quantity: 1,
-      status: getStatusBadge("RENTED"),
-      detail: (
-        <MDTypography
-          component="a"
-          href="#"
-          onClick={() => navigate("/mypage/rentals/1")}
-          variant="caption"
-          color="info"
-          fontWeight="medium"
-        >
-          보기
-        </MDTypography>
-      ),
-    },
-    {
-      item: "DJI 드론 Mini 2",
-      period: "2025-08-01 ~ 2025-08-03",
-      quantity: 2,
-      status: getStatusBadge("RETURNED"),
-      detail: (
-        <MDTypography
-          component="a"
-          href="#"
-          onClick={() => navigate("/mypage/rentals/2")}
-          variant="caption"
-          color="info"
-          fontWeight="medium"
-        >
-          보기
-        </MDTypography>
-      ),
-    },
-  ];
+  useEffect(() => {
+    const fetchMyRentals = async () => {
+      try {
+        // 생성한 apiClient를 사용하여 API를 호출합니다. 코드가 훨씬 간결해집니다.
+        const data = await apiClient.get("/api/user/mypage");
+
+        const transformedRows = data.recentRentals.map((rental) => ({
+          item: rental.itemName,
+          period: rental.rentalPeriod,
+          quantity: 1,
+          status: getStatusBadge(rental.status),
+          detail: (
+            <MDTypography
+              component="a"
+              href="#"
+              onClick={() => navigate(`/mypage/rentals/${rental.id}`)}
+              variant="caption"
+              color="info"
+              fontWeight="medium"
+            >
+              보기
+            </MDTypography>
+          ),
+        }));
+
+        setRentalRows(transformedRows);
+      } catch (error) {
+        console.error("Failed to fetch rental data:", error.message);
+      }
+    };
+
+    fetchMyRentals();
+  }, [navigate]);
 
   return (
     <DashboardLayout>
@@ -100,7 +130,7 @@ function MyRentals() {
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
-                  table={{ columns, rows }}
+                  table={{ columns, rows: rentalRows }}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}

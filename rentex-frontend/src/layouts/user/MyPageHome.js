@@ -1,46 +1,87 @@
+import { useEffect, useState } from "react";
+import api from "api/client";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import Icon from "@mui/material/Icon";
-
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import DataTable from "examples/Tables/DataTable";
+import { CircularProgress } from "@mui/material";
 
 function MyPageHome() {
-  // 더미 요약 데이터
-  const summary = {
-    rentalsInProgress: 2,
-    penalties: 1,
-    unpaidPenalty: false,
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMyPageData = async () => {
+      try {
+        // '/api/user/mypage' 엔드포인트로 GET 요청
+        const response = await api.get("/api/user/mypage");
+        setUserData(response.data); // 성공 시 데이터 저장
+      } catch (err) {
+        console.error("마이페이지 데이터 로딩 실패:", err);
+        setError("데이터를 불러오는 데 실패했습니다."); // 실패 시 에러 상태 설정
+      } finally {
+        setLoading(false); // 로딩 종료
+      }
+    };
+
+    fetchMyPageData();
+  }, []);
+
+  // API 응답 데이터(recentRentals)를 DataTable의 columns 형식에 맞게 변환
+  const tableData = {
+    columns: [
+      { Header: "ID", accessor: "id", align: "center" },
+      { Header: "장비", accessor: "item", align: "center" },
+      { Header: "기간", accessor: "period", align: "center" },
+      { Header: "상태", accessor: "status", align: "center" },
+    ],
+    rows:
+      userData?.recentRentals?.map((rental) => ({
+        id: rental.id,
+        item: rental.itemName, // 백엔드 key: itemName
+        period: rental.rentalPeriod, // 백엔드 key: rentalPeriod
+        status: rental.status,
+      })) || [], // userData가 아직 없을 경우 빈 배열 사용
   };
 
-  // 최근 대여 더미
-  const columns = [
-    { Header: "ID", accessor: "id", align: "center" },
-    { Header: "장비", accessor: "item", align: "center" },
-    { Header: "기간", accessor: "period", align: "center" },
-    { Header: "상태", accessor: "status", align: "center" },
-  ];
-  const rows = [
-    { id: 15, item: "카메라 A", period: "08-10 ~ 08-14", status: "RENTED" },
-    { id: 14, item: "드론 B", period: "08-01 ~ 08-05", status: "RETURNED" },
-  ];
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox display="flex" justifyContent="center" alignItems="center" height="80vh">
+          <CircularProgress />
+        </MDBox>
+        <Footer />
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox p={3}>
+          <MDTypography color="error">{error}</MDTypography>
+        </MDBox>
+        <Footer />
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3}>
-        {/* 인사말 */}
         <MDTypography variant="h4" mb={3}>
-          👋 홍길동 님, 환영합니다!
+          👋 {userData?.userName} 님, 환영합니다!
         </MDTypography>
 
-        {/* 요약 카드 3개 */}
         <Grid container spacing={2} mb={3}>
           <Grid item xs={12} md={4}>
             <Card>
@@ -49,7 +90,7 @@ function MyPageHome() {
                   진행 중 대여
                 </MDTypography>
                 <MDTypography variant="h4" fontWeight="bold">
-                  {summary.rentalsInProgress}
+                  {userData?.summary?.rentalsInProgress}
                 </MDTypography>
               </MDBox>
             </Card>
@@ -61,7 +102,7 @@ function MyPageHome() {
                   누적 벌점
                 </MDTypography>
                 <MDTypography variant="h4" fontWeight="bold" color="error">
-                  {summary.penalties}
+                  {userData?.summary?.penalties}
                 </MDTypography>
               </MDBox>
             </Card>
@@ -72,7 +113,7 @@ function MyPageHome() {
                 <MDTypography variant="button" color="text">
                   패널티 결제
                 </MDTypography>
-                {summary.unpaidPenalty ? (
+                {userData?.summary?.unpaidPenalty ? (
                   <MDButton color="error" size="small" href="/mypage/pay-penalty">
                     결제 필요
                   </MDButton>
@@ -86,7 +127,6 @@ function MyPageHome() {
           </Grid>
         </Grid>
 
-        {/* 최근 대여 테이블 */}
         <MDBox mb={2} display="flex" justifyContent="space-between" alignItems="center">
           <MDTypography variant="h6">최근 대여 내역</MDTypography>
           <MDButton variant="text" color="info" size="small" href="/mypage/rentals">
@@ -94,7 +134,7 @@ function MyPageHome() {
           </MDButton>
         </MDBox>
         <DataTable
-          table={{ columns, rows }}
+          table={tableData}
           entriesPerPage={false}
           showTotalEntries={false}
           isSorted={false}

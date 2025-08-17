@@ -18,46 +18,49 @@ import api from "api/client";
 function Basic() {
   const nav = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-
   const [loginFailed, setLoginFailed] = useState(false);
-
   const [viewMode, setViewMode] = useState("login");
+
+  const [resetStep, setResetStep] = useState("enterEmail");
+  const [resetForm, setResetForm] = useState({
+    email: "",
+    code: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [resetError, setResetError] = useState("");
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
   const onChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
     setLoginFailed(false);
+  };
+
+  const onResetFormChange = (e) => {
+    const { name, value } = e.target;
+    setResetForm((prev) => ({ ...prev, [name]: value }));
+    setResetError("");
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      // ✅ 1. API 주소를 '/api/auth/login'으로 수정
-      const res = await api.post("/api/auth/login", {
-        email: form.email,
-        password: form.password,
-      });
+      const res = await api.post("/api/auth/login", { email: form.email, password: form.password });
+      const authHeader = res.headers["authorization"];
 
-      // ✅ 2. 응답 '헤더'에서 'authorization' 값을 가져오도록 수정
-      const token = res.headers["authorization"];
-
-      if (token) {
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        // "Bearer " 접두사를 제거하고 순수한 토큰만 추출합니다.
+        const token = authHeader.substring(7);
         localStorage.setItem("accessToken", token);
         alert("로그인 성공!");
-        nav("/dashboard"); // 성공 시 대시보드로 이동
+        nav("/dashboard");
       } else {
-        alert("로그인 실패: 응답에 토큰이 없습니다.");
+        alert("로그인 실패: 응답에 유효한 토큰이 없습니다.");
       }
     } catch (err) {
       console.error(err);
@@ -65,7 +68,52 @@ function Basic() {
       alert(msg);
       setLoginFailed(true);
     } finally {
-      setLoading(false); // ✅ 성공/실패와 관계없이 로딩 상태 해제
+      setLoading(false);
+    }
+  };
+
+  const handleSendCode = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setResetError("");
+    try {
+      await api.post("/api/auth/password-reset/request", { email: resetForm.email });
+      alert("인증 코드가 이메일로 발송되었습니다.");
+      setResetStep("enterCodeAndPassword");
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        "이메일 발송에 실패했습니다. 가입된 이메일인지 확인해주세요.";
+      setResetError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyAndReset = async (e) => {
+    e.preventDefault();
+    if (resetForm.newPassword !== resetForm.confirmPassword) {
+      setResetError("새 비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    setLoading(true);
+    setResetError("");
+    try {
+      await api.post("/api/auth/password-reset/verify", {
+        email: resetForm.email,
+        code: resetForm.code,
+        newPassword: resetForm.newPassword,
+      });
+      alert("비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인하세요.");
+      setViewMode("login");
+      setResetStep("enterEmail");
+      setResetForm({ email: "", code: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      const msg =
+        err.response?.data?.body || "비밀번호 변경에 실패했습니다. 인증 코드를 확인해주세요.";
+      setResetError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,11 +132,8 @@ function Basic() {
           textAlign="center"
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            {/* ✅ viewMode에 따라 제목도 변경해 줍니다. */}
             {viewMode === "login" ? "Sign in" : "비밀번호 재설정"}
           </MDTypography>
-
-          {/* 소셜 로그인 아이콘은 로그인 화면에만 표시 */}
           {viewMode === "login" && (
             <Grid container spacing={3} justifyContent="center" sx={{ mt: 1, mb: 2 }}>
               <Grid item xs={2}>
@@ -112,9 +157,6 @@ function Basic() {
 
         <MDBox pt={4} pb={3} px={3}>
           {viewMode === "login" ? (
-            // ===================================
-            // ✅ 1. 'login' 뷰
-            // ===================================
             <>
               <MDBox component="form" role="form" onSubmit={onSubmit}>
                 <MDBox mb={2}>
@@ -137,7 +179,6 @@ function Basic() {
                     fullWidth
                   />
                 </MDBox>
-
                 {loginFailed && (
                   <MDBox mb={2} textAlign="right">
                     <MDTypography variant="button" color="text">
@@ -156,7 +197,6 @@ function Basic() {
                     </MDTypography>
                   </MDBox>
                 )}
-
                 <MDBox mt={4} mb={1}>
                   <MDButton
                     type="submit"
@@ -169,8 +209,6 @@ function Basic() {
                   </MDButton>
                 </MDBox>
               </MDBox>
-
-              {/* 소셜 로그인 버튼 */}
               <MDBox mt={2}>
                 <MDButton
                   variant="outlined"
@@ -195,8 +233,6 @@ function Basic() {
                   </MDButton>
                 </MDBox>
               </MDBox>
-
-              {/* 회원가입 링크 */}
               <MDBox mt={3} mb={1} textAlign="center">
                 <MDTypography variant="button" color="text">
                   Don&apos;t have an account?{" "}
@@ -214,24 +250,87 @@ function Basic() {
               </MDBox>
             </>
           ) : (
-            // ===================================
-            // ✅ 2. 'passwordReset' 뷰
-            // ===================================
-            <MDBox
-              component="form"
-              role="form"
-              onSubmit={(e) => {
-                /* 비밀번호 재설정 API 호출 로직 */
-              }}
-            >
-              <MDBox mb={2}>
-                <MDInput type="email" label="가입한 이메일" fullWidth />
-              </MDBox>
-              <MDBox mt={4} mb={1}>
-                <MDButton type="submit" variant="gradient" color="info" fullWidth>
-                  인증 코드 발송
-                </MDButton>
-              </MDBox>
+            <>
+              {resetStep === "enterEmail" && (
+                <MDBox component="form" role="form" onSubmit={handleSendCode}>
+                  <MDBox mb={2}>
+                    <MDInput
+                      type="email"
+                      label="가입한 이메일"
+                      name="email"
+                      value={resetForm.email}
+                      onChange={onResetFormChange}
+                      fullWidth
+                    />
+                  </MDBox>
+                  <MDBox mt={4} mb={1}>
+                    <MDButton
+                      type="submit"
+                      variant="gradient"
+                      color="info"
+                      fullWidth
+                      disabled={loading}
+                    >
+                      {loading ? "전송 중..." : "인증 코드 발송"}
+                    </MDButton>
+                  </MDBox>
+                </MDBox>
+              )}
+
+              {resetStep === "enterCodeAndPassword" && (
+                <MDBox component="form" role="form" onSubmit={handleVerifyAndReset}>
+                  <MDBox mb={2}>
+                    <MDInput
+                      type="text"
+                      label="인증 코드"
+                      name="code"
+                      value={resetForm.code}
+                      onChange={onResetFormChange}
+                      fullWidth
+                    />
+                  </MDBox>
+                  <MDBox mb={2}>
+                    <MDInput
+                      type="password"
+                      label="새 비밀번호"
+                      name="newPassword"
+                      value={resetForm.newPassword}
+                      onChange={onResetFormChange}
+                      fullWidth
+                    />
+                  </MDBox>
+                  <MDBox mb={2}>
+                    <MDInput
+                      type="password"
+                      label="새 비밀번호 확인"
+                      name="confirmPassword"
+                      value={resetForm.confirmPassword}
+                      onChange={onResetFormChange}
+                      fullWidth
+                    />
+                  </MDBox>
+                  <MDBox mt={4} mb={1}>
+                    <MDButton
+                      type="submit"
+                      variant="gradient"
+                      color="info"
+                      fullWidth
+                      disabled={loading}
+                    >
+                      {loading ? "변경 중..." : "비밀번호 변경 확인"}
+                    </MDButton>
+                  </MDBox>
+                </MDBox>
+              )}
+
+              {resetError && (
+                <MDBox mt={2} textAlign="center">
+                  <MDTypography variant="caption" color="error">
+                    {resetError}
+                  </MDTypography>
+                </MDBox>
+              )}
+
               <MDBox mt={3} mb={1} textAlign="center">
                 <MDTypography
                   component="a"
@@ -244,7 +343,7 @@ function Basic() {
                   로그인 화면으로 돌아가기
                 </MDTypography>
               </MDBox>
-            </MDBox>
+            </>
           )}
         </MDBox>
       </Card>

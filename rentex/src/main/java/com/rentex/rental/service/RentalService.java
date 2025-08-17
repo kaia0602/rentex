@@ -7,7 +7,10 @@ import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalHistory;
 import com.rentex.rental.domain.RentalStatus;
 import com.rentex.rental.dto.*;
-import com.rentex.rental.exception.*;
+import com.rentex.rental.exception.InvalidRentalStateException;
+import com.rentex.rental.exception.ItemNotFoundException;
+import com.rentex.rental.exception.ItemUnavailableException;
+import com.rentex.rental.exception.RentalNotFoundException;
 import com.rentex.rental.repository.RentalHistoryRepository;
 import com.rentex.rental.repository.RentalRepository;
 import com.rentex.user.domain.User;
@@ -246,4 +249,11 @@ public class RentalService {
 
         return rentals.map(RentalResponseDto::from);
     }
+
+    @Transactional(readOnly = true)
+    public List<Rental> findByUser(User user) {
+        return rentalRepository.findByUser(user);
+    }
+
+
 }

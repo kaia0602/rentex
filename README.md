@@ -1,4 +1,4 @@
-# RENTEX
+pm # RENTEX
 
 Spring Boot + React 기반 렌탈 관리 시스템  
 > 백엔드와 프론트엔드를 하나의 저장소에서 통합 관리하는 **모노레포 구조**입니다.

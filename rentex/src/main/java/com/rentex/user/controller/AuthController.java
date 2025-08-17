@@ -1,4 +1,3 @@
-// src/main/java/com/rentex/user/controller/AuthController.java
 package com.rentex.user.controller;
 
 import com.rentex.global.jwt.JwtTokenProvider;
@@ -29,7 +28,9 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
-    /** 로그인: 이메일/비번 인증 → 액세스 토큰 발급 + 리프레시 쿠키 저장 */
+    /**
+     * 로그인: 이메일/비번 인증 → 액세스 토큰 발급 + 리프레시 쿠키 저장
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req, HttpServletResponse res) {
         try {
@@ -70,7 +71,9 @@ public class AuthController {
         }
     }
 
-    /** 액세스 토큰 재발급: 리프레시 쿠키 검증 → 새 액세스/리프레시 발급 */
+    /**
+     * 액세스 토큰 재발급: 리프레시 쿠키 검증 → 새 액세스/리프레시 발급
+     */
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(
             @CookieValue(value = REFRESH_COOKIE, required = false) String refreshCookie,
@@ -99,7 +102,7 @@ public class AuthController {
             // 6) (선택) 리프레시 토큰 회전: 새 토큰 발급 → 쿠키 교체
             String newRefresh = jwtTokenProvider.createRefreshToken(user.getId());
             ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, newRefresh)
-                    .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(60L*60L*24L*14L).build();
+                    .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(60L * 60L * 24L * 14L).build();
             res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             // 7) 새 액세스 토큰 반환
@@ -112,7 +115,9 @@ public class AuthController {
         }
     }
 
-    /** 로그아웃: 리프레시 쿠키 제거(만료) */
+    /**
+     * 로그아웃: 리프레시 쿠키 제거(만료)
+     */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse res) {
         ResponseCookie delete = ResponseCookie.from(REFRESH_COOKIE, "")
