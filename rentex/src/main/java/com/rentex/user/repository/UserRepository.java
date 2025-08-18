@@ -15,7 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /** 이메일로 단건 조회 */
     Optional<User> findByEmail(String email);
 
-<<<<<<< HEAD
     /** 역할(Role) 기준 조회 (USER / PARTNER / ADMIN) */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
             "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints) " +
@@ -27,36 +26,36 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints) " +
             "FROM User u")
     List<UserResponseDTO> findAllUsersForAdmin();
-=======
-    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(u.id, u.email, u.name, u.nickname,  u.role, u.createdAt, u.penaltyPoints) " +
-            "FROM User u " + "WHERE u.role = 'USER'")
+
+    /** 일반 유저만 조회 */
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints) " +
+            "FROM User u WHERE u.role = 'USER'")
     List<UserResponseDTO> findAllUsers();
 
-    @Query(value = "SELECT u.id FROM user u WHERE u.email = :email LIMIT 1", nativeQuery = true)
+    /** 이메일로 userId 조회 (예약어 → backtick) */
+    @Query(value = "SELECT u.id FROM `user` u WHERE u.email = :email LIMIT 1", nativeQuery = true)
     Long findUserIdByEmail(@Param("email") String email);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE `user` SET penalty_points = COALESCE(penalty_points,0) + :delta WHERE id = :id", nativeQuery = true)
-    int increasePenaltyPoints(@Param("id") Long userId, @Param("delta") int delta);  // ← int 로!
+    int increasePenaltyPoints(@Param("id") Long userId, @Param("delta") int delta);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE `user` SET penalty_points = GREATEST(0, COALESCE(penalty_points,0) - :delta) WHERE id = :id", nativeQuery = true)
-    int decreasePenaltyPoints(@Param("id") Long userId, @Param("delta") int delta);  // ← int
+    int decreasePenaltyPoints(@Param("id") Long userId, @Param("delta") int delta);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value = "UPDATE `user` SET penalty_points = 0 WHERE id = :id", nativeQuery = true)
-    int resetPenaltyPoints(@Param("id") Long userId);                                 // ← int
+    int resetPenaltyPoints(@Param("id") Long userId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = """
-        UPDATE `user` u
-        SET u.penalty_points = (
-          SELECT COALESCE(SUM(CASE WHEN up.status='VALID' THEN up.points ELSE 0 END),0)
-          FROM user_penalty up WHERE up.user_id = :id
-        )
-        WHERE u.id = :id
-        """, nativeQuery = true)
-    int recalcPenaltyPoints(@Param("id") Long userId);                                 // ← int
->>>>>>> feature/admin-items
+    @Query(value =
+            "UPDATE `user` u " +
+                    "SET u.penalty_points = ( " +
+                    "  SELECT COALESCE(SUM(CASE WHEN up.status='VALID' THEN up.points ELSE 0 END),0) " +
+                    "  FROM user_penalty up WHERE up.user_id = :id " +
+                    ") " +
+                    "WHERE u.id = :id", nativeQuery = true)
+    int recalcPenaltyPoints(@Param("id") Long userId);
 }
-
