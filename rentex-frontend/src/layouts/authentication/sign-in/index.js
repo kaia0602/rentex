@@ -13,6 +13,7 @@ import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 import api from "api/client"; // axios 인스턴스
+import { setToken } from "utils/auth"; // ✅ 토큰 저장 유틸
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 
 function Basic() {
@@ -36,6 +37,10 @@ function Basic() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+
+    // ✅ 여기서 form 값 확인
+    console.log("login 요청 DTO:", form);
+
     try {
       setLoading(true);
       const res = await api.post("/auth/login", {
@@ -43,11 +48,12 @@ function Basic() {
         password: form.password,
       });
 
-      const token = res.data?.token || res.data; // 백엔드 응답 구조 맞춰서 조정
+      // ✅ 응답 필드 우선순위: accessToken → token → 전체 데이터
+      const token = res.data?.accessToken || res.data?.token || res.data;
       if (token) {
-        localStorage.setItem("accessToken", token);
+        setToken(token); // ✅ 통일된 키로 저장
         alert("로그인 성공!");
-        nav("/dashboard");
+        nav("/"); // 필요하면 "/dashboard"로 변경
       } else {
         alert("로그인 실패: 토큰이 없습니다.");
       }
@@ -58,6 +64,8 @@ function Basic() {
         JSON.stringify(err.response?.data) ||
         "로그인 중 오류가 발생했습니다.";
       alert(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,7 +151,10 @@ function Basic() {
                 color="info"
                 fullWidth
                 onClick={() => {
-                  window.location.href = "http://localhost:8080/oauth2/authorization/google";
+                  // API_BASE에서 /api 부분 제거
+                  const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
+                  const serverBase = apiBase.replace(/\/api$/, "");
+                  window.location.href = `${serverBase}/oauth2/authorization/google`;
                 }}
               >
                 <GoogleIcon sx={{ mr: 1 }} />

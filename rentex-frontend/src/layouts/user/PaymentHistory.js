@@ -11,7 +11,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-import api from "../../api.js";
+import api from "api/client";
 
 const nf = new Intl.NumberFormat("ko-KR");
 

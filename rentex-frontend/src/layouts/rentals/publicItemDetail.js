@@ -151,18 +151,17 @@ function PublicItemsDetail() {
                 console.log(`➡️ 최종 이미지 URL:`, getImageUrl(img));
 
                 return (
-                  <CardMedia
-                    key={idx}
-                    component="img"
-                    image={getImageUrl(img)} // ✅ 확인 포인트
-                    alt={`상세 이미지 ${idx + 1}`}
-                    style={{
-                      marginTop: "16px",
-                      borderRadius: "8px",
-                      position: "relative",
-                      zIndex: 1,
-                    }}
-                  />
+                  <MDBox key={idx} display="flex" justifyContent="center" mt={2}>
+                    <CardMedia
+                      component="img"
+                      image={getImageUrl(img)} // ✅ 확인 포인트
+                      alt={`상세 이미지 ${idx + 1}`}
+                      style={{
+                        maxWidth: "80%",
+                        borderRadius: "8px",
+                      }}
+                    />
+                  </MDBox>
                 );
               })}
           </MDBox>

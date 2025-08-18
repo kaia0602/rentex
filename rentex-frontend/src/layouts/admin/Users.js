@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "api/client"; // ✅ axios 대신 api 인스턴스 사용
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -21,16 +21,17 @@ function AdminUsers() {
     { Header: "이메일", accessor: "email", align: "center" },
     {
       Header: "가입일",
-      accessor: (row) => new Date(row.createdAt).toLocaleDateString(),
+      accessor: "createdAt",
+      Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "-"),
       align: "center",
     },
-    { Header: "패널티 포인트", accessor: "pp", align: "center" },
+    { Header: "패널티 포인트", accessor: "penaltyPoints", align: "center" },
     { Header: "액션", accessor: "actions", align: "center" },
   ];
 
   useEffect(() => {
-    axios
-      .get("/api/admin/users")
+    api
+      .get("/admin/users")
       .then((res) => {
         const mappedRows = res.data.map((user) => ({
           id: user.id,
@@ -38,7 +39,7 @@ function AdminUsers() {
           nickname: user.nickname,
           email: user.email,
           createdAt: user.createdAt,
-          pp: user.pp || 0,
+          penaltyPoints: user.penaltyPoints || 0, // ✅ 필드명 통일
           actions: (
             <MDButton color="info" size="small" onClick={() => navigate(`/admin/users/${user.id}`)}>
               상세
@@ -50,7 +51,7 @@ function AdminUsers() {
       .catch((err) => {
         console.error("유저 목록 조회 실패:", err);
       });
-  }, []);
+  }, [navigate]);
 
   return (
     <DashboardLayout>
@@ -62,8 +63,8 @@ function AdminUsers() {
         <DataTable
           table={{ columns, rows }}
           isSorted={false}
-          entriesPerPage={true}
-          showTotalEntries={true}
+          entriesPerPage
+          showTotalEntries
           noEndBorder
         />
       </MDBox>

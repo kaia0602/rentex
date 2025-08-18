@@ -15,7 +15,8 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-import api from "../../../api.js";
+import api from "api/client"; // ✅ 수정됨
+
 const nf = new Intl.NumberFormat("ko-KR");
 const NOW = new Date();
 const YEARS = [NOW.getFullYear() - 1, NOW.getFullYear(), NOW.getFullYear() + 1];
@@ -39,7 +40,6 @@ export default function PartnerStatisticsIndex() {
     [],
   );
 
-  // rows: amount 채워서 표시
   const rows = useMemo(
     () =>
       (data?.details || []).map((d) => ({
@@ -54,11 +54,9 @@ export default function PartnerStatisticsIndex() {
     [data],
   );
 
-  // 데이터를 정확히 가져오기
   const fetchData = async () => {
     setLoading(true);
     try {
-      // 1) partnerId 없으면 목록에서 내 파트너 id 하나 고름
       let pid = partnerId?.toString().trim() ? Number(partnerId) : null;
 
       if (pid == null) {
@@ -271,7 +269,7 @@ export default function PartnerStatisticsIndex() {
               component="button"
               variant="button"
               onClick={printStatement}
-              sx={{ px: 2, py: 0.75, border: "1px solid #ccc", borderRadius: 1 }}
+              sx={{ px: 2, py: 0.75, border: "1px solid #ccc", borderRadius: 1, ml: 1 }}
             >
               PDF로 출력
             </MDTypography>

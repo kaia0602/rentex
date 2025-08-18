@@ -1,22 +1,7 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// prop-types is a library for typechecking of props
+// src/examples/Footer/index.js
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import axios from "axios";
+import api from "api/client"; // ✅ axios 대신 api 사용
 
 // @mui material components
 import Link from "@mui/material/Link";
@@ -47,8 +32,8 @@ function Footer({ company, links }) {
 
   useEffect(() => {
     // 페이지 로딩 시 로그인 정보 확인 API 호출
-    axios
-      .get("/api/users/me")
+    api
+      .get("/users/me") // ✅ baseURL 자동 적용 + 토큰 자동 첨부
       .then((res) => setUser(res.data))
       .catch(() => setUser(null));
   }, []);
@@ -108,7 +93,6 @@ function Footer({ company, links }) {
   );
 }
 
-// Setting default values for the props of Footer
 Footer.defaultProps = {
   company: { href: "https://www.creative-tim.com/", name: "Creative Tim" },
   links: [
@@ -119,7 +103,6 @@ Footer.defaultProps = {
   ],
 };
 
-// Typechecking props for the Footer
 Footer.propTypes = {
   company: PropTypes.objectOf(PropTypes.string),
   links: PropTypes.arrayOf(PropTypes.object),

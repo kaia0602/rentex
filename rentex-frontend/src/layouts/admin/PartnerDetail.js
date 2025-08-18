@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -8,6 +7,9 @@ import Footer from "examples/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
+
+// ✅ api 클라이언트 사용
+import api from "api/client";
 
 function PartnerDetail() {
   const { id } = useParams();
@@ -22,19 +24,29 @@ function PartnerDetail() {
 
   useEffect(() => {
     // 1. 업체 정보 불러오기
-    axios.get(`/api/admin/partners/${id}`).then((res) => {
-      setPartner(res.data);
-    });
+    api
+      .get(`/admin/partners/${id}`)
+      .then((res) => {
+        setPartner(res.data);
+      })
+      .catch((err) => {
+        console.error("업체 정보 불러오기 실패:", err);
+      });
 
     // 2. 해당 업체의 장비 목록 불러오기
-    axios.get(`/api/partner/items/partner/${id}`).then((res) => {
-      const mappedRows = res.data.map((item) => ({
-        name: item.name,
-        quantity: item.stockQuantity,
-        price: item.dailyPrice != null ? `${Number(item.dailyPrice).toLocaleString()}원` : "-",
-      }));
-      setRows(mappedRows);
-    });
+    api
+      .get(`/partner/items/partner/${id}`)
+      .then((res) => {
+        const mappedRows = res.data.map((item) => ({
+          name: item.name,
+          quantity: item.stockQuantity,
+          price: item.dailyPrice != null ? `${Number(item.dailyPrice).toLocaleString()}원` : "-",
+        }));
+        setRows(mappedRows);
+      })
+      .catch((err) => {
+        console.error("업체 장비 목록 불러오기 실패:", err);
+      });
   }, [id]);
 
   return (

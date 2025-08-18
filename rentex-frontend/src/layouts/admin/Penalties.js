@@ -12,7 +12,7 @@ import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import api from "../../api";
+import api from "api/client"; // ✅ 수정됨
 
 const nf = new Intl.NumberFormat("ko-KR");
 
@@ -48,6 +48,7 @@ export default function AdminPenalties() {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     if (composing) return;
     const id = setTimeout(() => {

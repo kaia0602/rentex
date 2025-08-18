@@ -44,7 +44,7 @@ spring:
 # ✅ 업로드 파일 저장 경로
 # ===================================
 file:
-  upload-dir: C:/Users/it/Documents/Rentex/rentex/uploads
+  upload-dir: ./uploads
   # 🟢 AWS 배포 시: /home/ubuntu/rentex/uploads 로 변경
 
 # ===================================

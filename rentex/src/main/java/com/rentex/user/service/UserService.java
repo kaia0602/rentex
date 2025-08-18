@@ -15,7 +15,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User.UserBuilder;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collections;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -146,5 +152,26 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getUsersByRole(String role) {
         return userRepository.findAllByRole(role.toUpperCase());
+    }
+
+    /** 편의: 이메일로 조회(예외) */
+    @Transactional(readOnly = true)
+    public User getOrThrowByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+    }
+
+    /** 액세스 토큰 생성을 위한 Authentication 빌드 */
+    @Transactional(readOnly = true)
+    public Authentication buildAuthentication(User user) {
+        // 스프링 시큐리티 UserDetails 구성
+        UserBuilder builder = org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPassword()) // 패스워드는 토큰 생성 시 검증에 쓰이지 않지만 형태 맞춰둠
+                .authorities(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+                .accountExpired(false).accountLocked(false).credentialsExpired(false).disabled(false);
+
+        UserDetails details = builder.build();
+        return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
     }
 }

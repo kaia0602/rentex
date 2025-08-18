@@ -21,7 +21,7 @@ function SignUp() {
     password: "",
     name: "",
     nickname: "",
-    userType: "USER",
+    userType: "USER", // UI에서는 userType으로 관리
     businessNo: "",
     contactEmail: "",
     contactPhone: "",
@@ -50,12 +50,12 @@ function SignUp() {
         password: form.password,
         name: form.name,
         nickname: form.nickname,
-        userType: form.userType,
+        role: form.userType, // ✅ 백엔드에서는 role 필드 사용
         businessNo: form.userType === "PARTNER" ? form.businessNo : null,
         contactEmail: form.userType === "PARTNER" ? form.contactEmail : null,
         contactPhone: form.userType === "PARTNER" ? form.contactPhone : null,
       });
-      alert("회원가입이 완료되었습니다. 이메일 인증을 진행해주세요.");
+      alert("회원가입이 완료되었습니다."); // ✅ 실제 기능에 맞게 메시지 변경
       nav("/authentication/sign-in");
     } catch (err) {
       console.error(err);
@@ -94,7 +94,7 @@ function SignUp() {
                 label="이름"
                 name="name"
                 variant="standard"
-                InputLabelProps={{ shrink: true }} // 추가
+                InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={form.name}
                 onChange={onChange}
@@ -105,7 +105,7 @@ function SignUp() {
                 label="닉네임"
                 name="nickname"
                 variant="standard"
-                InputLabelProps={{ shrink: true }} // 추가
+                InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={form.nickname}
                 onChange={onChange}
@@ -117,7 +117,7 @@ function SignUp() {
                 label="이메일"
                 name="email"
                 variant="standard"
-                InputLabelProps={{ shrink: true }} // 추가
+                InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={form.email}
                 onChange={onChange}
@@ -129,7 +129,7 @@ function SignUp() {
                 label="비밀번호"
                 name="password"
                 variant="standard"
-                InputLabelProps={{ shrink: true }} // 추가
+                InputLabelProps={{ shrink: true }}
                 fullWidth
                 value={form.password}
                 onChange={onChange}
@@ -158,7 +158,7 @@ function SignUp() {
                     label="사업자 번호"
                     name="businessNo"
                     variant="standard"
-                    InputLabelProps={{ shrink: true }} // 추가
+                    InputLabelProps={{ shrink: true }}
                     fullWidth
                     value={form.businessNo}
                     onChange={onChange}
@@ -170,7 +170,7 @@ function SignUp() {
                     label="담당자 이메일"
                     name="contactEmail"
                     variant="standard"
-                    InputLabelProps={{ shrink: true }} // 추가
+                    InputLabelProps={{ shrink: true }}
                     fullWidth
                     value={form.contactEmail}
                     onChange={onChange}
@@ -181,7 +181,7 @@ function SignUp() {
                     label="담당자 연락처"
                     name="contactPhone"
                     variant="standard"
-                    InputLabelProps={{ shrink: true }} // 추가
+                    InputLabelProps={{ shrink: true }}
                     fullWidth
                     value={form.contactPhone}
                     onChange={onChange}
@@ -223,13 +223,16 @@ function SignUp() {
                 </MDTypography>
               </MDTypography>
             </MDBox>
+
+            {/* ✅ 구글 로그인 버튼 환경변수화 */}
             <MDBox mt={2}>
               <MDButton
                 variant="outlined"
                 color="info"
                 fullWidth
                 onClick={() => {
-                  window.location.href = "http://localhost:8080/oauth2/authorization/google";
+                  const base = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+                  window.location.href = `${base}/oauth2/authorization/google`;
                 }}
               >
                 Google로 로그인
