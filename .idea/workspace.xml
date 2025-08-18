@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/api.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PenaltyPage.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/user/PenaltyPage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/controller/PaymentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/payment/controller/PaymentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PenaltyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/PenaltyController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PenaltyResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/PenaltyResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" afterDir="false" />
-    </list>
+    <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,7 +110,7 @@
       <workItem from="1754617068649" duration="10770000" />
       <workItem from="1754976553776" duration="4659000" />
       <workItem from="1755041502590" duration="8891000" />
-      <workItem from="1755129717892" duration="13248000" />
+      <workItem from="1755129717892" duration="18517000" />
     </task>
     <servers />
   </component>
