@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { UserProvider } from "context/UserContext";
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles";
@@ -36,6 +37,8 @@ import PartnerDetail from "layouts/admin/PartnerDetail";
 import AdminUsers from "layouts/admin/Users";
 import AdminUserDetail from "layouts/admin/UserDetail";
 import PublicItemDetail from "layouts/rentals/publicItemDetail";
+import AdminPenalties from "layouts/admin/Penalties";
+import AdminPenaltyDetail from "layouts/admin/PenaltyDetail";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -184,6 +187,8 @@ export default function App() {
         <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
         <Route path="/admin/partners/:id" element={<PartnerDetail />} />
         <Route path="/admin/users" element={<AdminUsers />} />
+        <Route path="/admin/penalties" element={<AdminPenalties />} />
+        <Route path="/admin/penaltyDetail/:userId" element={<AdminPenaltyDetail />} />
         <Route path="/admin/users/:id" element={<AdminUserDetail />} />
         {/* catch-all */}
         <Route path="*" element={<Navigate to="/dashboard" />} />

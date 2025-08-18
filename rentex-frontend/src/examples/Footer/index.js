@@ -14,7 +14,9 @@ Coded by www.creative-tim.com
 */
 
 // prop-types is a library for typechecking of props
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 // @mui material components
 import Link from "@mui/material/Link";
@@ -28,6 +30,7 @@ import MDTypography from "components/MDTypography";
 import typography from "assets/theme/base/typography";
 
 function Footer({ company, links }) {
+  const [user, setUser] = useState(null);
   const { href, name } = company;
   const { size } = typography;
 
@@ -41,6 +44,14 @@ function Footer({ company, links }) {
         </Link>
       </MDBox>
     ));
+
+  useEffect(() => {
+    // 페이지 로딩 시 로그인 정보 확인 API 호출
+    axios
+      .get("/api/users/me")
+      .then((res) => setUser(res.data))
+      .catch(() => setUser(null));
+  }, []);
 
   return (
     <MDBox
@@ -72,7 +83,7 @@ function Footer({ company, links }) {
             &nbsp;{name}&nbsp;
           </MDTypography>
         </Link>
-        for a better web.
+        {user ? <p>{user.nickname}님 환영합니다!</p> : <p>로그인해주세요.</p>}
       </MDBox>
       <MDBox
         component="ul"

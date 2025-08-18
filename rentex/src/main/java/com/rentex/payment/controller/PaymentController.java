@@ -27,16 +27,16 @@ public class PaymentController {
         User user = userService.getUserById(Long.parseLong(principal.getName()));
         return paymentService.getPaymentHistory(user).stream()
                 .map(PaymentResponseDTO::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @PostMapping("/pay-penalty")
-    public PaymentResponseDTO payPenalty(@RequestParam int amount,
-                                      @RequestParam PaymentMethod method,
-                                      Principal principal) {
+    public PaymentResponseDTO payPenalty(
+            @RequestParam PaymentMethod method,
+            Principal principal
+    ) {
         User user = userService.getUserById(Long.parseLong(principal.getName()));
-        Payment payment = paymentService.processPenaltyPayment(user, amount, method);
-        return PaymentResponseDTO.from(payment);
+        return PaymentResponseDTO.from(paymentService.processPenaltyPayment(user, method));
     }
 }
 

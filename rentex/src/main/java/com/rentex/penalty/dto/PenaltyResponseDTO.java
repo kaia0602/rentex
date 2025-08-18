@@ -14,4 +14,5 @@ public record PenaltyResponseDTO(int point, boolean paid, LocalDateTime createdA
                 .createdAt(p.getCreatedAt())
                 .build();
     }
+
 }
