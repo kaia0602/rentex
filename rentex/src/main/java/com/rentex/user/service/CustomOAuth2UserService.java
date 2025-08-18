@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -32,21 +34,29 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
+        // OAuthAttributes를 통해 제공자별로 다른 사용자 정보를 표준화합니다.
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
 
+        // [수정] 어떤 소셜 로그인이든 공통된 키(email, name)로 정보를 꺼낼 수 있도록 데이터를 평탄화합니다.
+        Map<String, Object> principalAttributes = new HashMap<>(attributes.getAttributes());
+        principalAttributes.put("email", attributes.getEmail());
+        principalAttributes.put("name", attributes.getName());
+        principalAttributes.put("user_id", user.getId()); // 시스템 내부 ID도 추가
+
+        // DB에 저장된 사용자의 실제 권한을 사용하도록 수정
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                attributes.getAttributes(),
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole())),
+                principalAttributes,
                 attributes.getNameAttributeKey()
         );
     }
 
     private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getName()))
-                .orElse(attributes.toEntity());
+                .map(entity -> entity.update(attributes.getName())) // 기존 회원이면 이름 업데이트
+                .orElse(attributes.toEntity()); // 신규 회원이면 새로 생성
 
         return userRepository.save(user);
     }

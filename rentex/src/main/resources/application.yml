@@ -84,6 +84,8 @@ app:
 jwt:
   secret: ${JWT_SECRET_KEY}
   expiration-in-seconds: 3600
+  access-token-expiration-in-seconds: 3600   # 1시간 (3600초)
+  refresh-token-expiration-in-seconds: 1209600 # 2주 (1,209,600초)
 
 logging:
   level:

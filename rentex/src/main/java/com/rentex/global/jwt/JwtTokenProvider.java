@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -21,40 +22,36 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
 
-    private final Key key;
-    private final long accessTokenValidityInMilliseconds;
     private static final String AUTHORITIES_KEY = "auth";
+    private final Key key;
+    private final long accessTokenValidityInMs;
+    private final long refreshTokenValidityInMs;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
-                            @Value("${jwt.expiration-in-seconds}") long expiration) {
+                            @Value("${jwt.access-token-expiration-in-seconds}") long accessExpiration,
+                            @Value("${jwt.refresh-token-expiration-in-seconds}") long refreshExpiration) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
-        this.accessTokenValidityInMilliseconds = expiration * 1000;
+        this.accessTokenValidityInMs = accessExpiration * 1000;
+        this.refreshTokenValidityInMs = refreshExpiration * 1000;
     }
 
-    /** 일반 로그인용 Access Token 생성 */
-    public String createAccessToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        // UserDetails의 username 대신, User PK를 꺼내도록 UserDetailsService 수정 필요
-        Long userId = Long.valueOf(((User) authentication.getPrincipal()).getUsername());
-        return createToken(userId, authorities);
+    /**
+     * Access Token을 생성합니다. (사용자의 실제 권한을 담습니다)
+     */
+    public String createAccessToken(Long userId, String authorities) {
+        return createToken(userId, authorities, accessTokenValidityInMs);
     }
 
-    /** PK 기반 Access Token 생성 (소셜 로그인 등에서 직접 호출) */
-    public String createAccessTokenByUserId(Long userId) {
-        String authorities = "ROLE_USER"; // 필요 시 ROLE 지정
-        return createToken(userId, authorities);
-    }
-
-    /** Refresh Token 생성 */
+    /**
+     * Refresh Token을 생성합니다. (권한 정보를 포함하지 않습니다)
+     */
     public String createRefreshToken(Long userId) {
-        String authorities = "ROLE_USER";
-        return createToken(userId, authorities);
+        return createToken(userId, null, refreshTokenValidityInMs);
     }
 
-    /** 토큰에서 UserId 추출 */
+    /**
+     * 토큰에서 UserId를 추출합니다.
+     */
     public Long getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -64,22 +61,28 @@ public class JwtTokenProvider {
         return Long.parseLong(claims.getSubject());
     }
 
-    /** 토큰 기반 Authentication 생성 */
+    /**
+     * 토큰을 기반으로 Authentication 객체를 생성합니다.
+     */
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody();
 
+        // 'auth' 클레임이 없는 경우(Refresh Token 등)를 대비해 null 체크 추가
+        Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+                authoritiesClaim == null ? Collections.emptyList() :
+                        Arrays.stream(authoritiesClaim.toString().split(","))
+                                .map(SimpleGrantedAuthority::new)
+                                .collect(Collectors.toList());
 
-        // subject가 PK이므로 username에 id를 문자열로 세팅
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    /** 토큰 유효성 검증 */
+    /**
+     * 토큰의 유효성을 검증합니다.
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -90,18 +93,24 @@ public class JwtTokenProvider {
         }
     }
 
-    /** 공통 토큰 생성 로직 */
-    private String createToken(Long userId, String authorities) {
+    /**
+     * 토큰을 생성하는 핵심 private 메소드
+     */
+    private String createToken(Long userId, String authorities, long validityInMs) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + accessTokenValidityInMilliseconds);
+        Date validity = new Date(now.getTime() + validityInMs);
 
-        return Jwts.builder()
+        JwtBuilder builder = Jwts.builder()
                 .setSubject(String.valueOf(userId))
-                .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(key, SignatureAlgorithm.HS256);
+
+        // 권한 정보가 있는 경우에만 'auth' 클레임을 추가합니다.
+        if (authorities != null && !authorities.isEmpty()) {
+            builder.claim(AUTHORITIES_KEY, authorities);
+        }
+
+        return builder.compact();
     }
 }
-
