@@ -14,6 +14,8 @@ Coded by www.creative-tim.com
 */
 
 import { useState, useEffect } from "react";
+import axios from "axios";
+import MDTypography from "components/MDTypography";
 
 // react-router components
 import { useLocation, Link } from "react-router-dom";
@@ -59,6 +61,42 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
   const [openMenu, setOpenMenu] = useState(false);
   const route = useLocation().pathname.split("/").slice(1);
+  const [nickname, setNickname] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // 로그인 시 저장한 JWT
+    if (!token) return;
+
+    axios
+      .get("http://localhost:8080/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setNickname(res.data.nickname); // ✅ MyPageDTO.nickname
+      })
+      .catch((err) => {
+        console.error("사용자 정보 불러오기 실패:", err);
+      });
+  }, []);
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8080/api/auth/logout",
+        {},
+        {
+          withCredentials: true, // 쿠키도 함께 전송
+        },
+      );
+      localStorage.removeItem("token"); // 저장된 access token 삭제
+      navigate("/authentication/sign-in/basic"); // 로그인 화면으로 이동
+    } catch (err) {
+      console.error("로그아웃 실패:", err);
+    }
+  };
 
   useEffect(() => {
     // Setting the navbar type
@@ -135,9 +173,26 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </MDBox>
         {isMini ? null : (
           <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
+            {/* ✅ 검색창 */}
             <MDBox pr={1}>
               <MDInput label="Search here" />
             </MDBox>
+
+            {/* ✅ 닉네임 표시 영역 */}
+            {nickname && (
+              <MDBox display="flex" alignItems="center" pr={2}>
+                <MDTypography variant="button" fontWeight="medium">
+                  👤 {nickname} 님
+                </MDTypography>
+              </MDBox>
+            )}
+
+            {/* 로그아웃 버튼 */}
+            <IconButton size="small" color="inherit" onClick={handleLogout}>
+              <Icon>logout</Icon>
+            </IconButton>
+
+            {/* 기존 아이콘들 */}
             <MDBox color={light ? "white" : "inherit"}>
               <Link to="/authentication/sign-in/basic">
                 <IconButton sx={navbarIconButton} size="small" disableRipple>
