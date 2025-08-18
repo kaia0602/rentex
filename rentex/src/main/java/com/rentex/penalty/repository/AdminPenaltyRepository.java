@@ -19,14 +19,14 @@ public class AdminPenaltyRepository {
               u.id              AS userId,
               u.name            AS name,
               u.email           AS email,
-              u.penalty_points  AS penaltyPoints,
-              (SELECT COUNT(*) FROM user_penalty up
-                 WHERE up.user_id = u.id AND up.status = 'VALID') AS activeEntries,
-              (SELECT MAX(up.given_at) FROM user_penalty up
-                 WHERE up.user_id = u.id) AS lastGivenAt
+              p.point  AS penaltyPoints,
+              (SELECT COUNT(*) FROM penalty p
+                 WHERE p.user_id = u.id AND p.status = 'VALID') AS activeEntries,
+              (SELECT MAX(p.given_at) FROM user_penalty up
+                 WHERE p.user_id = u.id) AS lastGivenAt
             FROM `user` u
             WHERE (:q IS NULL OR :q = '' OR u.name LIKE CONCAT('%',:q,'%') OR u.email LIKE CONCAT('%',:q,'%'))
-            ORDER BY u.penalty_points DESC, u.id DESC
+            ORDER BY p.point DESC, u.id DESC
             LIMIT :limit OFFSET :offset
             """;
         var params = new MapSqlParameterSource()
@@ -47,35 +47,34 @@ public class AdminPenaltyRepository {
     public List<AdminPenaltyEntryDTO> userEntries(Long userId) {
         var sql = """
             SELECT id, reason, points, status, given_at
-            FROM user_penalty
+            FROM penalty
             WHERE user_id = :userId
             ORDER BY id DESC
             """;
         return jdbc.query(sql, Map.of("userId", userId), (rs, i) -> AdminPenaltyEntryDTO.builder()
                 .id(rs.getLong("id"))
                 .reason(rs.getString("reason"))
-                .points(rs.getInt("points"))
+                .points(rs.getInt("point"))
                 .status(rs.getString("status"))
                 .givenAt(rs.getTimestamp("given_at").toLocalDateTime())
                 .build());
     }
 
-    public void addEntry(Long userId, String reason, int points) {
-        var sql = """
-            INSERT INTO user_penalty(user_id, reason, points, status, given_at)
-            VALUES (:userId, :reason, :points, 'VALID', NOW())
-            """;
-        jdbc.update(sql, Map.of("userId", userId, "reason", reason, "points", points));
-        jdbc.update("UPDATE `user` SET penalty_points = penalty_points + :p WHERE id = :u",
-                Map.of("p", points, "u", userId));
-    }
+//    public void addEntry(Long userId, String reason, int points) {
+//        var sql = """
+//            INSERT INTO penalty(user_id, reason, points, status, given_at)
+//            VALUES (:userId, :reason, :point, 'VALID', NOW())
+//            """;
+//        jdbc.update(sql, Map.of("userId", userId, "reason", reason, "point", points));
+//        jdbc.update("UPDATE `user` SET point = penalty_points + :p WHERE id = :u",
+//                Map.of("p", point, "u", userId));
+//    }
 
     public void deleteEntry(Long entryId) {
-        // points와 userId를 먼저 구한 뒤 상태 변경 및 포인트 차감
-        var row = jdbc.queryForMap("SELECT user_id, points FROM user_penalty WHERE id = :id",
+        var row = jdbc.queryForMap("SELECT user_id, point FROM penalty WHERE id = :id",
                 Map.of("id", entryId));
         Long userId = ((Number)row.get("user_id")).longValue();
-        int points = ((Number)row.get("points")).intValue();
+        int point = ((Number)row.get("point")).intValue();
 
         jdbc.update("""
             UPDATE user_penalty
@@ -85,9 +84,9 @@ public class AdminPenaltyRepository {
 
         jdbc.update("""
             UPDATE `user`
-               SET penalty_points = GREATEST(0, penalty_points - :p)
+               SET penalty = GREATEST(0, penalty_points - :p)
              WHERE id = :u
-            """, Map.of("p", points, "u", userId));
+            """, Map.of("p", point, "u", userId));
     }
 
     public void resetUser(Long userId) {

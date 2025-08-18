@@ -20,7 +20,7 @@ export default function AdminPenaltyDetail() {
 
   const [loading, setLoading] = useState(false);
   const [rowsData, setRowsData] = useState([]);
-  const [summary, setSummary] = useState({ name: "", email: "", penaltyPoints: 0 });
+  const [summary, setSummary] = useState([{ name: "", email: "", penaltyPoints: 0 }]);
 
   const columns = useMemo(
     () => [
@@ -156,23 +156,6 @@ export default function AdminPenaltyDetail() {
               }}
             >
               벌점 부여(+1)
-            </MDButton>
-          </Grid>
-          <Grid item>
-            <MDButton
-              color="secondary"
-              variant="outlined"
-              onClick={async () => {
-                if (!confirm("이 사용자의 벌점을 전부 초기화할까요?")) return;
-                try {
-                  await api.post(`/admin/penalties/${uid}/reset`);
-                  await fetchAll();
-                } catch {
-                  alert("초기화 실패");
-                }
-              }}
-            >
-              벌점 초기화
             </MDButton>
           </Grid>
         </Grid>

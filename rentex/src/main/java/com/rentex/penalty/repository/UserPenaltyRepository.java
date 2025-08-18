@@ -1,18 +1,18 @@
 package com.rentex.penalty.repository;
 
 import com.rentex.penalty.domain.PenaltyStatus;
-import com.rentex.penalty.domain.UserPenalty;
+import com.rentex.penalty.domain.Penalty;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface UserPenaltyRepository extends JpaRepository<UserPenalty, Long> {
+public interface UserPenaltyRepository extends JpaRepository<Penalty, Long> {
 
-    // --- Service에서 직접 사용 중인 메서드들 ---
-    List<UserPenalty> findByUserIdOrderByIdDesc(Long userId);
 
-    List<UserPenalty> findByUserIdAndStatusOrderByIdDesc(Long userId, PenaltyStatus status);
+    List<Penalty> findByUserIdOrderByIdDesc(Long userId);
+
+    List<Penalty> findByUserIdAndStatusOrderByIdDesc(Long userId, PenaltyStatus status);
 
     long countByUserIdAndStatus(Long userId, PenaltyStatus status);
 
@@ -21,13 +21,12 @@ public interface UserPenaltyRepository extends JpaRepository<UserPenalty, Long> 
     u.id AS userId,
     u.name AS name,
     u.email AS email,
-    /* 표시용 벌점은 로그 합계로 계산: 컬럼이 안 갱신돼도 UI는 정확 */
-    (SELECT COALESCE(SUM(CASE WHEN up.status='VALID' THEN up.points ELSE 0 END), 0)
-       FROM user_penalty up WHERE up.user_id = u.id) AS penaltyPoints,
-    (SELECT COUNT(*) FROM user_penalty up 
-       WHERE up.user_id = u.id AND up.status = 'VALID') AS activeEntries,
-    (SELECT MAX(up.given_at) FROM user_penalty up 
-       WHERE up.user_id = u.id) AS lastGivenAt
+    (SELECT COALESCE(SUM(CASE WHEN p.status='VALID' THEN p.point ELSE 0 END), 0)
+       FROM penalty p WHERE p.user_id = u.id) AS penaltyPoints,
+    (SELECT COUNT(*) FROM penalty p 
+       WHERE p.user_id = u.id AND p.status = 'VALID') AS activeEntries,
+    (SELECT MAX(p.given_at) FROM penalty p 
+       WHERE p.user_id = u.id) AS lastGivenAt
   FROM `user` u
   WHERE u.role = 'USER'
     AND (:q IS NULL OR :q = '' 
@@ -51,14 +50,14 @@ public interface UserPenaltyRepository extends JpaRepository<UserPenalty, Long> 
           u.name                                  AS name,
           u.email                                 AS email,
           u.penalty_points                        AS penaltyPoints,
-          COALESCE(COUNT(up.id), 0)               AS activeEntries,
-          MAX(up.created_at)                      AS lastGivenAt
+          COALESCE(COUNT(p.id), 0)               AS activeEntries,
+          MAX(p.given_at)                      AS lastGivenAt
         FROM `user` u
-        LEFT JOIN user_penalty up 
-               ON up.user_id = u.id
-              AND up.status  = 'VALID'
+        LEFT JOIN penalty p 
+               ON p.user_id = u.id
+              AND p.status  = 'VALID'
         WHERE u.id = :userId
-        GROUP BY u.id, u.name, u.email, u.penalty_points
+        GROUP BY u.id, u.name, u.email, p.point
         """,
             nativeQuery = true)
     AdminPenaltyUserProjection findUserSummary(@Param("userId") Long userId);

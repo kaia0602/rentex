@@ -13,7 +13,7 @@ public class PartnerStatisticsController {
 
     private final StatisticsService service;
 
-    @GetMapping("/monthly")
+    @GetMapping("/{partnerId}")
     public PartnerMonthlyStatementDTO monthlyByUserId(
             @RequestParam Long userId,
             @RequestParam int year,

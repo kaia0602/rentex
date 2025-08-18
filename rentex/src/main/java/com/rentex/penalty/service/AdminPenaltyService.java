@@ -2,7 +2,7 @@
 package com.rentex.penalty.service;
 
 import com.rentex.penalty.domain.PenaltyStatus;
-import com.rentex.penalty.domain.UserPenalty;
+import com.rentex.penalty.domain.Penalty;
 import com.rentex.penalty.dto.AdminPenaltyEntryDTO;
 import com.rentex.penalty.dto.AdminPenaltyUserDTO;
 import com.rentex.penalty.dto.GrantPenaltyRequest;
@@ -22,7 +22,6 @@ public class AdminPenaltyService {
     private final UserPenaltyRepository penaltyRepo;
     private final UserRepository userRepo;
 
-    /** 관리자 벌점 목록(일반 사용자만, 검색/페이징) */
     @Transactional(readOnly = true)
     public List<AdminPenaltyUserDTO> listOnlyUsers(String q, int page, int size) {
         int limit = Math.max(1, size);
@@ -47,7 +46,7 @@ public class AdminPenaltyService {
                 .map(e -> AdminPenaltyEntryDTO.builder()
                         .id(e.getId())
                         .reason(e.getReason())
-                        .points(e.getPoints())
+                        .points(e.getPoint())
                         .status(e.getStatus().name())
                         .givenAt(e.getGivenAt())
                         .build())
@@ -60,20 +59,20 @@ public class AdminPenaltyService {
         // 존재 확인
         userRepo.findById(userId).orElseThrow();
 
-        int points = (req == null || req.getPoints() == null || req.getPoints() <= 0) ? 1 : req.getPoints();
+        int point = (req == null || req.getPoints() == null || req.getPoints() <= 0) ? 1 : req.getPoints();
         String reason = (req == null || req.getReason() == null || req.getReason().isBlank())
                 ? "벌점 사유입력" : req.getReason();
 
         // 로그 저장
-        penaltyRepo.save(UserPenalty.builder()
+        penaltyRepo.save(Penalty.builder()
                 .user(userRepo.getReferenceById(userId))
                 .reason(reason)
-                .points(points)
+                .point(point)
                 .status(PenaltyStatus.VALID)
                 .build());
 
         // 사용자 컬럼 가산 (영향 0이면 재계산 보정)
-        int updated = userRepo.increasePenaltyPoints(userId, points);
+        int updated = userRepo.increasePenaltyPoints(userId, point);
         if (updated == 0) {
             userRepo.recalcPenaltyPoints(userId);
         }
@@ -82,36 +81,36 @@ public class AdminPenaltyService {
     /** 벌점 엔트리 개별 삭제(회수) */
     @Transactional
     public void deleteEntry(Long entryId) {
-        UserPenalty entry = penaltyRepo.findById(entryId).orElseThrow();
+        Penalty entry = penaltyRepo.findById(entryId).orElseThrow();
         if (entry.getStatus() != PenaltyStatus.VALID) return;
 
         entry.markDeleted();
         penaltyRepo.save(entry);
 
-        int updated = userRepo.decreasePenaltyPoints(entry.getUser().getId(), entry.getPoints());
+        int updated = userRepo.decreasePenaltyPoints(entry.getUser().getId(), entry.getPoint());
         if (updated == 0) {
             userRepo.recalcPenaltyPoints(entry.getUser().getId());
         }
     }
 
-    /** 사용자 벌점 전체 초기화 */
-    @Transactional
-    public void reset(Long userId) {
-        // 존재 확인
-        userRepo.findById(userId).orElseThrow();
-
-        List<UserPenalty> valids = penaltyRepo.findByUserIdAndStatusOrderByIdDesc(userId, PenaltyStatus.VALID);
-        if (!valids.isEmpty()) {
-            LocalDateTime now = LocalDateTime.now();
-            valids.forEach(e -> { e.setStatus(PenaltyStatus.CLEARED); e.setClearedAt(now); });
-            penaltyRepo.saveAll(valids);
-        }
-
-        int updated = userRepo.resetPenaltyPoints(userId);
-        if (updated == 0) {
-            userRepo.recalcPenaltyPoints(userId);
-        }
-    }
+//    /** 사용자 벌점 전체 초기화 */
+//    @Transactional
+//    public void reset(Long userId) {
+//        // 존재 확인
+//        userRepo.findById(userId).orElseThrow();
+//
+//        List<Penalty> valids = penaltyRepo.findByUserIdAndStatusOrderByIdDesc(userId, PenaltyStatus.VALID);
+//        if (!valids.isEmpty()) {
+//            LocalDateTime now = LocalDateTime.now();
+//            valids.forEach(e -> { e.setState(PenaltyStatus.CLEARED); e.setClearedAt(now); });
+//            penaltyRepo.saveAll(valids);
+//        }
+//
+//        int updated = userRepo.resetPenaltyPoints(userId);
+//        if (updated == 0) {
+//            userRepo.recalcPenaltyPoints(userId);
+//        }
+//    }
 
     /** 상세 화면 상단 요약 */
     @Transactional(readOnly = true)

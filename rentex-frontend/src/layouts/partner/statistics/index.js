@@ -21,8 +21,6 @@ const NOW = new Date();
 const YEARS = [NOW.getFullYear() - 1, NOW.getFullYear(), NOW.getFullYear() + 1];
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 
-const API_PREFIX = "";
-
 export default function PartnerStatisticsIndex() {
   const [year, setYear] = useState(NOW.getFullYear());
   const [month, setMonth] = useState(NOW.getMonth() + 1);
@@ -41,6 +39,7 @@ export default function PartnerStatisticsIndex() {
     [],
   );
 
+  // rows: amount 채워서 표시
   const rows = useMemo(
     () =>
       (data?.details || []).map((d) => ({
@@ -48,26 +47,25 @@ export default function PartnerStatisticsIndex() {
         quantity: d.quantity,
         days: d.days,
         unitPrice: (d.unitPrice ?? 0).toLocaleString(),
-        amount: (d.amount ?? 0).toLocaleString(),
+        amount: (
+          d.amount ?? Number(d.unitPrice ?? 0) * Number(d.days ?? 0) * Number(d.quantity ?? 0)
+        ).toLocaleString(),
       })),
     [data],
   );
 
+  // 데이터를 정확히 가져오기
   const fetchData = async () => {
     setLoading(true);
     try {
-      const noAuth = { headers: { Authorization: undefined } };
-
+      // 1) partnerId 없으면 목록에서 내 파트너 id 하나 고름
       let pid = partnerId?.toString().trim() ? Number(partnerId) : null;
 
       if (pid == null) {
-        const summaryRes = await api.get(`/admin/statistics`, {
-          params: { year, month },
-          ...noAuth,
-        });
-        if (summaryRes.status !== 200) throw new Error(`summary ${summaryRes.status}`);
-        const list = summaryRes.data ?? [];
-        if (!Array.isArray(list) || list.length === 0) {
+        const listRes = await api.get(`/partner/statistics`, { params: { year, month } });
+        if (listRes.status !== 200) throw new Error(`summary ${listRes.status}`);
+        const list = Array.isArray(listRes.data) ? listRes.data : [];
+        if (list.length === 0) {
           setData({
             totalRentals: 0,
             totalQuantity: 0,
@@ -79,32 +77,43 @@ export default function PartnerStatisticsIndex() {
           return;
         }
         pid = list[0].partnerId;
-        setPartnerId(String(pid)); // UI에도 반영
+        setPartnerId(String(pid));
       }
 
-      const [itemsRes, summaryRes2] = await Promise.all([
-        api.get(`/admin/statistics/partners/${pid}/items`, {
-          params: { year, month },
-          ...noAuth,
-        }),
-        api.get(`/admin/statistics`, {
-          params: { year, month },
-          ...noAuth,
-        }),
-      ]);
+      const detailRes = await api.get(`/partner/statistics/${pid}`, {
+        params: { year, month },
+      });
+      if (detailRes.status !== 200) throw new Error(`detail ${detailRes.status}`);
 
-      if (itemsRes.status !== 200) throw new Error(`items ${itemsRes.status}`);
-      if (summaryRes2.status !== 200) throw new Error(`summary ${summaryRes2.status}`);
+      const payload = detailRes.data ?? {};
+      const details = Array.isArray(payload.details)
+        ? payload.details
+        : Array.isArray(payload)
+        ? payload
+        : [];
+      const summary = payload.summary ?? null;
 
-      const details = itemsRes.data ?? [];
-      const summary = (summaryRes2.data ?? []).find((s) => s.partnerId === pid);
-
-      const totalRentals = summary?.totalRentals ?? 0;
-      const totalQuantity =
-        summary?.totalQuantity ?? details.reduce((a, d) => a + (d.quantity || 0), 0);
-      const totalDays = summary?.totalDays ?? details.reduce((a, d) => a + (d.days || 0), 0);
-      const totalRevenue =
-        summary?.totalRevenue ?? details.reduce((a, d) => a + (d.amount || 0), 0);
+      const totalRentals = Number(
+        summary?.totalRentals ?? details.reduce((a, d) => a + Number(d.rentalCount || 0), 0),
+      );
+      const totalQuantity = Number(
+        summary?.totalQuantity ?? details.reduce((a, d) => a + Number(d.quantity || 0), 0),
+      );
+      const totalDays = Number(
+        summary?.totalDays ?? details.reduce((a, d) => a + Number(d.days || 0), 0),
+      );
+      const totalRevenue = Number(
+        summary?.totalRevenue ??
+          details.reduce(
+            (a, d) =>
+              a +
+              Number(
+                d.amount ??
+                  Number(d.unitPrice || 0) * Number(d.days || 0) * Number(d.quantity || 0),
+              ),
+            0,
+          ),
+      );
 
       setData({ totalRentals, totalQuantity, totalDays, totalRevenue, details });
     } catch (e) {
