@@ -5,8 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PenaltyDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/PenaltyDetail.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/domain/BaseTimeEntity$BaseTimeEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/domain/BaseTimeEntity$BaseTimeEntityBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/jwt/OAuthAttributes$OAuthAttributesBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/jwt/OAuthAttributes$OAuthAttributesBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$MyPageDTOBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$MyPageDTOBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$PenaltyInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$PenaltyInfo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$RentalInfo$RentalInfoBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$RentalInfo$RentalInfoBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/AdminPenaltyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/controller/AdminPenaltyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/UserPenalty.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/AdminPenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/AdminPenaltyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/AdminPenaltyService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/service/AdminPenaltyService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

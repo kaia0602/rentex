@@ -14,7 +14,7 @@ public class AdminPenaltyController {
 
     private final AdminPenaltyService service;
 
-    /** 목록 - /api/admin/penalties?q=키워드&page=0&size=20 */
+
     @GetMapping
     public List<AdminPenaltyUserDTO> list(
             @RequestParam(required = false) String q,
@@ -44,7 +44,7 @@ public class AdminPenaltyController {
     /** 사용자 벌점 전체 초기화 */
     @PostMapping("/{userId}/reset")
     public void reset(@PathVariable Long userId) {
-        service.reset(userId);
+        service.deleteEntry(userId);
     }
 
     /** 개별 벌점 삭제 */
