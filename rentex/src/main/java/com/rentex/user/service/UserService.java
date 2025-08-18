@@ -1,7 +1,6 @@
 package com.rentex.user.service;
 
-import com.rentex.partner.domain.Partner;
-import com.rentex.partner.repository.PartnerRepository;
+import com.rentex.admin.dto.UserResponseDTO;
 import com.rentex.penalty.domain.Penalty;
 import com.rentex.penalty.repository.PenaltyRepository;
 import com.rentex.rental.domain.Rental;
@@ -26,19 +25,21 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PartnerRepository partnerRepository; // Partner 가입 시 중복 체크용
     private final PasswordEncoder passwordEncoder;
     private final RentalRepository rentalRepository;
     private final PenaltyRepository penaltyRepository;
 
+    /** 이메일로 조회 */
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
+    /** ID로 조회 */
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
+    /** 회원가입 */
     @Transactional
     public Long signUp(SignUpRequestDTO requestDTO) {
         if (userRepository.findByEmail(requestDTO.getEmail()).isPresent()) {
@@ -46,30 +47,25 @@ public class UserService {
         }
 
         String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
-        User newUser;
 
-        if ("PARTNER".equalsIgnoreCase(requestDTO.getUserType())) {
-            newUser = Partner.builder()
-                    .email(requestDTO.getEmail())
-                    .password(encodedPassword)
-                    .name(requestDTO.getName())
-                    .nickname(requestDTO.getNickname())
-                    .businessNo(requestDTO.getBusinessNo())
-                    .contactEmail(requestDTO.getContactEmail())
-                    .contactPhone(requestDTO.getContactPhone())
-                    .build();
-        } else {
-            newUser = new User(
-                    requestDTO.getEmail(),
-                    encodedPassword,
-                    requestDTO.getName(),
-                    requestDTO.getNickname());
-        }
+        // userType이 null이면 USER로 기본 세팅
+        String role = (requestDTO.getUserType() == null) ? "USER" : requestDTO.getUserType().toUpperCase();
 
-        User savedUser = userRepository.save(newUser);
-        return savedUser.getId();
+        User newUser = User.builder()
+                .email(requestDTO.getEmail())
+                .password(encodedPassword)
+                .name(requestDTO.getName())
+                .nickname(requestDTO.getNickname())
+                .role(role) // USER / PARTNER / ADMIN
+                .businessNo(requestDTO.getBusinessNo())
+                .contactEmail(requestDTO.getContactEmail())
+                .contactPhone(requestDTO.getContactPhone())
+                .build();
+
+        return userRepository.save(newUser).getId();
     }
 
+    /** 비밀번호 재설정 */
     @Transactional
     public void resetPassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email)
@@ -83,6 +79,7 @@ public class UserService {
         user.updatePassword(encodedPassword);
     }
 
+    /** 마이페이지 정보 조회 */
     @Transactional(readOnly = true)
     public MyPageDTO getMyPageInfo(Long userId) {
         User user = userRepository.findById(userId)
@@ -94,6 +91,7 @@ public class UserService {
         return MyPageDTO.from(user, rentals, penalties);
     }
 
+    /** 프로필 수정 */
     @Transactional
     public void updateProfile(Long userId, ProfileUpdateRequestDTO requestDTO) {
         User user = userRepository.findById(userId)
@@ -101,17 +99,20 @@ public class UserService {
         user.updateNickname(requestDTO.getNickname());
     }
 
+    /** 회원 탈퇴 */
     @Transactional
     public void withdrawUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        // 아직 반납하지 않은 대여가 있으면 탈퇴 불가
         if (rentalRepository.existsByUserAndStatusNotIn(
                 user,
                 Arrays.asList(RentalStatus.RETURNED, RentalStatus.CANCELED, RentalStatus.REJECTED))) {
             throw new IllegalStateException("아직 반납하지 않은 대여 건이 있어 탈퇴할 수 없습니다.");
         }
 
+        // 미결제 패널티가 있으면 탈퇴 불가
         if (penaltyRepository.existsByUserAndPaidFalse(user)) {
             throw new IllegalStateException("패널티가 결제되지 않아 계정을 삭제할 수 없습니다.");
         }
@@ -119,22 +120,31 @@ public class UserService {
         // ✅ 패널티 레코드 선삭제
         penaltyRepository.deleteByUserId(userId);
 
-        // soft delete 유지 시:
-        // user.withdraw();
+        // soft delete
+        user.withdraw();
 
-        // 실제 삭제 시:
-        userRepository.deleteById(userId);
+        // hard delete 하고 싶으면 이걸로 교체:
+        // userRepository.deleteById(userId);
     }
 
-    /**
-     * 로그인된 사용자 이메일로 User 엔티티 조회.
-     * 존재하지 않을 경우 IllegalArgumentException 발생.
-     */
+    /** ID로 강제 조회 */
     @Transactional(readOnly = true)
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + id));
     }
 
+    // =====================================
+    // ✅ 관리자 조회용
+    // =====================================
 
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAllUsersForAdmin();
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getUsersByRole(String role) {
+        return userRepository.findAllByRole(role.toUpperCase());
+    }
 }

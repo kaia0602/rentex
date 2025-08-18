@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "api/client";
 import { useCategories } from "components/Hooks/useCategories";
+import { getImageUrl } from "utils/imageUrl";
 
 // MUI
 import {
@@ -23,15 +24,17 @@ import MDTypography from "components/MDTypography";
 function PublicItems() {
   const navigate = useNavigate();
   const { categories, subCategories, fetchSubCategories } = useCategories();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
-  const [subCategoryId, setSubCategoryId] = useState("");
-  const [keyword, setKeyword] = useState("");
 
-  const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(9);
+  // ✅ URL 쿼리스트링에서 초기값 읽기
+  const [categoryId, setCategoryId] = useState(searchParams.get("cat") || "");
+  const [subCategoryId, setSubCategoryId] = useState(searchParams.get("sub") || "");
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
+  const [itemsPerPage, setItemsPerPage] = useState(parseInt(searchParams.get("size")) || 9);
 
   useEffect(() => {
     api
@@ -43,25 +46,56 @@ function PublicItems() {
       .catch((err) => console.error("아이템 목록 불러오기 실패:", err));
   }, []);
 
+  // ✅ 카테고리 바뀔 때 소분류 불러오기
   useEffect(() => {
     fetchSubCategories(categoryId);
     // eslint-disable-next-line
   }, [categoryId]);
 
+  // ✅ 쿼리스트링 값이 바뀔 때 state 동기화
+  useEffect(() => {
+    const cat = searchParams.get("cat") || "";
+    const sub = searchParams.get("sub") || "";
+    const key = searchParams.get("keyword") || "";
+    const pg = parseInt(searchParams.get("page")) || 1;
+    const size = parseInt(searchParams.get("size")) || 9;
+
+    setCategoryId(cat);
+    setSubCategoryId(sub);
+    setKeyword(key);
+    setPage(pg);
+    setItemsPerPage(size);
+
+    // 아이템이 이미 로드된 상태라면 바로 필터링 반영
+    if (items.length > 0) {
+      let temp = [...items];
+      if (cat) temp = temp.filter((item) => item.categoryId === parseInt(cat));
+      if (sub) temp = temp.filter((item) => item.subCategoryId === parseInt(sub));
+      if (key.trim())
+        temp = temp.filter((item) => item.name.toLowerCase().includes(key.toLowerCase()));
+      setFilteredItems(temp);
+    }
+  }, [searchParams, items]);
+
   const filterItems = () => {
     let temp = [...items];
 
-    if (categoryId) {
-      temp = temp.filter((item) => item.category?.id === categoryId);
-    }
-    if (subCategoryId) {
-      temp = temp.filter((item) => item.subCategory?.id === subCategoryId);
-    }
-    if (keyword.trim()) {
+    if (categoryId) temp = temp.filter((item) => item.categoryId === parseInt(categoryId));
+    if (subCategoryId) temp = temp.filter((item) => item.subCategoryId === parseInt(subCategoryId));
+    if (keyword.trim())
       temp = temp.filter((item) => item.name.toLowerCase().includes(keyword.toLowerCase()));
-    }
+
     setFilteredItems(temp);
     setPage(1);
+
+    // ✅ 쿼리스트링 저장
+    setSearchParams({
+      cat: categoryId || "",
+      sub: subCategoryId || "",
+      keyword: keyword || "",
+      page: 1,
+      size: itemsPerPage,
+    });
   };
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -84,7 +118,7 @@ function PublicItems() {
               sx={{ minWidth: 140 }}
               size="small"
               value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value ? parseInt(e.target.value) : "")}
+              onChange={(e) => setCategoryId(e.target.value)}
               InputLabelProps={{ shrink: true }}
             >
               <MenuItem value="">전체</MenuItem>
@@ -103,7 +137,7 @@ function PublicItems() {
               sx={{ minWidth: 140 }}
               size="small"
               value={subCategoryId}
-              onChange={(e) => setSubCategoryId(e.target.value ? parseInt(e.target.value) : "")}
+              onChange={(e) => setSubCategoryId(e.target.value)}
               InputLabelProps={{ shrink: true }}
             >
               <MenuItem value="">전체</MenuItem>
@@ -127,13 +161,48 @@ function PublicItems() {
           </Grid>
 
           <Grid item>
-            <Button variant="contained" color="primary" onClick={filterItems}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={filterItems}
+              sx={{
+                color: "#fff", // ✅ 글자색 흰색 고정
+              }}
+            >
               검색
+            </Button>
+          </Grid>
+
+          <Grid item>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setCategoryId("");
+                setSubCategoryId("");
+                setKeyword("");
+                setPage(1);
+                setItemsPerPage(9);
+                setFilteredItems(items);
+
+                // ✅ 쿼리스트링 완전히 제거
+                setSearchParams({});
+              }}
+              sx={{
+                backgroundColor: "#f5f5f5",
+                color: "#000",
+                borderColor: "#ccc",
+                "&:hover": {
+                  backgroundColor: "#e0e0e0",
+                  borderColor: "#aaa",
+                },
+              }}
+            >
+              초기화
             </Button>
           </Grid>
         </Grid>
 
-        {/* 9개씩 보기: 한 줄 아래 */}
+        {/* 9개씩 보기 */}
         <Grid container spacing={2} mb={2}>
           <Grid item>
             <TextField
@@ -141,7 +210,17 @@ function PublicItems() {
               size="small"
               sx={{ minWidth: 120 }}
               value={itemsPerPage}
-              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setItemsPerPage(value);
+                setSearchParams({
+                  cat: categoryId || "",
+                  sub: subCategoryId || "",
+                  keyword: keyword || "",
+                  page,
+                  size: value,
+                });
+              }}
               InputLabelProps={{ shrink: true }}
             >
               <MenuItem value={9}>9개씩 보기</MenuItem>
@@ -162,12 +241,12 @@ function PublicItems() {
                   display: "flex",
                   flexDirection: "column",
                 }}
-                onClick={() => navigate(`/rentals/${item.id}`)}
+                onClick={() => navigate(`/rentals/${item.id}${location.search}`)}
               >
                 <CardMedia
                   component="img"
                   height="220"
-                  image={item.thumbnailUrl || "/no-image.png"}
+                  image={getImageUrl(item.thumbnailUrl)}
                   alt={item.name}
                   style={{ objectFit: "cover" }}
                 />
@@ -190,6 +269,9 @@ function PublicItems() {
                     {item.description || "설명이 없습니다."}
                   </MDTypography>
                   <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                    {item.categoryName} / {item.subCategoryName}
+                  </MDTypography>
+                  <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                     재고: {item.stockQuantity ?? "-"} 개
                   </MDTypography>
                   <MDTypography variant="body2">
@@ -207,7 +289,16 @@ function PublicItems() {
             <Pagination
               count={Math.ceil(filteredItems.length / itemsPerPage)}
               page={page}
-              onChange={(e, value) => setPage(value)}
+              onChange={(e, value) => {
+                setPage(value);
+                setSearchParams({
+                  cat: categoryId || "",
+                  sub: subCategoryId || "",
+                  keyword: keyword || "",
+                  page: value,
+                  size: itemsPerPage,
+                });
+              }}
               color="primary"
             />
           </Grid>

@@ -173,6 +173,9 @@ public class SecurityConfig {
 
                 // ✅ 지금은 전부 오픈
                 .authorizeHttpRequests(auth -> auth
+                        // 정적 리소스는 반드시 열어둬야 함
+                        .requestMatchers("/uploads/**").permitAll()
+                        // 나머지는 지금처럼 전부 오픈
                         .anyRequest().permitAll()
                 )
 

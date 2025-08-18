@@ -14,15 +14,15 @@ import java.util.List;
 @RequestMapping("/api/items") // 공용 경로
 public class PublicItemController {
 
-    private final ItemService itemService;
+    private final ItemService itemService; // 서비스 주입
 
-    // ✅ 전체 아이템 목록 (공용)
+    // 전체 아이템 목록 조회 (공용)
     @GetMapping
     public ResponseEntity<List<ItemResponseDTO>> getAllItems() {
         return ResponseEntity.ok(itemService.getAllItems());
     }
 
-    // ✅ 개별 아이템 상세 (공용)
+    // 개별 아이템 상세 조회 (공용)
     @GetMapping("/{id}")
     public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable Long id) {
         return ResponseEntity.ok(itemService.getItemById(id));

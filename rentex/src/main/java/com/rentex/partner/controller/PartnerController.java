@@ -1,9 +1,9 @@
 package com.rentex.partner.controller;
 
-import com.rentex.partner.domain.Partner;
-import com.rentex.partner.dto.PartnerRequestDto;
-import com.rentex.partner.dto.PartnerResponseDto;
-import com.rentex.partner.service.PartnerService;
+import com.rentex.admin.dto.UserResponseDTO;
+import com.rentex.user.domain.User;
+import com.rentex.user.dto.SignUpRequestDTO;
+import com.rentex.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,28 +15,36 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PartnerController {
 
-    private final PartnerService partnerService;
+    private final UserService userService;
 
+    /** 파트너 생성 (회원가입 시 role = PARTNER 강제 세팅) */
     @PostMapping
-    public ResponseEntity<PartnerResponseDto> create(@RequestBody PartnerRequestDto dto) {
-        Partner partner = partnerService.toEntity(dto);
-        Partner saved = partnerService.createPartner(partner);
-        return ResponseEntity.ok(partnerService.toDto(saved));
+    public ResponseEntity<Long> create(@RequestBody SignUpRequestDTO dto) {
+        dto.setUserType("PARTNER"); // ✅ role 강제 지정
+        Long savedId = userService.signUp(dto);
+        return ResponseEntity.ok(savedId);
     }
 
+    /** 전체 파트너 조회 */
     @GetMapping
-    public ResponseEntity<List<Partner>> getAll() {
-        return ResponseEntity.ok(partnerService.findAllPartners());
+    public ResponseEntity<List<UserResponseDTO>> getAll() {
+        return ResponseEntity.ok(userService.getUsersByRole("PARTNER"));
     }
 
+    /** 단일 파트너 조회 */
     @GetMapping("/{id}")
-    public ResponseEntity<Partner> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(partnerService.findById(id));
+    public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        if (!"PARTNER".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity.badRequest().build(); // PARTNER 아니면 에러
+        }
+        return ResponseEntity.ok(new UserResponseDTO(user));
     }
 
+    /** 파트너 삭제 (탈퇴 처리) */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        partnerService.deletePartner(id);
+        userService.withdrawUser(id); // ✅ UserService 탈퇴 로직 재사용
         return ResponseEntity.noContent().build();
     }
 }
