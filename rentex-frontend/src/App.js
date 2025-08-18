@@ -92,18 +92,26 @@ export default function App() {
   }, [pathname]);
 
   useEffect(() => {
-    const isAuthenticated = !!localStorage.getItem("accessToken");
+    const checkAuthStatus = () => {
+      const isAuthenticated = !!localStorage.getItem("accessToken");
+      const filteredRoutes = routes.filter((route) => {
+        if (isAuthenticated) {
+          return route.key !== "sign-in" && route.key !== "sign-up";
+        } else {
+          return route.key !== "sign-out";
+        }
+      });
+      setDynamicRoutes(filteredRoutes);
+    };
 
-    const filteredRoutes = routes.filter((route) => {
-      if (isAuthenticated) {
-        return route.key !== "sign-in" && route.key !== "sign-up";
-      } else {
-        return route.key !== "sign-out";
-      }
-    });
+    checkAuthStatus();
 
-    setDynamicRoutes(filteredRoutes);
-  }, [pathname]);
+    window.addEventListener("storage", checkAuthStatus);
+
+    return () => {
+      window.removeEventListener("storage", checkAuthStatus);
+    };
+  }, []);
 
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {

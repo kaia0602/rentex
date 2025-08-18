@@ -9,7 +9,7 @@ function OAuthRedirect() {
     const token = params.get("token");
 
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem("accessToken", token);
       alert("로그인 성공!");
       nav("/"); // 로그인 후 이동할 경로
     } else {

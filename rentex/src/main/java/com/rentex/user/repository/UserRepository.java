@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- *  임시용 UserRepository
+ * 임시용 UserRepository
  * 테스트용 유저 조회 (findById)만 사용하며, 추후 JWT 인증 연동 시 삭제 또는 교체
- *
+ * <p>
  * TODO: 이후 팀원(User 도메인 담당자)이 정식 UserRepository 구현 시 이 파일 삭제할 것
  */
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+
+    // 이메일 인증 토큰으로 사용자를 찾는 메서드 추가
+    Optional<User> findByEmailVerificationToken(String emailVerificationToken);
 
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(u.id, u.email, u.name, u.nickname,  u.role, u.createdAt, u.penaltyPoints) " +
             "FROM User u " + "WHERE u.role = 'USER'")

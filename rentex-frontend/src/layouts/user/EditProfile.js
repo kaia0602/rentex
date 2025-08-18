@@ -8,7 +8,6 @@ import Footer from "examples/Footer";
 
 // MUI
 import Grid from "@mui/material/Grid";
-import Divider from "@mui/material/Divider";
 import CircularProgress from "@mui/material/CircularProgress";
 
 // Components
@@ -19,13 +18,8 @@ import MDButton from "components/MDButton";
 import MDSnackbar from "components/MDSnackbar";
 
 // Custom Cards
-import ProfileInfoCard from "examples/Cards/InfoCards/ProfileInfoCard";
-import PlatformSettings from "layouts/profile/components/PlatformSettings";
 
 // Icons
-import FacebookIcon from "@mui/icons-material/Facebook";
-import TwitterIcon from "@mui/icons-material/Twitter";
-import InstagramIcon from "@mui/icons-material/Instagram";
 
 function EditProfile() {
   const navigate = useNavigate();
@@ -106,14 +100,12 @@ function EditProfile() {
         return;
       }
 
-      // ✅ payload 변수에 trim() 처리된 데이터를 담습니다.
       const payload = {
         name: form.name?.trim() || null,
         nickname: form.nickname?.trim() || null,
         phone: form.phone?.trim() || null,
       };
 
-      // ✅ 불필요한 첫 번째 호출을 삭제하고, 이 한 번의 호출로 깔끔한 데이터를 보냅니다.
       await axios.patch("/api/users/me", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -165,61 +157,45 @@ function EditProfile() {
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox mt={4} mb={3}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6} xl={4}>
-            <PlatformSettings />
-          </Grid>
-
-          <Grid item xs={12} md={6} xl={4} sx={{ display: "flex" }}>
-            <Divider orientation="vertical" sx={{ ml: -2, mr: 1 }} />
-            <ProfileInfoCard
-              title="회원 정보"
-              description="프로필 정보를 확인하고 수정할 수 있습니다."
-              info={{
-                fullName: form.name,
-                nickname: form.nickname,
-                phone: form.phone,
+        <Grid container justifyContent="center">
+          <Grid item xs={6} md={6} xl={6}>
+            <MDBox
+              p={3}
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "10px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
               }}
-              social={[
-                { link: "#", icon: <FacebookIcon />, color: "facebook" },
-                { link: "#", icon: <TwitterIcon />, color: "twitter" },
-                { link: "#", icon: <InstagramIcon />, color: "instagram" },
-              ]}
-              action={{ route: "", tooltip: "수정" }}
-              shadow={false}
-            />
-            <Divider orientation="vertical" sx={{ mx: 0 }} />
-          </Grid>
-
-          <Grid item xs={12} xl={4}>
-            <MDBox display="flex" flexDirection="column" gap={2}>
-              <MDTypography variant="h6">회원 정보 수정</MDTypography>
-              <MDInput
-                label="이름"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                fullWidth
-              />
-              <MDInput
-                label="닉네임"
-                name="nickname"
-                value={form.nickname}
-                onChange={handleChange}
-                fullWidth
-              />
-              <MDInput
-                label="연락처"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                fullWidth
-                // 파트너 회원이 아니면 수정 불가
-                disabled={!form.phone}
-              />
-              <MDButton color="info" onClick={handleSubmit}>
-                저장하기
-              </MDButton>
+            >
+              <MDBox display="flex" flexDirection="column" gap={2}>
+                <MDTypography variant="h6">회원 정보 수정</MDTypography>
+                <MDInput
+                  label="이름"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <MDInput
+                  label="닉네임"
+                  name="nickname"
+                  value={form.nickname}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <MDInput
+                  label="연락처"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  fullWidth
+                  // 파트너 회원이 아니면 수정 불가
+                  disabled={!form.phone}
+                />
+                <MDButton color="info" onClick={handleSubmit}>
+                  저장하기
+                </MDButton>
+              </MDBox>
             </MDBox>
           </Grid>
         </Grid>

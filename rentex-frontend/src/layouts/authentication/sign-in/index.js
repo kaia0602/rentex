@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom"; // useSearchParams 추가
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
 import MuiLink from "@mui/material/Link";
@@ -14,6 +14,7 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 import NaverIcon from "assets/images/icons/NaverIcon";
 import api from "api/client";
+import MDSnackbar from "components/MDSnackbar"; // 추가
 
 function Basic() {
   const nav = useNavigate();
@@ -22,6 +23,7 @@ function Basic() {
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(false);
   const [viewMode, setViewMode] = useState("login");
+  const [searchParams] = useSearchParams(); // 추가
 
   const [resetStep, setResetStep] = useState("enterEmail");
   const [resetForm, setResetForm] = useState({
@@ -31,6 +33,14 @@ function Basic() {
     confirmPassword: "",
   });
   const [resetError, setResetError] = useState("");
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    color: "info",
+    title: "",
+    content: "",
+  });
+  const closeSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
@@ -46,6 +56,18 @@ function Basic() {
     setResetError("");
   };
 
+  // ✅ 이메일 인증 완료 알림 로직 추가
+  useEffect(() => {
+    if (searchParams.get("verified") === "true") {
+      setSnackbar({
+        open: true,
+        color: "success",
+        title: "인증 완료",
+        content: "이메일 인증이 성공적으로 완료되었습니다. 이제 로그인할 수 있습니다.",
+      });
+    }
+  }, [searchParams]);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -54,31 +76,51 @@ function Basic() {
       const authHeader = res.headers["authorization"];
 
       if (authHeader && authHeader.startsWith("Bearer ")) {
-        // "Bearer " 접두사를 제거하고 순수한 토큰만 추출합니다.
         const token = authHeader.substring(7);
         localStorage.setItem("accessToken", token);
-        alert("로그인 성공!");
-        nav("/dashboard");
+        setSnackbar({
+          open: true,
+          color: "success",
+          title: "로그인 성공",
+          content: "환영합니다!",
+        });
+        setTimeout(() => nav("/dashboard"), 1000);
       } else {
-        alert("로그인 실패: 응답에 유효한 토큰이 없습니다.");
+        setSnackbar({
+          open: true,
+          color: "error",
+          title: "로그인 실패",
+          content: "응답에 유효한 토큰이 없습니다.",
+        });
       }
     } catch (err) {
       console.error(err);
-      const msg = err.response?.data?.message || "이메일 또는 비밀번호가 올바르지 않습니다.";
-      alert(msg);
+      const msg = err.response?.data || "이메일 또는 비밀번호가 올바르지 않습니다.";
+      setSnackbar({
+        open: true,
+        color: "error",
+        title: "로그인 실패",
+        content: msg,
+      });
       setLoginFailed(true);
     } finally {
       setLoading(false);
     }
   };
 
+  // ... (handleSendCode, handleVerifyAndReset 함수는 그대로 유지)
   const handleSendCode = async (e) => {
     e.preventDefault();
     setLoading(true);
     setResetError("");
     try {
       await api.post("/api/auth/password-reset/request", { email: resetForm.email });
-      alert("인증 코드가 이메일로 발송되었습니다.");
+      setSnackbar({
+        open: true,
+        color: "success",
+        title: "성공",
+        content: "인증 코드가 이메일로 발송되었습니다.",
+      });
       setResetStep("enterCodeAndPassword");
     } catch (err) {
       const msg =
@@ -104,13 +146,17 @@ function Basic() {
         code: resetForm.code,
         newPassword: resetForm.newPassword,
       });
-      alert("비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인하세요.");
+      setSnackbar({
+        open: true,
+        color: "success",
+        title: "성공",
+        content: "비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인하세요.",
+      });
       setViewMode("login");
       setResetStep("enterEmail");
       setResetForm({ email: "", code: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      const msg =
-        err.response?.data?.body || "비밀번호 변경에 실패했습니다. 인증 코드를 확인해주세요.";
+      const msg = err.response?.data || "비밀번호 변경에 실패했습니다. 인증 코드를 확인해주세요.";
       setResetError(msg);
     } finally {
       setLoading(false);
@@ -347,6 +393,18 @@ function Basic() {
           )}
         </MDBox>
       </Card>
+
+      {/* ✅ 스낵바 컴포넌트 추가 */}
+      <MDSnackbar
+        color={snackbar.color}
+        icon={snackbar.color === "success" ? "check" : "warning"}
+        title={snackbar.title}
+        content={snackbar.content}
+        open={snackbar.open}
+        onClose={closeSnackbar}
+        close={closeSnackbar}
+        bgWhite
+      />
     </BasicLayout>
   );
 }

@@ -30,4 +30,5 @@ public class EmailService {
             throw new RuntimeException("HTML 이메일 발송에 실패했습니다.", e);
         }
     }
+    
 }
