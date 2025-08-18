@@ -118,7 +118,7 @@ public class UserService {
         }
 
         // ✅ 패널티 레코드 선삭제
-        penaltyRepository.deleteByUserId(userId);
+        penaltyRepository.deleteByUser_Id(userId);
 
         // soft delete
         user.withdraw();

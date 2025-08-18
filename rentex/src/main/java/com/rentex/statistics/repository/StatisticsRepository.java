@@ -18,68 +18,41 @@ public class StatisticsRepository {
 
     private final NamedParameterJdbcTemplate jdbc;
 
-    // 필요 시 여기만 상태값 맞춰서 수정
+    // 필요 시 상태값 수정
     private static final String STATUS_FILTER = "('APPROVED','RENTED','RETURN_REQUESTED','RETURNED')";
 
 
+    /** PartnerId 조회 (users.id 그대로 사용) */
     public Optional<Long> resolvePartnerIdByUserId(Long userId) {
-        // Case 1: user 테이블에 partner_id가 있는 경우
-        String q1 = "SELECT u.partner_id AS pid FROM `user` u WHERE u.id = :uid AND u.partner_id IS NOT NULL LIMIT 1";
-        List<Long> r1 = jdbc.query(q1, new MapSqlParameterSource("uid", userId), (rs, i) -> rs.getLong("pid"));
-        if (!r1.isEmpty()) return Optional.of(r1.get(0));
-
-        // Case 2: partner 테이블에 user_id가 있는 경우
-        String q2 = "SELECT p.id AS pid FROM partner p WHERE p.user_id = :uid LIMIT 1";
-        List<Long> r2 = jdbc.query(q2, new MapSqlParameterSource("uid", userId), (rs, i) -> rs.getLong("pid"));
-        if (!r2.isEmpty()) return Optional.of(r2.get(0));
-
-        return Optional.empty();
+        String sql = "SELECT id FROM users WHERE id = :uid AND role = 'PARTNER'";
+        List<Long> r = jdbc.query(sql, new MapSqlParameterSource("uid", userId), (rs, i) -> rs.getLong("id"));
+        return r.isEmpty() ? Optional.empty() : Optional.of(r.get(0));
     }
 
-    // 1) partner의 표시용 이름 컬럼을 동적으로 찾기
-    private String partnerNameExpr() {
-        // 우선순위: name > partner_name > company_name > title
-        String sql = """
-        SELECT COLUMN_NAME
-        FROM INFORMATION_SCHEMA.COLUMNS
-        WHERE TABLE_SCHEMA = DATABASE()
-          AND TABLE_NAME = 'partner'
-          AND COLUMN_NAME IN ('name','partner_name','company_name','title')
-        ORDER BY FIELD(COLUMN_NAME,'name','partner_name','company_name','title')
-        LIMIT 1
-    """;
-        var cols = jdbc.query(sql, (rs, i) -> rs.getString(1));
-        if (cols.isEmpty()) {
-            // 컬럼이 없으면 partnerId를 문자열로 표시
-            return "CAST(p.id AS CHAR)";
-        }
-        // p.<찾은컬럼>
-        return "p." + cols.get(0);
-    }
 
-    // 2) 관리자 합계 쿼리 (p.name 부분만 동적 표현식으로 교체)
+    /** 관리자 전체 파트너 정산 요약 */
     public List<AdminPartnerSummaryDTO> adminPartnerSummary(LocalDate from, LocalDate to) {
-        String nameExpr = partnerNameExpr(); // ← 여기서 이름 표현식 확보
         String sql = """
         SELECT
-          p.id   AS partnerId,
-          %s     AS partnerName,
-          COUNT(DISTINCT r.id)                                                                 AS totalRentals,
-          COALESCE(SUM(r.quantity), 0)                                                         AS totalQuantity,
+          u.id   AS partnerId,
+          u.name AS partnerName,
+          COUNT(DISTINCT r.id) AS totalRentals,
+          COALESCE(SUM(r.quantity), 0) AS totalQuantity,
           COALESCE(SUM(GREATEST(0,
              DATEDIFF(LEAST(DATE(r.end_date), DATE(:to)), GREATEST(DATE(r.start_date), DATE(:from))) + 1)
-          ), 0)                                                                               AS totalDays,
+          ), 0) AS totalDays,
           COALESCE(SUM(i.daily_price * r.quantity *
              GREATEST(0, DATEDIFF(LEAST(DATE(r.end_date), DATE(:to)), GREATEST(DATE(r.start_date), DATE(:from))) + 1)
-          ), 0)                                                                               AS totalRevenue
-        FROM partner p
-        JOIN item i   ON i.partner_id = p.id
+          ), 0) AS totalRevenue
+        FROM users u
+        JOIN item i   ON i.partner_id = u.id
         JOIN rental r ON r.item_id = i.id
-        WHERE LEAST(DATE(r.end_date), DATE(:to)) >= GREATEST(DATE(r.start_date), DATE(:from))
-          AND r.status IN ('APPROVED','RENTED','RETURN_REQUESTED','RETURNED')
-        GROUP BY p.id, %s
+        WHERE u.role = 'PARTNER'
+          AND LEAST(DATE(r.end_date), DATE(:to)) >= GREATEST(DATE(r.start_date), DATE(:from))
+          AND r.status IN """ + STATUS_FILTER + """
+        GROUP BY u.id, u.name
         ORDER BY totalRevenue DESC
-    """.formatted(nameExpr, nameExpr);
+    """;
 
         var params = new MapSqlParameterSource()
                 .addValue("from", from)
@@ -96,6 +69,7 @@ public class StatisticsRepository {
     }
 
 
+    /** 관리자 - 특정 파트너 아이템별 정산 */
     public List<AdminPartnerItemDetailDTO> adminPartnerItemDetails(Long partnerId, LocalDate from, LocalDate to) {
         String sql = """
             SELECT
@@ -105,11 +79,11 @@ public class StatisticsRepository {
               i.daily_price                AS unitPrice,
               COALESCE(SUM(GREATEST(0,
                  DATEDIFF(LEAST(DATE(r.end_date), DATE(:to)), GREATEST(DATE(r.start_date), DATE(:from))) + 1)
-              ), 0)                         AS days,
+              ), 0) AS days,
               i.daily_price *
               COALESCE(SUM(r.quantity *
                  GREATEST(0, DATEDIFF(LEAST(DATE(r.end_date), DATE(:to)), GREATEST(DATE(r.start_date), DATE(:from))) + 1)
-              ), 0)                         AS amount
+              ), 0) AS amount
             FROM item i
             JOIN rental r ON r.item_id = i.id
             WHERE i.partner_id = :partnerId
@@ -134,6 +108,8 @@ public class StatisticsRepository {
                 .build());
     }
 
+
+    /** 파트너 월별 정산 */
     public PartnerMonthlyStatementDTO partnerMonthlyByPartnerId(Long partnerId, YearMonth ym) {
         var from = ym.atDay(1);
         var to   = ym.atEndOfMonth();
@@ -156,6 +132,7 @@ public class StatisticsRepository {
                 .build();
     }
 
+
     private List<PartnerMonthlyItemDetailDTO> partnerMonthlyItemDetails(Long partnerId, LocalDate from, LocalDate to) {
         String sql = """
             SELECT
@@ -165,11 +142,11 @@ public class StatisticsRepository {
               i.daily_price                AS unitPrice,
               COALESCE(SUM(GREATEST(0,
                  DATEDIFF(LEAST(DATE(r.end_date), DATE(:to)), GREATEST(DATE(r.start_date), DATE(:from))) + 1)
-              ), 0)                         AS days,
+              ), 0) AS days,
               i.daily_price *
               COALESCE(SUM(r.quantity *
                  GREATEST(0, DATEDIFF(LEAST(DATE(r.end_date), DATE(:to)), GREATEST(DATE(r.start_date), DATE(:from))) + 1)
-              ), 0)                         AS amount
+              ), 0) AS amount
             FROM item i
             JOIN rental r ON r.item_id = i.id
             WHERE i.partner_id = :partnerId
@@ -193,6 +170,7 @@ public class StatisticsRepository {
                 .amount(rs.getLong("amount"))
                 .build());
     }
+
 
     private long countPartnerRentals(Long partnerId, LocalDate from, LocalDate to) {
         String sql = """

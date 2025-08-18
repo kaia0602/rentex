@@ -42,7 +42,7 @@ public class AdminPenaltyService {
     /** 특정 사용자 벌점 엔트리 목록 */
     @Transactional(readOnly = true)
     public List<AdminPenaltyEntryDTO> entries(Long userId) {
-        return penaltyRepo.findByUserIdOrderByIdDesc(userId).stream()
+        return penaltyRepo.findByUser_IdOrderByIdDesc(userId).stream()
                 .map(e -> AdminPenaltyEntryDTO.builder()
                         .id(e.getId())
                         .reason(e.getReason())

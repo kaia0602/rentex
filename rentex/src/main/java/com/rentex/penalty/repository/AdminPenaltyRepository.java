@@ -13,26 +13,32 @@ import java.util.*;
 public class AdminPenaltyRepository {
     private final NamedParameterJdbcTemplate jdbc;
 
+    /** 유저 목록 + 패널티 현황 조회 */
     public List<AdminPenaltyUserDTO> listUsers(String q, int limit, int offset) {
         var sql = """
             SELECT
-              u.id              AS userId,
-              u.name            AS name,
-              u.email           AS email,
-              p.point  AS penaltyPoints,
+              u.id   AS userId,
+              u.name AS name,
+              u.email AS email,
+              (SELECT COALESCE(SUM(CASE WHEN p.status='VALID' THEN p.point ELSE 0 END), 0)
+                 FROM penalty p WHERE p.user_id = u.id) AS penaltyPoints,
               (SELECT COUNT(*) FROM penalty p
                  WHERE p.user_id = u.id AND p.status = 'VALID') AS activeEntries,
-              (SELECT MAX(p.given_at) FROM user_penalty up
-                 WHERE p.user_id = u.id) AS lastGivenAt
-            FROM `user` u
-            WHERE (:q IS NULL OR :q = '' OR u.name LIKE CONCAT('%',:q,'%') OR u.email LIKE CONCAT('%',:q,'%'))
-            ORDER BY p.point DESC, u.id DESC
+              (SELECT MAX(up.given_at) FROM user_penalty up
+                 WHERE up.user_id = u.id) AS lastGivenAt
+            FROM users u
+            WHERE (:q IS NULL OR :q = '' 
+                   OR u.name LIKE CONCAT('%',:q,'%') 
+                   OR u.email LIKE CONCAT('%',:q,'%'))
+            ORDER BY penaltyPoints DESC, u.id DESC
             LIMIT :limit OFFSET :offset
             """;
+
         var params = new MapSqlParameterSource()
                 .addValue("q", q)
                 .addValue("limit", limit)
                 .addValue("offset", offset);
+
         return jdbc.query(sql, params, (rs, i) -> AdminPenaltyUserDTO.builder()
                 .userId(rs.getLong("userId"))
                 .name(rs.getString("name"))
@@ -44,9 +50,10 @@ public class AdminPenaltyRepository {
                 .build());
     }
 
+    /** 특정 유저의 패널티 상세 내역 */
     public List<AdminPenaltyEntryDTO> userEntries(Long userId) {
         var sql = """
-            SELECT id, reason, points, status, given_at
+            SELECT id, reason, point, status, given_at
             FROM penalty
             WHERE user_id = :userId
             ORDER BY id DESC
@@ -60,16 +67,7 @@ public class AdminPenaltyRepository {
                 .build());
     }
 
-//    public void addEntry(Long userId, String reason, int points) {
-//        var sql = """
-//            INSERT INTO penalty(user_id, reason, points, status, given_at)
-//            VALUES (:userId, :reason, :point, 'VALID', NOW())
-//            """;
-//        jdbc.update(sql, Map.of("userId", userId, "reason", reason, "point", points));
-//        jdbc.update("UPDATE `user` SET point = penalty_points + :p WHERE id = :u",
-//                Map.of("p", point, "u", userId));
-//    }
-
+    /** 패널티 항목 삭제 처리 */
     public void deleteEntry(Long entryId) {
         var row = jdbc.queryForMap("SELECT user_id, point FROM penalty WHERE id = :id",
                 Map.of("id", entryId));
@@ -83,14 +81,15 @@ public class AdminPenaltyRepository {
             """, Map.of("id", entryId));
 
         jdbc.update("""
-            UPDATE `user`
-               SET penalty = GREATEST(0, penalty_points - :p)
+            UPDATE users
+               SET penalty_points = GREATEST(0, penalty_points - :p)
              WHERE id = :u
             """, Map.of("p", point, "u", userId));
     }
 
+    /** 특정 유저의 패널티 초기화 */
     public void resetUser(Long userId) {
-        jdbc.update("UPDATE `user` SET penalty_points = 0 WHERE id = :u", Map.of("u", userId));
+        jdbc.update("UPDATE users SET penalty_points = 0 WHERE id = :u", Map.of("u", userId));
         jdbc.update("""
             UPDATE user_penalty
                SET status = 'CLEARED', cleared_at = NOW()

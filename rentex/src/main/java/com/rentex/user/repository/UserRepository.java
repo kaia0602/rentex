@@ -33,28 +33,32 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "FROM User u WHERE u.role = 'USER'")
     List<UserResponseDTO> findAllUsers();
 
-    /** 이메일로 userId 조회 (예약어 → backtick) */
-    @Query(value = "SELECT u.id FROM `user` u WHERE u.email = :email LIMIT 1", nativeQuery = true)
+    /** 이메일로 userId 조회 */
+    @Query(value = "SELECT u.id FROM users u WHERE u.email = :email LIMIT 1", nativeQuery = true)
     Long findUserIdByEmail(@Param("email") String email);
 
+    /** 벌점 가산 */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "UPDATE `user` SET penalty_points = COALESCE(penalty_points,0) + :delta WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE users SET penalty_points = COALESCE(penalty_points,0) + :delta WHERE id = :id", nativeQuery = true)
     int increasePenaltyPoints(@Param("id") Long userId, @Param("delta") int delta);
 
+    /** 벌점 차감 */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "UPDATE `user` SET penalty_points = GREATEST(0, COALESCE(penalty_points,0) - :delta) WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE users SET penalty_points = GREATEST(0, COALESCE(penalty_points,0) - :delta) WHERE id = :id", nativeQuery = true)
     int decreasePenaltyPoints(@Param("id") Long userId, @Param("delta") int delta);
 
+    /** 벌점 초기화 */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query(value = "UPDATE `user` SET penalty_points = 0 WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE users SET penalty_points = 0 WHERE id = :id", nativeQuery = true)
     int resetPenaltyPoints(@Param("id") Long userId);
 
+    /** 벌점 재계산 (penalty 테이블 기준) */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(value =
-            "UPDATE `user` u " +
+            "UPDATE users u " +
                     "SET u.penalty_points = ( " +
-                    "  SELECT COALESCE(SUM(CASE WHEN up.status='VALID' THEN up.points ELSE 0 END),0) " +
-                    "  FROM user_penalty up WHERE up.user_id = :id " +
+                    "  SELECT COALESCE(SUM(CASE WHEN p.status='VALID' THEN p.point ELSE 0 END),0) " +
+                    "  FROM penalty p WHERE p.user_id = :id " +
                     ") " +
                     "WHERE u.id = :id", nativeQuery = true)
     int recalcPenaltyPoints(@Param("id") Long userId);
