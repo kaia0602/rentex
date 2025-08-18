@@ -21,6 +21,7 @@ public class ItemResponseDTO {
     private Long subCategoryId;
     private String categoryName;
     private String subCategoryName;
+    private String partnerName;
 
 
     public static ItemResponseDTO fromEntity(Item item) {
@@ -37,6 +38,7 @@ public class ItemResponseDTO {
                 .subCategoryId(item.getSubCategory() != null ? item.getSubCategory().getId() : null)
                 .categoryName(item.getCategory() != null ? item.getCategory().getName() : "-")
                 .subCategoryName(item.getSubCategory() != null ? item.getSubCategory().getName() : "-")
+                .partnerName(item.getPartner() != null ? item.getPartner().getName() : "-")
                 .build();
     }
 }

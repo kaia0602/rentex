@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -81,6 +82,10 @@ public class JwtTokenProvider {
 
     /** 토큰 유효성 검증 */
     public boolean validateToken(String token) {
+        if (!StringUtils.hasText(token) || token.chars().filter(ch -> ch == '.').count() != 2) {
+            log.error("Invalid JWT token format");
+            return false;
+        }
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;

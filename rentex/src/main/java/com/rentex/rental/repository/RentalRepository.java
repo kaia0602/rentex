@@ -1,9 +1,9 @@
 package com.rentex.rental.repository;
 
-import com.rentex.penalty.dto.PartnerStatisticsDto;
 import com.rentex.item.domain.Item;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
+
 import com.rentex.user.domain.User; // ✅ 우리 도메인 User import
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +31,13 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
 
-    List<Rental> findByUserId(Long userId);
+    /**
+     * 특정 유저가 대여한 Rental 목록 조회
+     * @param userId 유저 ID
+     * @return 해당 유저의 Rental 목록
+     */
+    @Query("SELECT r FROM Rental r WHERE r.user.id = :userId")
+    List<Rental> findByUserId(@Param("userId") Long userId);
 
     @Query("""
     SELECT r FROM Rental r
@@ -50,21 +56,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query("SELECT r FROM Rental r WHERE r.status = 'RENTED' AND r.endDate < :today AND r.isOverdue = false")
     List<Rental> findOverdueRentals(@Param("today") LocalDate today);
 
-    @Query(value = """
-        SELECT 
-            p.name AS partnerName,
-            COUNT(r.id) AS totalRentals,
-            SUM(r.quantity) AS totalQuantity,
-            SUM(DATEDIFF(r.end_date, r.start_date) + 1) AS totalDays,
-            SUM(r.quantity * (DATEDIFF(r.end_date, r.start_date) + 1) * i.daily_price) AS totalAmount
-        FROM rental r
-        JOIN item i ON r.item_id = i.id
-        JOIN partner p ON i.partner_id = p.id
-        WHERE r.status = 'RETURNED'
-        GROUP BY p.name
-    """, nativeQuery = true)
-    List<PartnerStatisticsDto> getPartnerStatistics();
-
     @Query("""
     SELECT COUNT(r) > 0
     FROM Rental r
@@ -77,4 +68,30 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
                                     @Param("startDate") LocalDate startDate,
                                     @Param("endDate") LocalDate endDate);
 
+    @Query("SELECT r FROM Rental r WHERE r.user.id = :userId ORDER BY r.startDate DESC")
+    List<Rental> findRecentRentalsByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    /** 해당 월과 기간이 겹치는 모든 렌탈(아이템/파트너 같이 로딩) */
+    @Query("""
+        select r
+        from Rental r
+        join fetch r.item i
+        join fetch i.partner p
+        where r.startDate <= :monthEnd and r.endDate >= :monthStart
+    """)
+    List<Rental> findAllOverlapping(LocalDate monthStart, LocalDate monthEnd);
+
+    /** 특정 파트너의 해당 월 겹침 렌탈 */
+    @Query("""
+        select r
+        from Rental r
+        join fetch r.item i
+        join fetch i.partner p
+        where p.id = :partnerId
+          and r.startDate <= :monthEnd and r.endDate >= :monthStart
+    """)
+    List<Rental> findAllByPartnerOverlapping(Long partnerId, LocalDate monthStart, LocalDate monthEnd);
 }
+
+
+

@@ -17,20 +17,40 @@ import java.util.List;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final PenaltyService penaltyService; // 벌점 초기화를 위해
+    private final PenaltyService penaltyService;
 
-    public Payment processPenaltyPayment(User user, int amount, PaymentMethod method) {
+    /**
+     * 벌점 결제 처리 (시뮬레이션)
+     */
+    public Payment processPenaltyPayment(User user, PaymentMethod method) {
+        int point = penaltyService.getPenaltyByUser(user).getPoint();
+        int amount = point * 10000;
+
+        if (point <= 0) {
+            throw new IllegalStateException("결제할 벌점이 없습니다.");
+        }
+
         Payment payment = Payment.builder()
                 .user(user)
                 .amount(amount)
                 .method(method)
-                .status(PaymentStatus.SUCCESS)
+                .status(PaymentStatus.PENDING)
                 .paidAt(LocalDateTime.now())
                 .build();
+        paymentRepository.save(payment);
 
-        Payment saved = paymentRepository.save(payment);
-        penaltyService.resetPenalty(user); // 벌점 초기화 로직 호출
-        return saved;
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        payment.updateStatus(PaymentStatus.SUCCESS);
+        paymentRepository.save(payment);
+
+        penaltyService.resetPenalty(user);
+
+        return payment;
     }
 
     public List<Payment> getPaymentHistory(User user) {

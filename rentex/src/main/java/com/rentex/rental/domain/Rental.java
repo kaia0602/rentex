@@ -9,19 +9,6 @@ import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@SqlResultSetMapping(
-        name = "PartnerStatisticsMapping",
-        classes = @ConstructorResult(
-                targetClass = com.rentex.penalty.dto.PartnerStatisticsDto.class,
-                columns = {
-                        @ColumnResult(name = "partnerName", type = String.class),
-                        @ColumnResult(name = "totalRentals", type = Long.class),
-                        @ColumnResult(name = "totalQuantity", type = Long.class),
-                        @ColumnResult(name = "totalDays", type = Long.class),
-                        @ColumnResult(name = "totalRevenue", type = Long.class)
-                }
-        )
-)
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

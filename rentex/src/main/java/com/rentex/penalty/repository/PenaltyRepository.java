@@ -22,8 +22,15 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
     void resetPenalty(@Param("userId") Long userId);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE Penalty p SET p.point = p.point + :score WHERE p.user.id = :userId")
-    void increasePenalty(@Param("userId") Long userId, @Param("score") int score);
+    @Query("UPDATE Penalty p SET p.point = p.point + :point , p.paid = false WHERE p.user.id = :userId")
+    void increasePenalty(@Param("userId") Long userId, @Param("point") int point);
 
+    @Query("""
+        SELECT p
+        FROM Penalty p
+        JOIN FETCH p.user u
+        WHERE u.id = :userId
+    """)
+    List<Penalty> findAllByUserId(@Param("userId") Long userId);
 
 }

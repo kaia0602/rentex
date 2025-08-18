@@ -246,4 +246,19 @@ public class RentalService {
 
         return rentals.map(RentalResponseDto::from);
     }
+    /**
+     * 특정 유저가 대여한 장비(Item) 목록 조회
+     * - Rental → Item으로 변환
+     * - 동일 장비 중복 대여 기록이 있을 수 있으므로 distinct() 처리
+     *
+     * @param userId 유저 ID
+     * @return 해당 유저가 대여한 장비 목록
+     */
+    @Transactional(readOnly = true)
+    public List<Item> getItemsRentedByUser(Long userId) {
+        return rentalRepository.findByUserId(userId).stream()
+                .map(Rental::getItem) // Rental 엔티티에서 Item 추출
+                .distinct()           // 중복 장비 제거
+                .toList();
+    }
 }

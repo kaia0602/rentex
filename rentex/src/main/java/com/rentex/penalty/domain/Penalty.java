@@ -25,6 +25,7 @@ public class Penalty extends BaseTimeEntity {
 
     public void addPoint(int score) {
         this.point += score;
+        this.paid = false;
     }
 
     public void resetPoint() {
