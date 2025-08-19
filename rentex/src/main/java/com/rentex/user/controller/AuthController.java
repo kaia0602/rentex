@@ -9,6 +9,7 @@ import com.rentex.user.service.EmailService;
 import com.rentex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private static final String REFRESH_COOKIE = "refresh_token";
@@ -80,29 +82,40 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req, HttpServletResponse res) {
         try {
+            log.info("✅ [1/8] 로그인 요청 수신: {}", req.getEmail());
+
             // 이메일 인증 상태 확인
             User user = userService.findByEmail(req.getEmail())
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
             if (user.getStatus() != User.UserStatus.ACTIVE) {
+                log.warn("로그인 실패: 이메일 미인증 사용자. 이메일: {}", req.getEmail());
                 return ResponseEntity.status(401).body("로그인 실패: 이메일 인증이 필요합니다.");
             }
+            log.info("✅ [2/8] 사용자 상태 확인 완료 (ACTIVE)");
 
             // 1) 스프링 시큐리티로 인증 시도
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
             );
+            log.info("✅ [3/8] Spring Security 인증 성공 (Authenticated user)");
 
-            // --- 개선안 적용 ---
             // 2) Access Token 발급 (DB의 최신 Role 사용)
             String authorities = auth.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(","));
+            log.info("✅ [4/8] 토큰 생성을 위한 권한 정보 추출: {}", authorities);
+
             String accessToken = jwtTokenProvider.createAccessToken(user.getId(), authorities);
+            log.info("✅ [5/8] Access Token 생성 완료");
 
             // 3) Refresh Token 발급 (보안을 위해 권한 미포함)
             String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
-            // --- 개선안 적용 끝 ---
+            log.info("✅ [6/8] Refresh Token 생성 완료");
+
+            // ✅ 추가된 로그: 발급된 토큰을 콘솔에 출력합니다.
+            log.info("⭐ [로그인 성공] 발급된 Access Token: {}", accessToken);
+            log.info("⭐ [로그인 성공] 발급된 Refresh Token: {}", refreshToken);
 
             // 4) 리프레시 토큰을 HttpOnly 쿠키에 저장
             ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, refreshToken)
@@ -113,13 +126,18 @@ public class AuthController {
                     .maxAge(60L * 60L * 24L * 14L)
                     .build();
             res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            log.info("✅ [7/8] Refresh Token 쿠키 설정 완료");
 
             // 5) 액세스 토큰을 헤더와 바디 둘 다로 반환
+            LoginResponseDTO responseBody = new LoginResponseDTO(accessToken, user.getId(), user.getName(), user.getRole());
+            log.info("✅ [8/8] 최종 응답 생성 완료. 클라이언트로 응답을 전송합니다.");
             return ResponseEntity.ok()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                    .body(new LoginResponseDTO(accessToken, user.getId(), user.getName(), user.getRole()));
+                    .body(responseBody);
 
         } catch (Exception e) {
+            // 예외 발생 시, 전체 스택 트레이스를 로그로 남겨 원인 파악을 용이하게 합니다.
+            log.error("로그인 처리 중 예외 발생", e);
             return ResponseEntity.status(401).body("로그인 실패: " + e.getMessage());
         }
     }

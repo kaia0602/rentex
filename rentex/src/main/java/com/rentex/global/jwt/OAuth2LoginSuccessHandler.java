@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Slf4j // 로깅을 위한 어노테이션 추가
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -31,23 +32,40 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-
-        // --- 에러 추적을 위한 try-catch 블록 추가 ---
         try {
-            log.info("OAuth2 로그인 성공. 후처리 시작...");
-            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-            String email = oAuth2User.getAttribute("email");
+            String email;
+            Object principal = authentication.getPrincipal();
 
-            if (email == null) {
-                log.error("OAuth2 provider로부터 이메일을 받아오지 못했습니다. Attributes: {}", oAuth2User.getAttributes());
-                response.sendRedirect(frontendUrl + "/login?error=email_not_found");
+            // =================== 로그인 방식에 따라 분기 처리 ===================
+            if (principal instanceof OAuth2User oAuth2User) {
+                // --- 1. 소셜 로그인일 경우 ---
+                log.info("소셜 로그인 성공. 후처리 시작...");
+                email = oAuth2User.getAttribute("email");
+
+                if (email == null) {
+                    log.error("OAuth2 provider로부터 이메일을 받아오지 못했습니다. Attributes: {}", oAuth2User.getAttributes());
+                    response.sendRedirect(frontendUrl + "/login?error=email_not_found");
+                    return;
+                }
+            } else if (principal instanceof UserDetails userDetails) {
+                // --- 2. 일반 로그인일 경우 ---
+                log.info("일반 로그인 성공. 후처리 시작...");
+                email = userDetails.getUsername(); // UserDetailsService에서 반환한 username (이메일)
+            } else {
+                // --- 3. 예상치 못한 타입의 Principal일 경우 ---
+                log.error("처리할 수 없는 Principal 타입입니다: {}", principal.getClass().getName());
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"message\": \"알 수 없는 사용자 인증 타입입니다.\"}");
                 return;
             }
+            // =================================================================
+
             log.info("이메일로 사용자 조회 시작: {}", email);
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
             log.info("사용자 조회 성공: userId={}", user.getId());
 
+            // =================== 공통 JWT 발급 로직 ===================
             Long userId = user.getId();
             String authorities = "ROLE_" + user.getRole();
 
@@ -59,26 +77,47 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             String refreshToken = jwtTokenProvider.createRefreshToken(userId);
             log.info("Refresh Token 생성 완료.");
 
-            log.info("쿠키 생성 및 리다이렉트 시작...");
+            log.info("⭐ [로그인 성공] 발급된 Access Token: {}", accessToken);
+            log.info("⭐ [로그인 성공] 발급된 Refresh Token: {}", refreshToken);
+            // ==========================================================
+
+            // Refresh Token을 담을 쿠키 생성 (공통)
             ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
                     .httpOnly(true)
-                    .secure(true)
-                    .sameSite("Lax")
+                    .secure(true) // HTTPS 환경에서만 전송
+                    .sameSite("Lax") // CSRF 방지
                     .path("/")
-                    .maxAge(60L * 60L * 24L * 14L)
+                    .maxAge(60L * 60L * 24L * 14L) // 2주
                     .build();
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-            // ▼ 소셜 로그인 액세스 토큰 발급 확인용, 사용할 때 마다 주석 해제하면 됨
-//            response.sendRedirect(frontendUrl + "/oauth-redirect?token=" + accessToken);
-            log.info("리다이렉트 완료.");
+
+            // =================== 로그인 방식에 따라 다른 응답 처리 ===================
+            if (principal instanceof OAuth2User) {
+                // 소셜 로그인은 프론트엔드로 리다이렉트
+                log.info("소셜 로그인 리다이렉트...");
+                // Access Token은 URL 쿼리 파라미터로 전달 (보안상 권장되지는 않으나, 프론트에서 즉시 사용하기 위함)
+                // 또는 바디에 담아 전달 후 리다이렉트 하는 방식을 고려할 수 있습니다.
+                response.sendRedirect(frontendUrl + "/oauth-redirect?token=" + accessToken);
+            } else {
+                // 일반 로그인은 JSON 응답 반환
+                log.info("일반 로그인 JSON 응답 생성...");
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.setContentType("application/json;charset=UTF-8");
+                response.setHeader("Authorization", "Bearer " + accessToken); // 헤더에도 AccessToken 추가
+
+                String responseBody = String.format(
+                        "{\"message\": \"로그인에 성공했습니다.\", \"accessToken\": \"%s\"}",
+                        accessToken
+                );
+                response.getWriter().write(responseBody);
+            }
+            // =====================================================================
 
         } catch (Exception e) {
-            // 예외 발생 시, 전체 에러 로그를 콘솔에 출력합니다.
-            log.error("OAuth2 로그인 성공 후 처리 과정에서 예외가 발생했습니다.", e);
-
-            // 기본 에러 페이지로 리다이렉트합니다.
-            response.sendRedirect(frontendUrl + "/login?error=internal_server_error");
+            log.error("로그인 성공 후 처리 과정에서 예외가 발생했습니다.", e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("{\"message\": \"로그인 처리 중 서버 에러가 발생했습니다.\"}");
         }
     }
 }
