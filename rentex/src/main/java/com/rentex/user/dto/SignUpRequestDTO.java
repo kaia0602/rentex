@@ -12,8 +12,10 @@ public class SignUpRequestDTO {
     private String name;
     private String nickname;
 
+    private String role;
+
     // 사용자 타입 구분 ( "USER" 또는 "PARTNER" )
-    private String userType;
+
 
     // 파트너 전용 정보 ( userType이 'PARTNER'일 때만 사용 )
     private String businessNo;

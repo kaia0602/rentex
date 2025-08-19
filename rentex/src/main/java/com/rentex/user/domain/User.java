@@ -35,7 +35,8 @@ public class User extends BaseTimeEntity {
 
     // USER / PARTNER / ADMIN
     @Column(nullable = false, length = 20)
-    private String role;
+    @Builder.Default
+    private String role = "USER";
 
     @Builder.Default
     private int penaltyPoints = 0;
@@ -51,12 +52,6 @@ public class User extends BaseTimeEntity {
 
     @Column(length = 20)
     private String contactPhone;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     // ==== 생성자 (일반 유저 기본값) ====
     public User(String email, String password, String name, String nickname) {

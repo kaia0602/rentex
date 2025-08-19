@@ -17,19 +17,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     /** 역할(Role) 기준 조회 (USER / PARTNER / ADMIN) */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
-            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints) " +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
             "FROM User u WHERE u.role = :role")
     List<UserResponseDTO> findAllByRole(@Param("role") String role);
 
     /** 전체 유저 리스트 (관리자 전용) */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
-            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints) " +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
             "FROM User u")
     List<UserResponseDTO> findAllUsersForAdmin();
 
     /** 일반 유저만 조회 */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
-            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints) " +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
             "FROM User u WHERE u.role = 'USER'")
     List<UserResponseDTO> findAllUsers();
 
