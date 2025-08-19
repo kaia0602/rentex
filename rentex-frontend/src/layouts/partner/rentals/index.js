@@ -1,7 +1,9 @@
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import IconButton from "@mui/material/IconButton";
-import DoneIcon from "@mui/icons-material/Done";
+import Button from "@mui/material/Button";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -10,45 +12,62 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-// ❗ 샘플 데이터 (추후 API 연동 예정)
-const columns = [
-  { Header: "장비명", accessor: "item" },
-  { Header: "대여자", accessor: "user" },
-  { Header: "대여기간", accessor: "period" },
-  { Header: "요청종류", accessor: "requestType", align: "center" },
-  { Header: "요청일", accessor: "requestDate", align: "center" },
-  {
-    Header: "처리",
-    accessor: "action",
-    align: "center",
-    Cell: () => (
-      <IconButton color="success">
-        <DoneIcon />
-      </IconButton>
-    ),
-  },
-];
-
-const rows = [
-  {
-    item: "Canon R6",
-    user: "홍길동",
-    period: "08.10 ~ 08.12",
-    requestType: "수령 완료 요청",
-    requestDate: "08.10",
-    action: "",
-  },
-  {
-    item: "DJI 드론",
-    user: "김영희",
-    period: "08.07 ~ 08.09",
-    requestType: "반납 완료 요청",
-    requestDate: "08.09",
-    action: "",
-  },
-];
+import api from "api/client"; // ✅ axios instance
 
 function PartnerRentalRequests() {
+  const navigate = useNavigate();
+  const [rows, setRows] = useState([]);
+
+  // ✅ 컬럼 정의
+  const columns = [
+    { Header: "장비명", accessor: "item" },
+    { Header: "대여자(닉네임)", accessor: "user" }, // ✅ 닉네임 표시
+    { Header: "대여기간", accessor: "period" },
+    { Header: "요청종류", accessor: "requestType", align: "center" },
+    { Header: "요청일", accessor: "requestDate", align: "center" },
+    {
+      Header: "상세보기",
+      accessor: "action",
+      align: "center",
+      Cell: ({ row }) => (
+        <Button
+          variant="outlined"
+          color="primary"
+          size="small"
+          onClick={() => navigate(`/partner/rentals/${row.original.id}`)}
+        >
+          상세보기
+        </Button>
+      ),
+    },
+  ];
+
+  // ✅ API 호출
+  const fetchRequests = async () => {
+    try {
+      const res = await api.get("/rentals/partner/requests", {
+        params: { status: "REQUESTED", page: 0, size: 20 },
+      });
+
+      const data = res.data.content.map((r) => ({
+        id: r.id,
+        item: r.itemName,
+        user: r.userNickname, // ✅ 닉네임만 매핑
+        period: `${r.startDate} ~ ${r.endDate}`,
+        requestType: r.status === "REQUESTED" ? "대여 요청" : r.status,
+        requestDate: r.createdAt,
+      }));
+
+      setRows(data);
+    } catch (err) {
+      console.error("❌ 파트너 요청 조회 실패:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -67,7 +86,7 @@ function PartnerRentalRequests() {
                 coloredShadow="warning"
               >
                 <MDTypography variant="h6" color="white">
-                  대여 요청 처리
+                  대여 요청 목록
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>

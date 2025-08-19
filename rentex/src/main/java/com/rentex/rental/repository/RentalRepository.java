@@ -20,7 +20,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     boolean existsByItemAndStatusIn(Item item, List<RentalStatus> statuses);
 
-    // ✅ User 엔티티 기반 메서드 추가 (탈퇴 시 사용)
+    // User 엔티티 기반 메서드 추가 (탈퇴 시 사용)
     boolean existsByUserAndStatusNotIn(User user, List<RentalStatus> statuses);
 
     List<Rental> findByUser(User user); // MyPage 조회용
@@ -31,11 +31,8 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     Page<Rental> findAllByStatus(RentalStatus status, Pageable pageable);
 
-    /**
-     * 특정 유저가 대여한 Rental 목록 조회
-     * @param userId 유저 ID
-     * @return 해당 유저의 Rental 목록
-     */
+    Page<Rental> findAll(Pageable pageable);  // 전체 상태 조건 없이
+
     @Query("SELECT r FROM Rental r WHERE r.user.id = :userId")
     List<Rental> findByUserId(@Param("userId") Long userId);
 
@@ -91,6 +88,18 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
           and r.startDate <= :monthEnd and r.endDate >= :monthStart
     """)
     List<Rental> findAllByPartnerOverlapping(Long partnerId, LocalDate monthStart, LocalDate monthEnd);
+
+    /** 특정 파트너의 요청 상태별 대여 목록 조회 */
+    Page<Rental> findByItemPartnerIdAndStatus(Long partnerId, RentalStatus status, Pageable pageable);
+
+    /** 특정파트너의 전체 조회 목록*/
+    @Query("SELECT r FROM Rental r " +
+            "JOIN r.item i " +
+            "WHERE i.partner.id = :partnerId " +
+            "AND (:status IS NULL OR r.status = :status)")
+    Page<Rental> findByPartnerItemAndStatus(@Param("partnerId") Long partnerId,
+                                            @Param("status") RentalStatus status,
+                                            Pageable pageable);
 }
 
 

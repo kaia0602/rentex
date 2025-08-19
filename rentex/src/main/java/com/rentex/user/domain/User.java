@@ -52,12 +52,6 @@ public class User extends BaseTimeEntity {
     @Column(length = 20)
     private String contactPhone;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
     // ==== 생성자 (일반 유저 기본값) ====
     public User(String email, String password, String name, String nickname) {
         this(email, password, name, nickname, "USER");

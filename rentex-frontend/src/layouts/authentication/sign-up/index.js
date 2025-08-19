@@ -50,7 +50,7 @@ function SignUp() {
         password: form.password,
         name: form.name,
         nickname: form.nickname,
-        role: form.userType, // ✅ 백엔드에서는 role 필드 사용
+        userType: form.userType,
         businessNo: form.userType === "PARTNER" ? form.businessNo : null,
         contactEmail: form.userType === "PARTNER" ? form.contactEmail : null,
         contactPhone: form.userType === "PARTNER" ? form.contactPhone : null,

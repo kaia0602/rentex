@@ -241,7 +241,7 @@ function PublicItems() {
                   display: "flex",
                   flexDirection: "column",
                 }}
-                onClick={() => navigate(`/rentals/${item.id}${location.search}`)}
+                onClick={() => navigate(`/items/${item.id}${location.search}`)}
               >
                 <CardMedia
                   component="img"

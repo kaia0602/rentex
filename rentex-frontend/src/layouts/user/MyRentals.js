@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -10,25 +11,49 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
-// 대여 상태 더미 enum
-const getStatusBadge = (status) => {
-  const colorMap = {
-    REQUESTED: "secondary",
-    APPROVED: "info",
-    RENTED: "primary",
-    RETURN_REQUESTED: "warning",
-    RETURNED: "success",
-  };
+import api from "api/client"; // ✅ client.js 기반 axios 인스턴스
 
-  return (
-    <MDTypography variant="caption" color={colorMap[status]} fontWeight="bold">
-      {status}
-    </MDTypography>
-  );
-};
+// 상태 뱃지 (서버에서 statusLabel, badgeColor 내려주니까 활용)
+const getStatusBadge = (status, label, color) => (
+  <MDTypography variant="caption" color={color} fontWeight="bold">
+    {label || status}
+  </MDTypography>
+);
 
 function MyRentals() {
   const navigate = useNavigate();
+  const [rows, setRows] = useState([]);
+
+  // ✅ API 호출
+  useEffect(() => {
+    api
+      .get("/rentals/me", { params: { page: 0, size: 10 } })
+      .then((res) => {
+        const content = res.data.content || res.data; // Page<RentalResponseDto> or List
+        const mapped = content.map((r) => ({
+          item: r.itemName,
+          period: `${r.startDate} ~ ${r.endDate}`,
+          quantity: r.quantity,
+          status: getStatusBadge(r.status, r.statusLabel, r.badgeColor),
+          detail: (
+            <MDTypography
+              component="a"
+              href="#"
+              onClick={() => navigate(`/mypage/rentals/${r.id}`)}
+              variant="caption"
+              color="info"
+              fontWeight="medium"
+            >
+              보기
+            </MDTypography>
+          ),
+        }));
+        setRows(mapped);
+      })
+      .catch((err) => {
+        console.error("내 대여내역 불러오기 실패:", err);
+      });
+  }, [navigate]);
 
   const columns = [
     { Header: "장비명", accessor: "item" },
@@ -36,45 +61,6 @@ function MyRentals() {
     { Header: "수량", accessor: "quantity", align: "center" },
     { Header: "상태", accessor: "status", align: "center" },
     { Header: "상세", accessor: "detail", align: "center" },
-  ];
-
-  const rows = [
-    {
-      item: "캐논 DSLR",
-      period: "2025-08-10 ~ 2025-08-13",
-      quantity: 1,
-      status: getStatusBadge("RENTED"),
-      detail: (
-        <MDTypography
-          component="a"
-          href="#"
-          onClick={() => navigate("/mypage/rentals/1")}
-          variant="caption"
-          color="info"
-          fontWeight="medium"
-        >
-          보기
-        </MDTypography>
-      ),
-    },
-    {
-      item: "DJI 드론 Mini 2",
-      period: "2025-08-01 ~ 2025-08-03",
-      quantity: 2,
-      status: getStatusBadge("RETURNED"),
-      detail: (
-        <MDTypography
-          component="a"
-          href="#"
-          onClick={() => navigate("/mypage/rentals/2")}
-          variant="caption"
-          color="info"
-          fontWeight="medium"
-        >
-          보기
-        </MDTypography>
-      ),
-    },
   ];
 
   return (
