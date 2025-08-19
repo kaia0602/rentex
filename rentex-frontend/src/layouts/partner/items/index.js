@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCategories } from "components/Hooks/useCategories";
-import api from "api/client"; // ✅ axios 대신 api 인스턴스 사용
+import api from "api/client"; // Axios 인스턴스, JWT 자동 포함
 
 // MUI
 import Grid from "@mui/material/Grid";
@@ -21,20 +21,16 @@ function PartnerItemList() {
   const { categories, subCategories } = useCategories();
   const navigate = useNavigate();
 
-  // id → name 매핑
+  // 카테고리 ID → 이름 매핑
   const categoriesMap = Object.fromEntries(categories.map((cat) => [cat.id, cat.name]));
   const subCategoriesMap = Object.fromEntries(subCategories.map((sc) => [sc.id, sc.name]));
 
+  // 로그인한 업체 장비 불러오기
   useEffect(() => {
     api
-      .get("/partner/items")
-      .then((res) => {
-        console.log("응답 데이터:", res.data);
-        setItems(res.data);
-      })
-      .catch((err) => {
-        console.error("장비 목록 불러오기 실패:", err);
-      });
+      .get("/partner/items") // JWT 토큰 자동 포함
+      .then((res) => setItems(res.data))
+      .catch((err) => console.error("장비 목록 불러오기 실패:", err));
   }, []);
 
   const columns = [

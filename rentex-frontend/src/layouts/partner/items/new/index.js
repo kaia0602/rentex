@@ -24,7 +24,6 @@ function NewItemForm() {
     stockQuantity: 0,
     dailyPrice: 0,
     status: "AVAILABLE",
-    partnerId: 1,
     categoryId: "",
     subCategoryId: "",
   });
@@ -195,17 +194,6 @@ function NewItemForm() {
                     <option value="AVAILABLE">사용 가능</option>
                     <option value="UNAVAILABLE">사용 불가</option>
                   </select>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <MDInput
-                    label="파트너 ID"
-                    name="partnerId"
-                    type="number"
-                    fullWidth
-                    value={itemData.partnerId}
-                    onChange={handleChange}
-                    required
-                  />
                 </Grid>
                 <Grid item xs={12}>
                   <MDInput
