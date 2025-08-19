@@ -55,7 +55,13 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
 
         // userType이 null이면 USER로 기본 세팅
-        String role = (requestDTO.getRole() == null) ? "USER" : requestDTO.getRole().toUpperCase();
+//        String role = (requestDTO.getUserType() == null) ? "USER" : requestDTO.getUserType().toUpperCase();
+
+        // userType 기반 role 결정 (서버에서만)
+        String role = "USER";
+        if ("PARTNER".equalsIgnoreCase(requestDTO.getUserType())) {
+            role = "PARTNER";
+        }
 
         User newUser = User.builder()
                 .email(requestDTO.getEmail())
@@ -63,9 +69,9 @@ public class UserService {
                 .name(requestDTO.getName())
                 .nickname(requestDTO.getNickname())
                 .role(role) // USER / PARTNER / ADMIN
-                .businessNo(role.equals("PARTNER") ? requestDTO.getBusinessNo() : null)
-                .contactEmail(role.equals("PARTNER") ? requestDTO.getContactEmail() : null)
-                .contactPhone(role.equals("PARTNER") ? requestDTO.getContactPhone() : null)
+                .businessNo(requestDTO.getBusinessNo())
+                .contactEmail(requestDTO.getContactEmail())
+                .contactPhone(requestDTO.getContactPhone())
                 .build();
 
         return userRepository.save(newUser).getId();
