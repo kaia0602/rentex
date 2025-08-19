@@ -23,15 +23,9 @@ public class StatisticsRepository {
 
 
     public Optional<Long> resolvePartnerIdByUserId(Long userId) {
-        // Case 1: user 테이블에 partner_id가 있는 경우
-        String q1 = "SELECT u.partner_id AS pid FROM `user` u WHERE u.id = :uid AND u.partner_id IS NOT NULL LIMIT 1";
-        List<Long> r1 = jdbc.query(q1, new MapSqlParameterSource("uid", userId), (rs, i) -> rs.getLong("pid"));
-        if (!r1.isEmpty()) return Optional.of(r1.get(0));
-
-        // Case 2: partner 테이블에 user_id가 있는 경우
-        String q2 = "SELECT p.id AS pid FROM partner p WHERE p.user_id = :uid LIMIT 1";
-        List<Long> r2 = jdbc.query(q2, new MapSqlParameterSource("uid", userId), (rs, i) -> rs.getLong("pid"));
-        if (!r2.isEmpty()) return Optional.of(r2.get(0));
+        String q = "SELECT p.id AS pid FROM partner p WHERE p.id = :uid LIMIT 1";
+        List<Long> r = jdbc.query(q, new MapSqlParameterSource("uid", userId), (rs, i) -> rs.getLong("pid"));
+        if (!r.isEmpty()) return Optional.of(r.get(0));
 
         return Optional.empty();
     }

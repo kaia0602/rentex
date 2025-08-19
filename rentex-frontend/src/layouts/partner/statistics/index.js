@@ -62,7 +62,7 @@ export default function PartnerStatisticsIndex() {
       let pid = partnerId?.toString().trim() ? Number(partnerId) : null;
 
       if (pid == null) {
-        const listRes = await api.get(`/partner/statistics`, { params: { year, month } });
+        const listRes = await api.get(`/partner/statistics/${pid}`);
         if (listRes.status !== 200) throw new Error(`summary ${listRes.status}`);
         const list = Array.isArray(listRes.data) ? listRes.data : [];
         if (list.length === 0) {
