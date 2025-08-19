@@ -25,6 +25,7 @@ export default function PartnerStatisticsIndex() {
   const [month, setMonth] = useState(NOW.getMonth() + 1);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const [userId, setUserId] = useState(12);
 
   const columns = useMemo(
     () => [
@@ -54,7 +55,7 @@ export default function PartnerStatisticsIndex() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/partner/statistics/me", { params: { year, month } });
+      const res = await api.get(`/partner/statistics/${userId}`, { params: { year, month } });
       if (res.status !== 200) throw new Error(`detail ${res.status}`);
 
       const payload = res.data ?? {};

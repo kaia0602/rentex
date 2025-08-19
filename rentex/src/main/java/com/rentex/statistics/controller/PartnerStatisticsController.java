@@ -14,9 +14,9 @@ public class PartnerStatisticsController {
 
     private final StatisticsService service;
 
-    @GetMapping("/me")
+    @GetMapping("/{userId}")
     public PartnerMonthlyStatementDTO monthlyByUserId(
-            @AuthenticationPrincipal(expression = "id") Long userId,
+            @PathVariable("userId") Long userId,
             @RequestParam int year,
             @RequestParam int month
     ) {
