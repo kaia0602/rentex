@@ -7,10 +7,11 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import Card from "@mui/material/Card";
-import Divider from "@mui/material/Divider";
 import Avatar from "@mui/material/Avatar";
 import DataTable from "examples/Tables/DataTable";
-import axios from "axios";
+
+// ✅ api 클라이언트
+import api from "api/client";
 
 function UserDetail() {
   const { id } = useParams();
@@ -19,23 +20,23 @@ function UserDetail() {
 
   useEffect(() => {
     // 유저 기본 정보
-    axios
-      .get(`/api/admin/users/${id}`)
+    api
+      .get(`/admin/users/${id}`)
       .then((res) => setUser(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("유저 불러오기 실패:", err));
 
     // 대여 내역
-    axios
-      .get(`/api/admin/users/${id}/rents`)
+    api
+      .get(`/admin/users/${id}/rents`)
       .then((res) => setRents(res.data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("대여 내역 불러오기 실패:", err));
   }, [id]);
 
   const handleBan = () => {
-    axios
-      .post(`/api/admin/users/${id}/ban`)
+    api
+      .post(`/admin/users/${id}/ban`)
       .then(() => alert("사용자가 밴 처리되었습니다."))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("밴 처리 실패:", err));
   };
 
   if (!user) return <DashboardLayout>Loading...</DashboardLayout>;

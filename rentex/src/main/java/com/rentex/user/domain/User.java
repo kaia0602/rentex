@@ -2,28 +2,26 @@ package com.rentex.user.domain;
 
 import com.rentex.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user")
-@Inheritance(strategy = InheritanceType.JOINED) // Partner 상속 고려
-@DiscriminatorColumn(name = "role")
+@Table(name = "users") // ✅ 예약어 충돌 방지 위해 "users" 권장
 @SuperBuilder
+@AllArgsConstructor
 public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name= "email", nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String email;
 
     @Column(nullable = false)
@@ -35,8 +33,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String nickname;
 
-    // Role은 Enum이 아니라 String 유지
-    @Column(name = "role", insertable = false, updatable = false)
+    // USER / PARTNER / ADMIN
+    @Column(nullable = false, length = 20)
     private String role;
 
     @Builder.Default
@@ -44,26 +42,42 @@ public class User extends BaseTimeEntity {
 
     private LocalDateTime withdrawnAt; // 탈퇴 일시 (soft delete)
 
-    // ==== 생성자 ====
+    // === Partner 전용 필드 ===
+    @Column(length = 20, unique = true)
+    private String businessNo;
+
+    @Column(length = 100)
+    private String contactEmail;
+
+    @Column(length = 20)
+    private String contactPhone;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    // ==== 생성자 (일반 유저 기본값) ====
     public User(String email, String password, String name, String nickname) {
+        this(email, password, name, nickname, "USER");
+    }
+
+    public User(String email, String password, String name, String nickname, String role) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.nickname = nickname;
+        this.role = role;
     }
 
     // ==== 업데이트 로직 ====
-    public User update(String name) {
-        this.name = name;
-        return this;
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
-    }
-
-    public void updateNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     // ==== 벌점 처리 ====
@@ -74,8 +88,5 @@ public class User extends BaseTimeEntity {
     // ==== 탈퇴 처리 ====
     public void withdraw() {
         this.withdrawnAt = LocalDateTime.now();
-        // 개인정보 마스킹 필요 시 아래 사용
-        // this.name = "탈퇴한사용자";
-        // this.email = "withdrawn@" + this.id;
     }
 }

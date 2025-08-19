@@ -5,39 +5,34 @@ import com.rentex.user.domain.User;
 import com.rentex.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class AdminService {
 
     private final UserRepository userRepository;
 
-    public AdminService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
+    /** 전체 사용자 조회 */
+    @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAllUsers();
+        return userRepository.findAllUsersForAdmin();
     }
 
-    // 단일 사용자 조회
+    /** 역할별 조회 (USER / PARTNER / ADMIN) */
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getUsersByRole(String role) {
+        return userRepository.findAllByRole(role.toUpperCase());
+    }
+
+    /** 단일 사용자 조회 */
+    @Transactional(readOnly = true)
     public UserResponseDTO getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. ID=" + id));
 
-        return UserResponseDTO.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .nickname(user.getNickname())
-                .role(user.getRole())
-                .createdAt(user.getCreatedAt())
-                .penaltyPoints(user.getPenaltyPoints())
-                .build();
+        return new UserResponseDTO(user); // DTO 변환 생성자 활용
     }
-
-
 }

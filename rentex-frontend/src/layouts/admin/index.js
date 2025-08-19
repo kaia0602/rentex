@@ -14,7 +14,7 @@ const adminMenus = [
   { title: "대여 관리", icon: "assignment", path: "/admin/rentals" },
   { title: "장비 관리", icon: "build", path: "/admin/items" },
   { title: "업체 관리", icon: "apartment", path: "/admin/partners" },
-  { title: "벌점 관리", icon: "gavel", path: "/admin/penalty" },
+  { title: "벌점 관리", icon: "gavel", path: "/admin/penalties" },
   { title: "정산 통계", icon: "bar_chart", path: "/admin/statistics" },
   { title: "사용자 관리", icon: "group", path: "/admin/users" },
 ];

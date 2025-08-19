@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { UserProvider } from "context/UserContext";
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles";

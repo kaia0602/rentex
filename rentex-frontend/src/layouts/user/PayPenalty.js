@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "api";
+import api from "api/client"; // ✅ 수정됨
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";

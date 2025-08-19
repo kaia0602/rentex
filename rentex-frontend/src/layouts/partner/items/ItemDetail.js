@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "api/client"; // ✅ axios 대신 api 인스턴스 사용
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -36,15 +36,15 @@ function PartnerItemDetail() {
     partnerId: null,
   });
 
-  // 상위 카테고리 변경 시 소분류 새로 불러오기
+  // 상위 카테고리 변경 시 소분류 조회
   useEffect(() => {
     if (!form.categoryId) {
       setSubCategories([]);
       setForm((prev) => ({ ...prev, subCategoryId: "" }));
       return;
     }
-    axios
-      .get(`/api/categories/${form.categoryId}/subcategories`)
+    api
+      .get(`/categories/${form.categoryId}/subcategories`)
       .then((res) => setSubCategories(res.data))
       .catch(() => {
         setSubCategories([]);
@@ -52,10 +52,10 @@ function PartnerItemDetail() {
       });
   }, [form.categoryId]);
 
-  // 아이템 상세 불러오기
+  // 아이템 상세 조회
   useEffect(() => {
-    axios
-      .get(`/api/partner/items/${id}`)
+    api
+      .get(`/partner/items/${id}`)
       .then((res) => {
         const data = res.data;
         setForm({
@@ -75,7 +75,7 @@ function PartnerItemDetail() {
       });
   }, [id]);
 
-  // input 변경 핸들러
+  // input 변경
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     setForm((prev) => ({
@@ -84,7 +84,7 @@ function PartnerItemDetail() {
     }));
   };
 
-  // 파일 변경 핸들러
+  // 파일 변경
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -93,7 +93,7 @@ function PartnerItemDetail() {
     }
   };
 
-  // FormData 빌드 함수
+  // FormData 빌드
   const buildFormData = () => {
     const formToSend = { ...form };
     const formData = new FormData();
@@ -105,7 +105,7 @@ function PartnerItemDetail() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`/api/partner/items/${id}`, buildFormData(), {
+      await api.put(`/api/partner/items/${id}`, buildFormData(), {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("수정 성공!");

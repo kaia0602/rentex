@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -20,16 +21,24 @@ public class PenaltyService {
     private final PenaltyRepository penaltyRepository;
     private final RentalRepository rentalRepository;
 
-    /** ✅ 유저 ID로 벌점 가져오기 */
+    /** ✅ 유저의 전체 벌점 내역 조회 */
     @Transactional(readOnly = true)
-    public Penalty getPenaltyByUser(User user) {
-        return penaltyRepository.findByUserId(user.getId())
+    public List<Penalty> getPenaltiesByUser(User user) {
+        return penaltyRepository.findByUser_Id(user.getId());
+    }
+
+    /** ✅ 가장 최신 벌점 가져오기 */
+    @Transactional(readOnly = true)
+    public Penalty getLatestPenalty(User user) {
+        return penaltyRepository.findByUser_Id(user.getId()).stream()
+                .max(Comparator.comparing(Penalty::getCreatedAt))
                 .orElseThrow(() -> new IllegalArgumentException("벌점 정보가 없습니다."));
     }
 
+    /** ✅ 최신 벌점 + 최근 대여 3건 */
     @Transactional(readOnly = true)
     public List<PenaltyWithRentalDTO> getPenaltyWithRentals(User user) {
-        Penalty penalty = getPenaltyByUser(user);
+        Penalty latestPenalty = getLatestPenalty(user);
 
         // 최신 3건만 조회
         List<Rental> rentals = rentalRepository
@@ -37,9 +46,9 @@ public class PenaltyService {
 
         return rentals.stream()
                 .map(r -> PenaltyWithRentalDTO.builder()
-                        .penaltyId(penalty.getId())
-                        .point(penalty.getPoint())
-                        .paid(penalty.isPaid())
+                        .penaltyId(latestPenalty.getId())
+                        .point(latestPenalty.getPoint())
+                        .paid(latestPenalty.isPaid())
                         .itemName(r.getItem().getName())
                         .startDate(r.getStartDate())
                         .endDate(r.getEndDate())
@@ -48,22 +57,21 @@ public class PenaltyService {
                 .toList();
     }
 
-    /** ✅ 벌점 초기화 (관리자) */
+    /** ✅ 벌점 초기화 (== 유저의 모든 벌점을 paid 처리) */
     @Transactional
     public void resetPenalty(User user) {
-        Penalty p = getPenaltyByUser(user);
-        p.reset();
+        List<Penalty> penalties = getPenaltiesByUser(user);
+        penalties.forEach(Penalty::reset);
     }
 
-    /** ✅ 벌점 초기화 (userId) */
+    /** ✅ 벌점 증가 (새 row 생성) */
     @Transactional
-    public void resetPenaltyByUserId(Long userId) {
-        penaltyRepository.resetPenalty(userId);
-    }
-
-    /** ✅ 벌점 증가 */
-    @Transactional
-    public void increasePenalty(Long userId, int score) {
-        penaltyRepository.increasePenalty(userId, score);
+    public void increasePenalty(User user, int score) {
+        Penalty penalty = Penalty.builder()
+                .user(user)
+                .point(score)
+                .paid(false)
+                .build();
+        penaltyRepository.save(penalty);
     }
 }
