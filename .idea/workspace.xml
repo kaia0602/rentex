@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/repository/StatisticsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/repository/StatisticsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/controller/PartnerStatisticsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/controller/PartnerStatisticsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/application.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +100,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.23892.409" />
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26094.121" />
+        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-IU-251.26094.121" />
       </set>
     </attachedChunks>
   </component>
@@ -114,6 +117,7 @@
       <workItem from="1754976553776" duration="4659000" />
       <workItem from="1755041502590" duration="8891000" />
       <workItem from="1755129717892" duration="13248000" />
+      <workItem from="1755562112072" duration="11254000" />
     </task>
     <servers />
   </component>

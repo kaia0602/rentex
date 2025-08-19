@@ -13,12 +13,11 @@ import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import api from "api/client"; // ✅ 수정됨
+import api from "api/client";
 
 const NOW = new Date();
 const YEARS = [NOW.getFullYear() - 1, NOW.getFullYear(), NOW.getFullYear() + 1];
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
-
 const nf = new Intl.NumberFormat("ko-KR");
 
 export default function AdminStatistics() {
@@ -82,6 +81,7 @@ export default function AdminStatistics() {
     }
   }, [year, month]);
 
+  // ✅ 최초 및 year/month 변경 시 자동 조회
   useEffect(() => {
     fetchData();
   }, [fetchData]);

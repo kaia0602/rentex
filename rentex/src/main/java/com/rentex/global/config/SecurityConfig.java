@@ -8,6 +8,7 @@ import com.rentex.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -84,6 +85,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
                         .requestMatchers("/uploads/**", "/oauth2/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/partner/statistics/**").permitAll()
                         .anyRequest().permitAll() // ⚠️ 배포 시엔 authenticated()로 바꿔도 됨
                 )
 

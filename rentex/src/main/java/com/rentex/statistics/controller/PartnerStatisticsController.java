@@ -4,18 +4,19 @@ package com.rentex.statistics.controller;
 import com.rentex.statistics.dto.PartnerMonthlyStatementDTO;
 import com.rentex.statistics.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/partners/statistics")
+@RequestMapping("/api/partner/statistics")
 @RequiredArgsConstructor
 public class PartnerStatisticsController {
 
     private final StatisticsService service;
 
-    @GetMapping("/{partnerId}")
+    @GetMapping("/me")
     public PartnerMonthlyStatementDTO monthlyByUserId(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal(expression = "id") Long userId,
             @RequestParam int year,
             @RequestParam int month
     ) {
