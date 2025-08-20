@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -8,6 +7,9 @@ import Footer from "examples/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
+
+// ✅ api 클라이언트
+import api from "api/client";
 
 function AdminPartners() {
   const [rows, setRows] = useState([]);
@@ -23,8 +25,8 @@ function AdminPartners() {
   ];
 
   useEffect(() => {
-    axios
-      .get("/api/admin/partners")
+    api
+      .get("/admin/partners")
       .then((res) => {
         const mappedRows = res.data.map((partner) => ({
           id: partner.id,
@@ -47,7 +49,7 @@ function AdminPartners() {
       .catch((err) => {
         console.error("업체 목록 불러오기 실패:", err);
       });
-  }, []);
+  }, [navigate]);
 
   return (
     <DashboardLayout>

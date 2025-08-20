@@ -13,5 +13,6 @@ public record RentalDetailResponseDto(
         LocalDate startDate,
         LocalDate endDate,
         LocalDateTime rentedAt,
-        LocalDateTime returnedAt
+        LocalDateTime returnedAt,
+        String thumbnailUrl   // ✅ 썸네일 추가
 ) {}

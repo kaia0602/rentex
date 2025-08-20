@@ -16,7 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+<<<<<<< HEAD
 import org.springframework.security.core.GrantedAuthority;
+=======
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+>>>>>>> origin/feature/rentaladd
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -34,7 +39,11 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+<<<<<<< HEAD
     private final EmailService emailService;
+=======
+    private final PasswordEncoder passwordEncoder; // ✅ 추가
+>>>>>>> origin/feature/rentaladd
 
     /**
      * 회원가입: 회원 생성 후 이메일 인증 메일 발송
@@ -82,6 +91,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req, HttpServletResponse res) {
         try {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/feature/user-auth
 
             // 이메일 인증 상태 확인
             User user = userService.findByEmail(req.getEmail())
@@ -93,10 +106,28 @@ public class AuthController {
             }
 
             // 1) 스프링 시큐리티로 인증 시도
+=======
+            // 🔍 디버깅 로그 추가
+            var userOpt = userService.findByEmail(req.getEmail());
+            if (userOpt.isPresent()) {
+                var u = userOpt.get();
+                log.info("로그인 시도: email={}", req.getEmail());
+                log.info("입력 pw={}, DB pw={}", req.getPassword(), u.getPassword());
+                log.info("matches={}", passwordEncoder.matches(req.getPassword(), u.getPassword()));
+            } else {
+                log.warn("해당 이메일 유저 없음: {}", req.getEmail());
+            }
+
+            // 1) 인증
+>>>>>>> origin/feature/rentaladd
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
             );
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/feature/user-auth
             // 2) Access Token 발급 (DB의 최신 Role 사용)
             String authorities = auth.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
@@ -115,19 +146,45 @@ public class AuthController {
             ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, refreshToken)
                     .httpOnly(true)
                     .secure(true) // 운영 환경에서는 true 권장
+=======
+            // 2) 이메일 추출 후 유저 조회
+            String email = ((UserDetails) auth.getPrincipal()).getUsername();
+            var user = userService.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+            // 3) 액세스/리프레시 발급 (ROLE 반영)
+            String access = jwtTokenProvider.createAccessTokenByUserId(user.getId(), user.getRole());
+            String refresh = jwtTokenProvider.createRefreshToken(user.getId());
+
+            // 4) 리프레시 → HttpOnly 쿠키
+            ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, refresh)
+                    .httpOnly(true)
+                    .secure(false)
+>>>>>>> origin/feature/rentaladd
                     .sameSite("Lax")
                     .path("/")
                     .maxAge(60L * 60L * 24L * 14L)
                     .build();
             res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
+<<<<<<< HEAD
             // 5) 액세스 토큰을 헤더와 바디 둘 다로 반환
             LoginResponseDTO responseBody = new LoginResponseDTO(accessToken, user.getId(), user.getName(), user.getRole());
+<<<<<<< HEAD
+=======
+=======
+            // 5) 액세스 토큰 헤더/바디 동시 반환
+>>>>>>> origin/feature/rentaladd
+>>>>>>> origin/feature/user-auth
             return ResponseEntity.ok()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                     .body(responseBody);
 
         } catch (Exception e) {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/feature/user-auth
             // 예외 발생 시, 전체 스택 트레이스를 로그로 남겨 원인 파악을 용이하게 합니다.
             log.error("로그인 처리 중 예외 발생", e);
             return ResponseEntity.status(401).body("로그인 실패: " + e.getMessage());
@@ -137,6 +194,15 @@ public class AuthController {
     /**
      * 액세스 토큰 재발급: 리프레시 쿠키 검증 → 새 액세스/리프레시 발급
      */
+=======
+            log.error("로그인 실패", e); // 전체 스택도 찍어보기
+            return ResponseEntity.status(401).body(Map.of("message", "로그인 실패: " + e.getMessage()));
+        }
+    }
+
+
+    /** 액세스 토큰 재발급: 리프레시 쿠키 검증 → 새 액세스/리프레시 발급 */
+>>>>>>> origin/feature/rentaladd
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(
             @CookieValue(value = REFRESH_COOKIE, required = false) String refreshCookie,
@@ -152,6 +218,7 @@ public class AuthController {
             }
 
             Long userId = jwtTokenProvider.getUserIdFromToken(refreshCookie);
+<<<<<<< HEAD
             User user = userService.findById(userId)
                     .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
 
@@ -168,6 +235,18 @@ public class AuthController {
 
             ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, newRefreshToken)
                     .httpOnly(true).secure(true).sameSite("Lax").path("/").maxAge(60L * 60L * 24L * 14L).build();
+=======
+            var user = userService.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+            // 새 액세스(ROLE 반영)
+            String newAccess = jwtTokenProvider.createAccessTokenByUserId(user.getId(), user.getRole());
+
+            // (선택) 리프레시 회전
+            String newRefresh = jwtTokenProvider.createRefreshToken(user.getId());
+            ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, newRefresh)
+                    .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(60L*60L*24L*14L).build();
+>>>>>>> origin/feature/rentaladd
             res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             return ResponseEntity.ok()

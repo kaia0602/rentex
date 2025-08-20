@@ -1,6 +1,7 @@
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
+import PublicItems from "layouts/rentals/publicItems";
+import PublicItemDetail from "layouts/rentals/publicItemDetail";
 import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
@@ -11,12 +12,13 @@ import SignOut from "layouts/authentication/sign-out";
 
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 
-// 유저관련
+// 유저 관련
 import UserDashboard from "layouts/user";
 import MyPageHome from "layouts/user/MyPageHome";
 import EditProfile from "layouts/user/EditProfile";
 import ItemList from "layouts/user/ItemList";
 import ItemDetail from "layouts/user/ItemDetail";
+import RentalPay from "layouts/user/RentalPay";
 import RentalRequest from "layouts/user/RentalRequest";
 import MyRentals from "layouts/user/MyRentals";
 import RentalDetail from "layouts/user/RentalDetail";
@@ -28,6 +30,7 @@ import PaymentHistory from "layouts/user/PaymentHistory";
 import PartnerDashboard from "layouts/partner";
 import PartnerItemList from "layouts/partner/items";
 import PartnerItemDetail from "layouts/partner/items/ItemDetail";
+import PartnerRentalManage from "layouts/partner/rentals/manage";
 import PartnerRentalRequests from "layouts/partner/rentals";
 import PartnerRentalDetail from "layouts/partner/rentals/RentalDetail";
 import PartnerStatistics from "layouts/partner/statistics";
@@ -55,7 +58,9 @@ import PartnerDetail from "layouts/admin/PartnerDetail";
 import Icon from "@mui/material/Icon";
 
 const routes = [
-  // 공통 테스트용
+  // =====================
+  // 공통 (모든 Role 접근 가능)
+  // =====================
   {
     type: "collapse",
     name: "Home",
@@ -63,15 +68,26 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
     name: "장비대여",
-    key: "tables",
+    key: "items",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
-    component: <Tables />,
+    route: "/items",
+    component: <PublicItems />,
   },
+  {
+    type: "collapse",
+    name: "장비 상세 (공용)",
+    key: "public-item-detail",
+    route: "/items/:id",
+    component: <PublicItemDetail />,
+    noCollapse: true,
+    display: false,
+  },
+
   {
     type: "collapse",
     name: "결제관리",
@@ -79,6 +95,7 @@ const routes = [
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/billing",
     component: <Billing />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -87,6 +104,7 @@ const routes = [
     icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
     route: "/rtl",
     component: <RTL />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -95,6 +113,7 @@ const routes = [
     icon: <Icon fontSize="small">notifications</Icon>,
     route: "/notifications",
     component: <Notifications />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -103,16 +122,10 @@ const routes = [
     icon: <Icon fontSize="small">person</Icon>,
     route: "/profile",
     component: <Profile />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
-  // 패널티 용
-  {
-    type: "collapse",
-    name: "penalty",
-    key: "penalty",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/penalty",
-    component: <Profile />,
-  },
+
+  // 인증 관련
   {
     type: "collapse",
     name: "로그인",
@@ -120,6 +133,7 @@ const routes = [
     icon: <Icon fontSize="small">login</Icon>,
     route: "/authentication/sign-in",
     component: <SignIn />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -128,8 +142,10 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/sign-up",
     component: <SignUp />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
 
+<<<<<<< HEAD
   {
     type: "collapse",
     name: "로그아웃",
@@ -139,7 +155,11 @@ const routes = [
     component: <SignOut />,
   },
 
+=======
+  // =====================
+>>>>>>> origin/feature/rentaladd
   // 유저 관련
+  // =====================
   {
     type: "title",
     title: "유저 관련",
@@ -152,6 +172,7 @@ const routes = [
     icon: <Icon fontSize="small">person</Icon>,
     route: "/test/user",
     component: <UserDashboard />,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -160,6 +181,7 @@ const routes = [
     icon: <Icon fontSize="small">home</Icon>,
     route: "/mypage",
     component: <MyPageHome />,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -169,32 +191,37 @@ const routes = [
     component: <EditProfile />,
     noCollapse: true,
     display: false,
-  },
-  {
-    type: "collapse",
-    name: "장비 목록(사용자)",
-    key: "user-items",
-    icon: <Icon fontSize="small">inventory</Icon>,
-    route: "/items",
-    component: <ItemList />,
-  },
-  {
-    type: "collapse",
-    name: "장비 상세 (숨김용)",
-    key: "item-detail",
-    route: "/items/:id",
-    component: <ItemDetail />,
-    noCollapse: true,
-    display: false,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
     name: "대여 요청 (숨김용)",
     key: "rental-request",
-    route: "/rentals/request",
+    route: "/rentals/request/:id",
     component: <RentalRequest />,
     noCollapse: true,
     display: false,
+    // role: ["USER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "대여 결제",
+    key: "rental-pay",
+    route: "/rentals/pay",
+    component: <RentalPay />,
+    noCollapse: true,
+    display: false,
+    // role: ["USER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "대여 상세",
+    key: "rental-detail",
+    route: "/mypage/rentals/:id",
+    component: <RentalDetail />,
+    noCollapse: true,
+    display: false,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -203,6 +230,7 @@ const routes = [
     icon: <Icon fontSize="small">list_alt</Icon>,
     route: "/mypage/rentals",
     component: <MyRentals />,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -212,6 +240,7 @@ const routes = [
     component: <RentalDetail />,
     noCollapse: true,
     display: false,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -220,6 +249,7 @@ const routes = [
     icon: <Icon fontSize="small">gavel</Icon>,
     route: "/mypage/penalty",
     component: <PenaltyPage />,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -229,6 +259,7 @@ const routes = [
     component: <PayPenalty />,
     noCollapse: true,
     display: false,
+    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -237,9 +268,12 @@ const routes = [
     icon: <Icon fontSize="small">credit_score</Icon>,
     route: "/mypage/payments",
     component: <PaymentHistory />,
+    // role: ["USER", "ADMIN"],
   },
 
+  // =====================
   // 파트너 관련
+  // =====================
   {
     type: "title",
     title: "파트너 관련",
@@ -252,6 +286,7 @@ const routes = [
     icon: <Icon fontSize="small">business</Icon>,
     route: "/test/partner",
     component: <PartnerDashboard />,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -260,6 +295,7 @@ const routes = [
     icon: <Icon fontSize="small">add_box</Icon>,
     route: "/partner/items/new",
     component: <NewItemForm />,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -268,6 +304,7 @@ const routes = [
     icon: <Icon fontSize="small">inventory</Icon>,
     route: "/partner/items",
     component: <PartnerItemList />,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -277,6 +314,16 @@ const routes = [
     component: <PartnerItemDetail />,
     noCollapse: true,
     display: false,
+    // role: ["PARTNER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "대여 전체 관리",
+    key: "partner-rental-manage",
+    icon: <Icon fontSize="small">manage_search</Icon>,
+    route: "/partner/rentals/manage",
+    component: <PartnerRentalManage />,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -285,6 +332,7 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/partner/rentals",
     component: <PartnerRentalRequests />,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -294,6 +342,7 @@ const routes = [
     component: <PartnerRentalDetail />,
     noCollapse: true,
     display: false,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -302,6 +351,7 @@ const routes = [
     icon: <Icon fontSize="small">bar_chart</Icon>,
     route: "/partner/statistics",
     component: <PartnerStatistics />,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -310,6 +360,7 @@ const routes = [
     icon: <Icon fontSize="small">settings</Icon>,
     route: "/partner/settings",
     component: <PartnerSettings />,
+    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -318,9 +369,12 @@ const routes = [
     icon: <Icon fontSize="small">notifications</Icon>,
     route: "/partner/notifications",
     component: <PartnerNotifications />,
+    // role: ["PARTNER", "ADMIN"],
   },
 
+  // =====================
   // 관리자 관련
+  // =====================
   {
     type: "title",
     title: "관리자 관련",
@@ -333,6 +387,7 @@ const routes = [
     icon: <Icon fontSize="small">admin_panel_settings</Icon>,
     route: "/test/admin",
     component: <AdminDashboard />,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -341,7 +396,7 @@ const routes = [
     route: "/admin/rentals",
     icon: <i className="material-icons">assignment</i>,
     component: <AdminRentals />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -350,7 +405,7 @@ const routes = [
     route: "/admin/returns",
     icon: <i className="material-icons">assignment_return</i>,
     component: <AdminReturns />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -359,7 +414,7 @@ const routes = [
     route: "/admin/items",
     icon: <i className="material-icons">inventory</i>,
     component: <AdminItems />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -368,7 +423,7 @@ const routes = [
     route: "/admin/partners",
     icon: <i className="material-icons">business</i>,
     component: <AdminPartners />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -377,6 +432,7 @@ const routes = [
     icon: <Icon fontSize="small">settings</Icon>,
     route: "/admin/partners",
     component: <PartnerDetail />,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -385,7 +441,7 @@ const routes = [
     route: "/admin/penalties",
     icon: <i className="material-icons">report</i>,
     component: <AdminPenalties />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -394,7 +450,7 @@ const routes = [
     route: "/admin/statistics",
     icon: <i className="material-icons">bar_chart</i>,
     component: <AdminStatistics />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -403,7 +459,7 @@ const routes = [
     route: "/admin/receipts",
     icon: <i className="material-icons">check_circle</i>,
     component: <AdminReceipts />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -412,7 +468,7 @@ const routes = [
     route: "/admin/users",
     icon: <i className="material-icons">group</i>,
     component: <AdminUsers />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -422,6 +478,7 @@ const routes = [
     component: <UserDetail />,
     noCollapse: true,
     display: false,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -431,6 +488,7 @@ const routes = [
     component: <AdminPenaltyDetail />,
     noCollapse: true,
     display: false,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -440,6 +498,7 @@ const routes = [
     component: <PartnerStatisticsDetail />,
     noCollapse: true,
     display: false,
+    // role: ["ADMIN"],
   },
   {
     type: "collapse",
@@ -448,14 +507,19 @@ const routes = [
     route: "/admin/statements/pdf",
     icon: <i className="material-icons">picture_as_pdf</i>,
     component: <StatementPdfPage />,
-    noCollapse: true,
+    // role: ["ADMIN"],
   },
+
+  // =====================
+  // 기타 (OAuth Redirect 등)
+  // =====================
   {
     type: "",
     name: "OAuth Redirect",
     key: "oauth-redirect",
     route: "/oauth-redirect",
     component: <OAuthRedirect />,
+    // role: ["USER", "PARTNER", "ADMIN"],
   },
 ];
 

@@ -3,6 +3,8 @@ package com.rentex.item.dto;
 import com.rentex.item.domain.Item;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,6 +25,9 @@ public class ItemResponseDTO {
     private String subCategoryName;
     private String partnerName;
 
+    // 추가된 필드
+    private String detailDescription; // 상세 설명
+    private List<String> detailImages; // 상세 이미지 리스트
 
     public static ItemResponseDTO fromEntity(Item item) {
         return ItemResponseDTO.builder()
@@ -39,6 +44,8 @@ public class ItemResponseDTO {
                 .categoryName(item.getCategory() != null ? item.getCategory().getName() : "-")
                 .subCategoryName(item.getSubCategory() != null ? item.getSubCategory().getName() : "-")
                 .partnerName(item.getPartner() != null ? item.getPartner().getName() : "-")
+                .detailDescription(item.getDetailDescription())
+                .detailImages(item.getDetailImages())
                 .build();
     }
 }

@@ -55,9 +55,30 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByEmail(attributes.getEmail())
+<<<<<<< HEAD
                 .map(entity -> entity.update(attributes.getName())) // 기존 회원이면 이름 업데이트
                 .orElse(attributes.toEntity()); // 신규 회원이면 새로 생성
 
         return userRepository.save(user);
     }
 }
+=======
+                .map(entity -> {
+                    // 기존 유저라면 이름/닉네임만 업데이트
+                    entity.updateNickname(attributes.getName());
+                    return entity;
+                })
+                .orElse(User.builder()
+                        .email(attributes.getEmail())
+                        .password("SOCIAL_LOGIN_PASSWORD") // ✅ 소셜 로그인 전용 비번 표시
+                        .name(attributes.getName())
+                        .nickname(attributes.getName()) // 닉네임은 임시로 name 사용
+                        .role("USER") // 기본 USER
+                        .build()
+                );
+
+        return userRepository.save(user);
+    }
+
+}
+>>>>>>> origin/feature/rentaladd

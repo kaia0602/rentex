@@ -24,19 +24,19 @@ public class PaymentController {
 
     @GetMapping("/payments")
     public List<PaymentResponseDTO> getPayments(Principal principal) {
-        User user = userService.getUserByEmail(principal.getName());
+        User user = userService.getUserById(Long.parseLong(principal.getName()));
         return paymentService.getPaymentHistory(user).stream()
                 .map(PaymentResponseDTO::from)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @PostMapping("/pay-penalty")
-    public PaymentResponseDTO payPenalty(@RequestParam int amount,
-                                      @RequestParam PaymentMethod method,
-                                      Principal principal) {
-        User user = userService.getUserByEmail(principal.getName());
-        Payment payment = paymentService.processPenaltyPayment(user, amount, method);
-        return PaymentResponseDTO.from(payment);
+    public PaymentResponseDTO payPenalty(
+            @RequestParam PaymentMethod method,
+            Principal principal
+    ) {
+        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        return PaymentResponseDTO.from(paymentService.processPenaltyPayment(user, method));
     }
 }
 

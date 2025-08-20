@@ -1,74 +1,114 @@
--- 💣 기존 데이터 삭제 방지 (원하면 DELETE 문 주석 해제 가능)
+/* --- 선택: 기존 데이터 삭제 방지 --- */
+/* 필요하면 주석 해제해서 비우세요
+-- DELETE FROM rental_history;
 -- DELETE FROM rental;
+-- DELETE FROM item_detail_images;
 -- DELETE FROM item;
--- DELETE FROM user;
--- DELETE FROM partner;
+-- DELETE FROM users;
 -- DELETE FROM category;
+-- DELETE FROM sub_category;
+*/
 
--- 0. 카테고리
+/* --- 0) 마이그레이션 안전장치 ---------------------------- */
 
--- ALTER TABLE category AUTO_INCREMENT = 1;
-ALTER TABLE category ADD UNIQUE (name);
+/* 0-1. user 테이블만 있고 users 가 없으면 RENAME */
+SET @has_users := (SELECT COUNT(*) FROM information_schema.tables
+                   WHERE table_schema = DATABASE() AND table_name = 'users');
+SET @has_user  := (SELECT COUNT(*) FROM information_schema.tables
+                   WHERE table_schema = DATABASE() AND table_name = 'user');
 
--- ALTER TABLE sub_category AUTO_INCREMENT = 1;
-ALTER TABLE sub_category ADD UNIQUE (category_id, name);
+SET @sql := IF(@has_users = 0 AND @has_user = 1,
+               'RENAME TABLE `user` TO `users`',
+               'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
 
-INSERT IGNORE INTO category (name) VALUES
-                                ('촬영/미디어'), ('캠핑/레저'), ('행사/전시/무대'), ('가전/생활/사무'), ('기타/기타장비');
+/* 0-2. 두 테이블이 동시에 있으면 `user` → `users` 로 데이터만 복사(중복 무시) */
+SET @has_users := (SELECT COUNT(*) FROM information_schema.tables
+                   WHERE table_schema = DATABASE() AND table_name = 'users');
+SET @has_user  := (SELECT COUNT(*) FROM information_schema.tables
+                   WHERE table_schema = DATABASE() AND table_name = 'user');
+
+SET @sql := IF(@has_users = 1 AND @has_user = 1,
+'INSERT IGNORE INTO `users` (id, email, password, name, nickname, role, created_at, updated_at)
+ SELECT id, email, password, name, nickname, role, created_at, updated_at FROM `user`',
+'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+/* 0-3. `item.partner_id` 가 아직 `partner`를 참조하면 FK 제거 후 `users` 로 연결 */
+SET @fk_partner := (SELECT CONSTRAINT_NAME
+                    FROM information_schema.key_column_usage
+                    WHERE table_schema = DATABASE()
+                      AND table_name = 'item'
+                      AND column_name = 'partner_id'
+                      AND referenced_table_name = 'partner'
+                    LIMIT 1);
+
+SET @sql := IF(@fk_partner IS NOT NULL,
+               CONCAT('ALTER TABLE `item` DROP FOREIGN KEY ', @fk_partner),
+               'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+/* 이미 users 로 붙어있는지 확인하고 없으면 FK 추가 */
+SET @has_fk_users := (SELECT COUNT(*)
+                      FROM information_schema.key_column_usage
+                      WHERE table_schema = DATABASE()
+                        AND table_name   = 'item'
+                        AND column_name  = 'partner_id'
+                        AND referenced_table_name = 'users');
+
+SET @sql := IF(@has_fk_users = 0,
+'ALTER TABLE `item`
+   ADD CONSTRAINT `fk_item_partner_users`
+   FOREIGN KEY (`partner_id`) REFERENCES `users`(`id`)
+   ON UPDATE CASCADE ON DELETE RESTRICT',
+'SELECT 1');
+PREPARE stmt FROM @sql; EXECUTE stmt; DEALLOCATE PREPARE stmt;
+
+/* --- 1) 카테고리/서브카: 인덱스 + 더미 데이터 ------------- */
+CREATE UNIQUE INDEX IF NOT EXISTS uq_category_name
+    ON category (name);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_sub_category_catid_name
+    ON sub_category (category_id, name);
+
+INSERT IGNORE INTO category (id, name) VALUES
+  (1,'촬영/미디어'), (2,'캠핑/레저'), (3,'행사/전시/무대'), (4,'가전/생활/사무'), (5,'기타/기타장비');
 
 INSERT IGNORE INTO sub_category (category_id, name) VALUES
-                                                 (1, '카메라'), (1, '렌즈'), (1, '삼각대'), (1, '짐벌'), (1, '조명'), (1, '마이크'), (1, '드론'), (1, '오디오 레코더'), (1, '모니터'),
-                                                 (2, '텐트'), (2, '캠핑의자/테이블'), (2, '침낭/매트'), (2, '버너/그릴'), (2, '전기쿨러'), (2, '랜턴'), (2, '캠핑박스'), (2, '야외조리도구'),
-                                                 (3, '음향 시스템'), (3, '조명 시스템'), (3, '배너/입간판'), (3, '의자/테이블'), (3, '텐트/부스'), (3, '무대 구조물'), (3, '전시 패널'),
-                                                 (4, '노트북'), (4, '모니터'), (4, '청소기'), (4, '빔프로젝터'), (4, '에어컨/냉장고'), (4, '프린터'), (4, '의자/책상'),
-                                                 (5, '공구세트'), (5, '디지털계측기'), (5, '보호장비'), (5, '차량용 보조배터리'), (5, '기타');
+ (1,'카메라'),(1,'렌즈'),(1,'삼각대'),(1,'짐벌'),(1,'조명'),(1,'마이크'),(1,'드론'),(1,'오디오 레코더'),(1,'모니터'),
+ (2,'텐트'),(2,'캠핑의자/테이블'),(2,'침낭/매트'),(2,'버너/그릴'),(2,'전기쿨러'),(2,'랜턴'),(2,'캠핑박스'),(2,'야외조리도구'),
+ (3,'음향 시스템'),(3,'조명 시스템'),(3,'배너/입간판'),(3,'의자/테이블'),(3,'텐트/부스'),(3,'무대 구조물'),(3,'전시 패널'),
+ (4,'노트북'),(4,'모니터'),(4,'청소기'),(4,'빔프로젝터'),(4,'에어컨/냉장고'),(4,'프린터'),(4,'의자/책상'),
+ (5,'공구세트'),(5,'디지털계측기'),(5,'보호장비'),(5,'차량용 보조배터리'),(5,'기타');
 
--- 1. 사용자 (파트너 먼저)
-INSERT IGNORE INTO user (id, email, password, name, nickname, role, created_at, updated_at) VALUES
-    (1,  'partner1@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '카메라랜드',   '파트너1', 'PARTNER', NOW(), NOW()),
-    (2,  'partner2@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '렌즈마켓',     '파트너2', 'PARTNER', NOW(), NOW()),
-    (3,  'partner3@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '삼각대월드',   '파트너3', 'PARTNER', NOW(), NOW()),
-    (4,  'partner4@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '짐벌코리아',   '파트너4', 'PARTNER', NOW(), NOW()),
-    (5,  'partner5@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '조명프라자',   '파트너5', 'PARTNER', NOW(), NOW()),
-    (6,  'partner6@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '사운드렌탈',   '파트너6', 'PARTNER', NOW(), NOW()),
-    (7,  'partner7@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '드론익스프레스','파트너7', 'PARTNER', NOW(), NOW()),
-    (8,  'partner8@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '오디오샵',     '파트너8', 'PARTNER', NOW(), NOW()),
-    (9,  'partner9@rentex.com',  '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '모니터존',     '파트너9', 'PARTNER', NOW(), NOW()),
-    (10, 'partner10@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '캠핑파크',     '파트너10','PARTNER', NOW(), NOW()),
-    (11, 'partner11@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '캠핑스토리',   '파트너11','PARTNER', NOW(), NOW()),
-    (12, 'partner12@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '버너하우스',   '파트너12','PARTNER', NOW(), NOW()),
-    (13, 'partner13@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '쿨러월드',     '파트너13','PARTNER', NOW(), NOW()),
-    (14, 'partner14@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '랜턴마켓',     '파트너14','PARTNER', NOW(), NOW()),
-    (15, 'partner15@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '행사렌탈컴퍼니','파트너15','PARTNER', NOW(), NOW()),
-    (16, 'partner16@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '무대마스터',   '파트너16','PARTNER', NOW(), NOW()),
-    (17, 'partner17@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '전시스토어',   '파트너17','PARTNER', NOW(), NOW()),
-    (18, 'partner18@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '오피스렌트',   '파트너18','PARTNER', NOW(), NOW()),
-    (19, 'partner19@rentex.com', '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '디지털툴스',   '파트너19','PARTNER', NOW(), NOW()),
-    -- 일반 유저/관리자는 충돌 피하려고 100번대로
-    (100,'user1@rentex.com',     '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '홍길동', '길동이', 'USER',  NOW(), NOW()),
-    (101,'admin@rentex.com',     '$2a$10$Dow1dZegFfNyQ2Q8qYMK8u9B9m8cPQgE1zLOKMGdCjHh5QiNvxtlW', '관리자', '운영자', 'ADMIN', NOW(), NOW());
-
--- 2. 파트너 (name 컬럼 제거 / id는 위 user와 동일해야 함)
-INSERT IGNORE INTO partner (id, business_no, contact_email, contact_phone) VALUES
-(1,  '641-40-98183', '카메라랜드@rentex.com', '010-2403-9141'),
-(2,  '234-60-36845', '렌즈마켓@rentex.com',   '010-2984-7665'),
-(3,  '321-54-82271', '삼각대월드@rentex.com', '010-3235-2235'),
-(4,  '910-78-68005', '짐벌코리아@rentex.com', '010-3522-4949'),
-(5,  '451-29-11457', '조명프라자@rentex.com', '010-3272-6701'),
-(6,  '662-85-98827', '사운드렌탈@rentex.com', '010-3476-1486'),
-(7,  '681-64-28328', '드론익스프레스@rentex.com','010-6822-7826'),
-(8,  '788-22-25180', '오디오샵@rentex.com',   '010-1193-4405'),
-(9,  '291-31-89216', '모니터존@rentex.com',   '010-7444-8971'),
-(10, '963-26-91658', '캠핑파크@rentex.com',   '010-3935-3043'),
-(11, '248-41-82882', '캠핑스토리@rentex.com', '010-7904-9164'),
-(12, '236-15-47813', '버너하우스@rentex.com', '010-9538-1655'),
-(13, '524-13-83512', '쿨러월드@rentex.com',   '010-4574-6264'),
-(14, '173-16-19118', '랜턴마켓@rentex.com',   '010-2093-8971'),
-(15, '820-60-32452', '행사렌탈컴퍼니@rentex.com', '010-1670-9465'),
-(16, '774-13-73620', '무대마스터@rentex.com', '010-9395-5520'),
-(17, '806-94-64563', '전시스토어@rentex.com', '010-3199-7326'),
-(18, '829-82-39334', '오피스렌트@rentex.com', '010-2219-1199'),
-(19, '217-17-79952', '디지털툴스@rentex.com', '010-7136-4148');
+/* --- 2) 사용자 + 파트너(사업자 정보는 users에 저장) ------ */
+/* bcrypt 샘플 패스워드 그대로 유지 */
+INSERT IGNORE INTO `users`
+  (id, email, password, name, nickname, role,
+   business_no, contact_email, contact_phone,
+   created_at, updated_at)
+VALUES
+ (1,'partner1@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','카메라랜드','파트너1','PARTNER','641-40-98183','카메라랜드@rentex.com','010-2403-9141',NOW(),NOW()),
+ (2,'partner2@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','렌즈마켓','파트너2','PARTNER','234-60-36845','렌즈마켓@rentex.com','010-2984-7665',NOW(),NOW()),
+ (3,'partner3@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','삼각대월드','파트너3','PARTNER','321-54-82271','삼각대월드@rentex.com','010-3235-2235',NOW(),NOW()),
+ (4,'partner4@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','짐벌코리아','파트너4','PARTNER','910-78-68005','짐벌코리아@rentex.com','010-3522-4949',NOW(),NOW()),
+ (5,'partner5@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','조명프라자','파트너5','PARTNER','451-29-11457','조명프라자@rentex.com','010-3272-6701',NOW(),NOW()),
+ (6,'partner6@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','사운드렌탈','파트너6','PARTNER','662-85-98827','사운드렌탈@rentex.com','010-3476-1486',NOW(),NOW()),
+ (7,'partner7@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','드론익스프레스','파트너7','PARTNER','681-64-28328','드론익스프레스@rentex.com','010-6822-7826',NOW(),NOW()),
+ (8,'partner8@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','오디오샵','파트너8','PARTNER','788-22-25180','오디오샵@rentex.com','010-1193-4405',NOW(),NOW()),
+ (9,'partner9@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','모니터존','파트너9','PARTNER','291-31-89216','모니터존@rentex.com','010-7444-8971',NOW(),NOW()),
+ (10,'partner10@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','캠핑파크','파트너10','PARTNER','963-26-91658','캠핑파크@rentex.com','010-3935-3043',NOW(),NOW()),
+ (11,'partner11@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','캠핑스토리','파트너11','PARTNER','248-41-82882','캠핑스토리@rentex.com','010-7904-9164',NOW(),NOW()),
+ (12,'partner12@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','버너하우스','파트너12','PARTNER','236-15-47813','버너하우스@rentex.com','010-9538-1655',NOW(),NOW()),
+ (13,'partner13@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','쿨러월드','파트너13','PARTNER','524-13-83512','쿨러월드@rentex.com','010-4574-6264',NOW(),NOW()),
+ (14,'partner14@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','랜턴마켓','파트너14','PARTNER','173-16-19118','랜턴마켓@rentex.com','010-2093-8971',NOW(),NOW()),
+ (15,'partner15@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','행사렌탈컴퍼니','파트너15','PARTNER','820-60-32452','행사렌탈컴퍼니@rentex.com','010-1670-9465',NOW(),NOW()),
+ (16,'partner16@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','무대마스터','파트너16','PARTNER','774-13-73620','무대마스터@rentex.com','010-9395-5520',NOW(),NOW()),
+ (17,'partner17@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','전시스토어','파트너17','PARTNER','806-94-64563','전시스토어@rentex.com','010-3199-7326',NOW(),NOW()),
+ (18,'partner18@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','오피스렌트','파트너18','PARTNER','829-82-39334','오피스렌트@rentex.com','010-2219-1199',NOW(),NOW()),
+ (19,'partner19@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','디지털툴스','파트너19','PARTNER','217-17-79952','디지털툴스@rentex.com','010-7136-4148',NOW(),NOW()),
+ (100,'user1@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','홍길동','길동이','USER',NULL,NULL,NULL,NOW(),NOW()),
+ (101,'admin@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','관리자','운영자','ADMIN',NULL,NULL,NULL,NOW(),NOW());
 
 -- 3. 장비
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (1, 'Canon EOS R6', '카메라 장비 - Canon EOS R6', 9, 'AVAILABLE', 1, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 1, 1, 7373, 'https://upload.wikimedia.org/wikipedia/commons/4/47/Canon_EOS_R6_15.jpg');
@@ -246,6 +286,35 @@ INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (173, '블랙앤데커 점프팩', '차량용 보조배터리 장비 - 블랙앤데커 점프팩', 9, 'AVAILABLE', 2, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 32293, 'https://manuals.plus/wp-content/uploads/2021/08/BLACK-DECKER-Jump-Starter-featured-image.jpg');
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (174, 'LG 배터리팩', '차량용 보조배터리 장비 - LG 배터리팩', 3, 'AVAILABLE', 3, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 45442, 'https://e-power.co.kr/web/product/big/202412/7387993879ca1d292b37f8bfbbc1e144.jpg');
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (175, '루메나 차량용', '차량용 보조배터리 장비 - 루메나 차량용', 9, 'UNAVAILABLE', 4, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 12460, 'https://lumena.co.kr/web/product/big/202408/eeb8bff046c80fa095007b5bb270e587.png');
+
+/* 상세 설명 (긴 텍스트) 채우기 */
+UPDATE item
+SET detail_description = CONCAT(
+        name, ' — 렌탈용 상세 안내\n\n',
+        '• 핵심 특징: 안정적인 성능, 직관적인 조작성, 현장 대응력을 갖춘 장비입니다. ',
+        '사진/영상/행사 기록 등 다양한 목적에 활용 가능하며 초보자도 쉽게 운용할 수 있습니다. ',
+        '장시간 사용 시 발열 관리를 위해 환기와 휴지 시간을 권장합니다.\n',
+        '• 기본 구성: 본체, 배터리 2개, 충전 케이블(또는 충전기), 휴대용 파우치(모델에 따라 다를 수 있음).\n',
+        '• 권장 용도: 브이로그/인터뷰/제품 촬영/행사 기록/유튜브 콘텐츠 제작 등.\n',
+        '• 사용 팁: 전원 투입 전 저장매체(메모리/카드/SSD) 잔여 용량 확인, 펌웨어 버전 확인, ',
+        '촬영 모드(해상도·프레임/노출/화이트밸런스) 사전 프리셋 저장 권장.\n',
+        '• 주의 사항: 방진·방습 환경이 아닌 곳에서의 물기/먼지 유입 주의, ',
+        '강한 충격/자외선/고온 보관 금지, 반납 전 저장매체 포맷 금지(데이터 백업 후 반납 권장).\n',
+        '• 호환성: 브랜드·마운트·전원 규격이 상이할 수 있으니, 기존 보유 액세서리와의 호환 여부를 사전 확인해 주세요.\n\n',
+        '※ 상세 스펙 및 구성은 모델·출고 시기에 따라 일부 다를 수 있습니다. 필요한 경우 사전 문의 바랍니다.'
+                         )
+WHERE (detail_description IS NULL OR detail_description = '');
+
+/* 1) 상세 이미지가 없는 아이템에만 기본 이미지 1장 추가 */
+INSERT INTO item_detail_images (item_id, image_url)
+SELECT i.id, '/uploads/detailimage.png'
+FROM item i
+         LEFT JOIN item_detail_images di ON i.id = di.item_id
+WHERE di.item_id IS NULL;
+
+/* 2) URL 경로 정리 (localhost 제거 → 상대경로만 유지) */
+UPDATE item_detail_images
+SET image_url = REPLACE(image_url, 'http://localhost:8080', '');
 
 -- 서버실행 후
 -- UPDATE item

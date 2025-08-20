@@ -7,6 +7,11 @@ import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
+<<<<<<< HEAD
+=======
+import api from "api/client"; // axios 인스턴스
+import { setToken } from "utils/auth"; // ✅ 토큰 저장 유틸
+>>>>>>> origin/feature/rentaladd
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 import NaverIcon from "assets/images/icons/NaverIcon";
 import api from "api/client";
@@ -38,6 +43,7 @@ function Basic() {
     });
     const closeSnackbar = () => setSnackbar({...snackbar, open: false});
 
+<<<<<<< HEAD
     const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
     const onChange = (e) => {
@@ -45,6 +51,41 @@ function Basic() {
         setForm((prev) => ({...prev, [name]: value}));
         setLoginFailed(false);
     };
+=======
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    // ✅ 여기서 form 값 확인
+    console.log("login 요청 DTO:", form);
+
+    try {
+      setLoading(true);
+      const res = await api.post("/auth/login", {
+        email: form.email,
+        password: form.password,
+      });
+
+      // ✅ 응답 필드 우선순위: accessToken → token → 전체 데이터
+      const token = res.data?.accessToken || res.data?.token || res.data;
+      if (token) {
+        setToken(token); // ✅ 통일된 키로 저장
+        alert("로그인 성공!");
+        nav("/"); // 필요하면 "/dashboard"로 변경
+      } else {
+        alert("로그인 실패: 토큰이 없습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      const msg =
+        err.response?.data?.message ||
+        JSON.stringify(err.response?.data) ||
+        "로그인 중 오류가 발생했습니다.";
+      alert(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+>>>>>>> origin/feature/rentaladd
 
     const onResetFormChange = (e) => {
         const {name, value} = e.target;
@@ -52,6 +93,7 @@ function Basic() {
         setResetError("");
     };
 
+<<<<<<< HEAD
     // ✅ 이메일 인증 완료 알림 로직 추가
     useEffect(() => {
         if (searchParams.get("verified") === "true") {
@@ -63,6 +105,25 @@ function Basic() {
             });
         }
     }, [searchParams]);
+=======
+            {/* Google OAuth 버튼 */}
+            <MDBox mt={2}>
+              <MDButton
+                variant="outlined"
+                color="info"
+                fullWidth
+                onClick={() => {
+                  // API_BASE에서 /api 부분 제거
+                  const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
+                  const serverBase = apiBase.replace(/\/api$/, "");
+                  window.location.href = `${serverBase}/oauth2/authorization/google`;
+                }}
+              >
+                <GoogleIcon sx={{ mr: 1 }} />
+                Google로 로그인
+              </MDButton>
+            </MDBox>
+>>>>>>> origin/feature/rentaladd
 
     const onSubmit = async (e) => {
         e.preventDefault();

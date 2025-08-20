@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "api/client"; // ✅ 수정됨
 
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -23,7 +23,7 @@ function PayPenalty() {
 
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
-  const [total, setTotal] = useState(0);
+  const [penalty, setPenalty] = useState(null);
   const [agree, setAgree] = useState(false);
   const [paying, setPaying] = useState(false);
 
@@ -32,33 +32,47 @@ function PayPenalty() {
   const [toastSeverity, setToastSeverity] = useState("success");
 
   const unitPrice = 10000;
-  const amount = useMemo(() => total * unitPrice, [total]);
 
+  // ── point를 어떤 응답이 와도 읽도록 정규화
+  const points = useMemo(() => {
+    if (!penalty) return 0;
+    if (typeof penalty.point === "number") return penalty.point;
+    if (typeof penalty.score === "number") return penalty.score;
+    if (typeof penalty.totalPoints === "number") return penalty.totalPoints;
+    return 0;
+  }, [penalty]);
+
+  const amount = useMemo(() => points * unitPrice, [points]);
+
+  // 벌점 정보 불러오기
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
         setLoading(true);
         setErr(null);
-        const res = await axios.get("/api/penalties/me", {
-          withCredentials: true,
-          validateStatus: () => true,
-        });
+        const res = await api.get("/penalties/me");
         if (!alive) return;
-        if (res.status !== 200) throw Object.assign(new Error("fetch failed"), { response: res });
-        const data = res.data;
-        const points =
-          Number.isFinite(data?.totalPoints) && data.totalPoints >= 0
-            ? data.totalPoints
-            : Array.isArray(data?.histories)
-            ? data.histories.length
-            : 0;
-        setTotal(points);
+
+        if (res.status === 401) {
+          navigate("/authentication/sign-in");
+          return;
+        }
+        if (res.status !== 200) throw new Error(`API ${res.status}`);
+
+        const raw = res.data;
+        if (Array.isArray(raw)) {
+          setPenalty({ point: raw[0]?.point ?? raw[0]?.score ?? raw[0]?.totalPoints ?? 0 });
+        } else if (raw && typeof raw === "object" && "totalPoints" in raw) {
+          setPenalty({ point: raw.totalPoints });
+        } else {
+          setPenalty(raw);
+        }
       } catch (e) {
         if (!alive) return;
-        console.error("GET /api/penalties/me error:", e?.response?.status, e?.response?.data);
+        console.error("GET /penalties/me error:", e);
         setErr(e);
-        setTotal(0);
+        setPenalty(null);
       } finally {
         if (alive) setLoading(false);
       }
@@ -66,32 +80,42 @@ function PayPenalty() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [navigate]);
 
+  // 결제/벌점 초기화
   const handlePay = async () => {
     try {
       setPaying(true);
-      await new Promise((r) => setTimeout(r, 1200));
-      await axios.post("/api/mypage/pay-penalty", null, {
-        withCredentials: true,
-        params: { amount, method: "CARD" },
-        validateStatus: () => true,
-      });
-      setToastSeverity("success");
-      setToastMsg("결제가 완료되었습니다. 벌점이 초기화됩니다.");
+      setToastSeverity("info");
+      setToastMsg("결제 진행 중... 잠시만 기다려주세요.");
       setToastOpen(true);
-      setTimeout(() => navigate("/mypage/penalty", { replace: true }), 1000);
+
+      const res = await api.post("/mypage/pay-penalty", null, {
+        params: { method: "CARD" }, // 금액은 서버에서 계산
+      });
+
+      if (res.status === 200) {
+        // 서버도 3초 sleep, 프론트도 연출(겹쳐도 체감 OK)
+        setTimeout(() => {
+          setToastSeverity("success");
+          setToastMsg("결제가 완료되었습니다. 벌점이 초기화됩니다.");
+          setToastOpen(true);
+          setTimeout(() => navigate("/mypage/penalty", { replace: true }), 1000);
+        }, 3000);
+      } else {
+        throw new Error(`결제 실패: ${res.status}`);
+      }
     } catch (e) {
-      console.error("POST /api/mypage/pay-penalty error:", e?.response?.status, e?.response?.data);
+      console.error("POST /mypage/pay-penalty error:", e);
       setToastSeverity("error");
       setToastMsg("결제에 실패했습니다. 잠시 후 다시 시도해주세요.");
       setToastOpen(true);
     } finally {
-      setPaying(false);
+      setTimeout(() => setPaying(false), 3000);
     }
   };
 
-  const disablePay = loading || paying || total <= 0 || !agree;
+  const disablePay = loading || paying || points <= 0 || !agree;
 
   return (
     <DashboardLayout>
@@ -123,7 +147,8 @@ function PayPenalty() {
                   </MDBox>
                 ) : err ? (
                   <MDTypography variant="button" color="error">
-                    데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.
+                    데이터를 불러오지 못했습니다. 로그인 상태를 확인하거나, 잠시 후 다시
+                    시도해주세요.
                   </MDTypography>
                 ) : (
                   <>
@@ -132,7 +157,7 @@ function PayPenalty() {
                         현재 누적 벌점
                       </MDTypography>
                       <MDTypography variant="h4" fontWeight="bold">
-                        {total}점
+                        {points}점
                       </MDTypography>
                     </MDBox>
 
@@ -159,7 +184,14 @@ function PayPenalty() {
 
                     <MDBox mt={2} display="flex" gap={1}>
                       <MDButton color="warning" onClick={handlePay} disabled={disablePay}>
-                        {paying ? "결제 중…" : "가짜 결제 진행"}
+                        {paying ? (
+                          <>
+                            <CircularProgress size={18} sx={{ color: "white", mr: 1 }} />
+                            결제 중...
+                          </>
+                        ) : (
+                          "결제 진행"
+                        )}
                       </MDButton>
                       <MDButton
                         variant="outlined"
@@ -171,7 +203,7 @@ function PayPenalty() {
                       </MDButton>
                     </MDBox>
 
-                    {total <= 0 && (
+                    {points <= 0 && (
                       <MDBox mt={2}>
                         <Alert severity="info" variant="outlined">
                           현재 벌점이 0점입니다. 결제할 항목이 없습니다.

@@ -17,16 +17,20 @@ public class PenaltyScheduler {
 
     private final RentalRepository rentalRepository;
     private final PenaltyService penaltyService;
-//    @Scheduled(cron = "*/10 * * * * *")
-    @Scheduled(cron = "0 0 0 * * ?")
+
+    /** 매일 자정에 연체 감지 */
+    // @Scheduled(cron = "*/10 * * * * *")  // 테스트용 (10초마다)
+    @Scheduled(cron = "0 0 0 * * ?")       // 운영용 (매일 0시)
     @Transactional
     public void detectOverdueRentals() {
         List<Rental> overdueList = rentalRepository.findOverdueRentals(LocalDate.now());
 
         for (Rental rental : overdueList) {
             rental.markAsOverdue();
-            penaltyService.increasePenalty(rental.getUser().getId(), 1);
-        }
+            penaltyService.increasePenalty(rental.getUser(), 1);  // ✅ User 객체 전달
 
+            // 안전하게 저장 보장
+            rentalRepository.save(rental);
+        }
     }
 }
