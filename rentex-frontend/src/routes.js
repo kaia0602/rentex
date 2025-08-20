@@ -17,6 +17,7 @@ import MyPageHome from "layouts/user/MyPageHome";
 import EditProfile from "layouts/user/EditProfile";
 import ItemList from "layouts/user/ItemList";
 import ItemDetail from "layouts/user/ItemDetail";
+import RentalPay from "layouts/user/RentalPay";
 import RentalRequest from "layouts/user/RentalRequest";
 import MyRentals from "layouts/user/MyRentals";
 import RentalDetail from "layouts/user/RentalDetail";
@@ -28,6 +29,7 @@ import PaymentHistory from "layouts/user/PaymentHistory";
 import PartnerDashboard from "layouts/partner";
 import PartnerItemList from "layouts/partner/items";
 import PartnerItemDetail from "layouts/partner/items/ItemDetail";
+import PartnerRentalManage from "layouts/partner/rentals/manage";
 import PartnerRentalRequests from "layouts/partner/rentals";
 import PartnerRentalDetail from "layouts/partner/rentals/RentalDetail";
 import PartnerStatistics from "layouts/partner/statistics";
@@ -70,22 +72,21 @@ const routes = [
   {
     type: "collapse",
     name: "장비대여",
-    key: "rentals",
+    key: "items",
     icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/rentals",
+    route: "/items",
     component: <PublicItems />,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
     name: "장비 상세 (공용)",
     key: "public-item-detail",
-    route: "/rentals/:id",
+    route: "/items/:id",
     component: <PublicItemDetail />,
     noCollapse: true,
     display: false,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
+
   {
     type: "collapse",
     name: "결제관리",
@@ -183,8 +184,28 @@ const routes = [
     type: "collapse",
     name: "대여 요청 (숨김용)",
     key: "rental-request",
-    route: "/rentals/request",
+    route: "/rentals/request/:id",
     component: <RentalRequest />,
+    noCollapse: true,
+    display: false,
+    // role: ["USER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "대여 결제",
+    key: "rental-pay",
+    route: "/rentals/pay",
+    component: <RentalPay />,
+    noCollapse: true,
+    display: false,
+    // role: ["USER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "대여 상세",
+    key: "rental-detail",
+    route: "/mypage/rentals/:id",
+    component: <RentalDetail />,
     noCollapse: true,
     display: false,
     // role: ["USER", "ADMIN"],
@@ -280,6 +301,15 @@ const routes = [
     component: <PartnerItemDetail />,
     noCollapse: true,
     display: false,
+    // role: ["PARTNER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "대여 전체 관리",
+    key: "partner-rental-manage",
+    icon: <Icon fontSize="small">manage_search</Icon>,
+    route: "/partner/rentals/manage",
+    component: <PartnerRentalManage />,
     // role: ["PARTNER", "ADMIN"],
   },
   {

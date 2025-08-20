@@ -64,6 +64,8 @@ public class RentalService {
                 .user(actor) // ADMIN도 직접 요청 가능
                 .item(item)
                 .quantity(requestDto.quantity())
+                .startDate(requestDto.startDate())   // ✅ 추가
+                .endDate(requestDto.endDate())       // ✅ 추가
                 .status(RentalStatus.REQUESTED)
                 .build();
         rentalRepository.save(rental);
@@ -203,7 +205,8 @@ public class RentalService {
                 rental.getStartDate(),
                 rental.getEndDate(),
                 rental.getRentedAt(),
-                rental.getReturnedAt()
+                rental.getReturnedAt(),
+                rental.getItem().getThumbnailUrl()
         );
     }
 
@@ -246,6 +249,66 @@ public class RentalService {
                 .map(Rental::getItem)
                 .distinct()
                 .toList();
+    }
+
+    // 파트너 전용: 자기 소속 아이템 대여 요청 조회
+    @Transactional(readOnly = true)
+    public Page<RentalResponseDto> getPartnerRentalRequests(User actor, RentalStatus status, Pageable pageable) {
+        if ("ADMIN".equals(actor.getRole())) {
+            // ADMIN은 모든 파트너 요청 조회 가능
+            Page<Rental> rentals = rentalRepository.findAllByStatus(
+                    status != null ? status : RentalStatus.REQUESTED,
+                    pageable
+            );
+            return rentals.map(RentalResponseDto::from);
+        }
+
+        if (!"PARTNER".equals(actor.getRole())) {
+            throw new AccessDeniedException("파트너 권한이 필요합니다.");
+        }
+
+        Page<Rental> rentals = rentalRepository.findByItemPartnerIdAndStatus(
+                actor.getId(),
+                status != null ? status : RentalStatus.REQUESTED,
+                pageable
+        );
+
+        return rentals.map(RentalResponseDto::from);
+    }
+
+    // 파트너 전용: 대여 상세 조회
+    @Transactional(readOnly = true)
+    public RentalResponseDto getPartnerRentalDetail(Long rentalId, User actor) {
+        if (!"PARTNER".equals(actor.getRole()) && !"ADMIN".equals(actor.getRole())) {
+            throw new AccessDeniedException("파트너 권한이 필요합니다.");
+        }
+
+        Rental rental = rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new RentalNotFoundException("대여 내역이 존재하지 않습니다."));
+
+        // ADMIN은 모든 대여 접근 가능, PARTNER는 자기 소속 아이템만 접근 가능
+        if ("PARTNER".equals(actor.getRole()) &&
+                !rental.getItem().getPartner().getId().equals(actor.getId())) {
+            throw new AccessDeniedException("본인 소속 장비 대여 내역만 조회할 수 있습니다.");
+        }
+
+        return RentalResponseDto.from(rental);
+    }
+
+    // 파트너 및 관리자 전용: 상태별 대여 내역 전체 조회
+    public Page<RentalResponseDto> getAllPartnerRentals(User loginUser, RentalStatus status, Pageable pageable) {
+        if ("ADMIN".equals(loginUser.getRole())) {
+            Page<Rental> rentals = (status != null)
+                    ? rentalRepository.findAllByStatus(status, pageable)
+                    : rentalRepository.findAll(pageable); // ✅ null이면 전체 조회로 처리
+            return rentals.map(RentalResponseDto::from);
+
+        } else if ("PARTNER".equals(loginUser.getRole())) {
+            return rentalRepository.findByPartnerItemAndStatus(loginUser.getId(), status, pageable)
+                    .map(RentalResponseDto::from);
+        } else {
+            throw new AccessDeniedException("접근 권한이 없습니다.");
+        }
     }
 
     // === 내부 유틸 ===
