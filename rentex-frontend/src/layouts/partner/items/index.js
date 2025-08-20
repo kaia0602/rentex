@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useCategories } from "components/Hooks/useCategories";
+import api from "api/client"; // Axios 인스턴스, JWT 자동 포함
 
+// MUI
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 
+// Material Dashboard
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
-import { useNavigate } from "react-router-dom";
 import MDButton from "components/MDButton";
 
 function PartnerItemList() {
@@ -19,50 +21,38 @@ function PartnerItemList() {
   const { categories, subCategories } = useCategories();
   const navigate = useNavigate();
 
-  // id -> name 매핑 객체 생성
-  const categoriesMap = {};
-  categories.forEach((cat) => {
-    categoriesMap[cat.id] = cat.name;
-  });
+  // 카테고리 ID → 이름 매핑
+  const categoriesMap = Object.fromEntries(categories.map((cat) => [cat.id, cat.name]));
+  const subCategoriesMap = Object.fromEntries(subCategories.map((sc) => [sc.id, sc.name]));
 
-  const subCategoriesMap = {};
-  subCategories.forEach((sc) => {
-    subCategoriesMap[sc.id] = sc.name;
-  });
-
+  // 로그인한 업체 장비 불러오기
   useEffect(() => {
-    axios
-      .get("/api/partner/items") // 실제 API 엔드포인트
-      .then((res) => {
-        console.log("응답 데이터:", res.data);
-        setItems(res.data);
-      })
-      .catch((err) => {
-        console.error("장비 목록 불러오기 실패:", err);
-      });
+    api
+      .get("/partner/items") // JWT 토큰 자동 포함
+      .then((res) => setItems(res.data))
+      .catch((err) => console.error("장비 목록 불러오기 실패:", err));
   }, []);
 
-  // DataTable 형식에 맞게 변환
   const columns = [
     { Header: "장비명", accessor: "name" },
     { Header: "카테고리", accessor: "category" },
     { Header: "소분류", accessor: "subCategory" },
     { Header: "재고", accessor: "stockQuantity", align: "center" },
-    { Header: "대여중", accessor: "rented", align: "center" },
+    { Header: "일일 대여가", accessor: "dailyPrice", align: "center" },
     { Header: "상태", accessor: "status", align: "center" },
-    { Header: "Actions", accessor: "actions", align: "center" },
+    { Header: "액션", accessor: "actions", align: "center" },
   ];
 
   const rows = items.map((item) => ({
     id: item.id,
     name: item.name,
-    category: item.categoryName || "-",
-    subCategory: item.subCategoryName || "-",
+    category: categoriesMap[item.categoryId] || item.categoryName || "-",
+    subCategory: subCategoriesMap[item.subCategoryId] || item.subCategoryName || "-",
     stockQuantity: item.stockQuantity,
-    rented: `${item.dailyPrice.toLocaleString()}원`,
+    dailyPrice: `${item.dailyPrice.toLocaleString()}원`,
     status: item.status === "AVAILABLE" ? "✅ 사용 가능" : "❌ 사용 불가",
     actions: (
-      <MDButton size="small" onClick={() => navigate(`/partner/items/${item.id}`)}>
+      <MDButton size="small" color="info" onClick={() => navigate(`/partner/items/${item.id}`)}>
         상세보기
       </MDButton>
     ),

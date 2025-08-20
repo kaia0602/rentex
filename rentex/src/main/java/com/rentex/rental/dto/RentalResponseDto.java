@@ -1,5 +1,6 @@
 package com.rentex.rental.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
 
@@ -18,22 +19,35 @@ public record RentalResponseDto(
         LocalDate endDate,
         LocalDateTime rentedAt,
         LocalDateTime returnedAt,
-        int dDay
+        int dDay,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+        LocalDateTime createdAt,
+        String userName,        // ✅ 본명
+        String userNickname,     // ✅ 닉네임
+        String thumbnailUrl
 ) {
     public static RentalResponseDto from(Rental rental) {
-        int dDay = Period.between(LocalDate.now(), rental.getEndDate()).getDays(); // ✅ D-day 계산
+        int dDay = Period.between(LocalDate.now(), rental.getEndDate()).getDays();
+
+        String name = rental.getUser() != null ? rental.getUser().getName() : "(알 수 없음)";
+        String nickname = rental.getUser() != null ? rental.getUser().getNickname() : "(알 수 없음)";
+
         return new RentalResponseDto(
                 rental.getId(),
                 rental.getItem().getName(),
                 rental.getQuantity(),
                 rental.getStatus(),
-                rental.getStatus().getLabel(),        // 한글 라벨 추가
-                rental.getStatus().getBadgeColor(),   // 상태 색상 추가
+                rental.getStatus().getLabel(),
+                rental.getStatus().getBadgeColor(),
                 rental.getStartDate(),
                 rental.getEndDate(),
                 rental.getRentedAt(),
                 rental.getReturnedAt(),
-                dDay
+                dDay,
+                rental.getCreatedAt(),
+                name,       // ✅ 이름
+                nickname,    // ✅ 닉네임
+                rental.getItem().getThumbnailUrl()
         );
     }
 }

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "api/client"; // ✅ axios → api 인스턴스
+
+import { useCategories } from "components/Hooks/useCategories";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -22,22 +24,13 @@ function NewItemForm() {
     stockQuantity: 0,
     dailyPrice: 0,
     status: "AVAILABLE",
-    partnerId: 1,
     categoryId: "",
     subCategoryId: "",
   });
 
   const [thumbnail, setThumbnail] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
 
-  useEffect(() => {
-    // 대분류 카테고리 불러오기
-    axios
-      .get("/api/categories")
-      .then((res) => setCategories(res.data))
-      .catch(console.error);
-  }, []);
+  const { categories, subCategories, fetchSubCategories } = useCategories();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,31 +42,16 @@ function NewItemForm() {
 
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
-    setItemData((prev) => ({
-      ...prev,
-      categoryId,
-      subCategoryId: "",
-    }));
-    if (!categoryId) {
-      setSubCategories([]);
-      return;
-    }
-    axios
-      .get(`/api/categories/${categoryId}/subcategories`)
-      .then((res) => setSubCategories(res.data))
-      .catch(console.error);
+    setItemData((prev) => ({ ...prev, categoryId, subCategoryId: "" }));
+    fetchSubCategories(categoryId);
   };
 
   const handleSubCategoryChange = (e) => {
-    const subCategoryId = e.target.value;
-    setItemData((prev) => ({
-      ...prev,
-      subCategoryId,
-    }));
+    setItemData((prev) => ({ ...prev, subCategoryId: e.target.value }));
   };
 
   const handleFileChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
+    if (e.target.files?.length > 0) {
       setThumbnail(e.target.files[0]);
     }
   };
@@ -81,7 +59,6 @@ function NewItemForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // validation 예: 카테고리/서브카테고리 선택 필수
     if (!itemData.categoryId || !itemData.subCategoryId) {
       alert("카테고리와 소분류를 선택해주세요.");
       return;
@@ -94,13 +71,13 @@ function NewItemForm() {
     }
 
     try {
-      await axios.post("/api/partner/items/new", formData, {
+      await api.post("/partner/items/new", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("등록 성공!");
-      navigate("/admin/item/list");
+      navigate("/partner/items"); // ✅ 등록 후 파트너 장비 목록으로 이동
     } catch (error) {
-      console.error("등록 실패:", error);
+      console.error("등록 실패:", error.response?.data || error.message);
       alert("등록 실패!");
     }
   };
@@ -217,17 +194,6 @@ function NewItemForm() {
                     <option value="AVAILABLE">사용 가능</option>
                     <option value="UNAVAILABLE">사용 불가</option>
                   </select>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                  <MDInput
-                    label="파트너 ID"
-                    name="partnerId"
-                    type="number"
-                    fullWidth
-                    value={itemData.partnerId}
-                    onChange={handleChange}
-                    required
-                  />
                 </Grid>
                 <Grid item xs={12}>
                   <MDInput

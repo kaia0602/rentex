@@ -4,6 +4,8 @@ import com.rentex.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -11,10 +13,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+<<<<<<< HEAD
 @Table(name = "user")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "role")
+=======
+@Table(name = "users") // ✅ 예약어 충돌 방지 위해 "users" 권장
+>>>>>>> origin/feature/rentaladd
 @SuperBuilder
+@AllArgsConstructor
 public class User extends BaseTimeEntity {
 
     @Id
@@ -33,8 +40,15 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String nickname;
 
+<<<<<<< HEAD
     @Column(name = "role", insertable = false, updatable = false)
     private String role;
+=======
+    // USER / PARTNER / ADMIN
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private String role = "USER";
+>>>>>>> origin/feature/rentaladd
 
     @Builder.Default
     private int penaltyPoints = 0;
@@ -52,12 +66,27 @@ public class User extends BaseTimeEntity {
 
     private LocalDateTime tokenExpirationDate;
 
-    // ==== 생성자 ====
+    // === Partner 전용 필드 ===
+    @Column(length = 20, unique = true)
+    private String businessNo;
+
+    @Column(length = 100)
+    private String contactEmail;
+
+    @Column(length = 20)
+    private String contactPhone;
+
+    // ==== 생성자 (일반 유저 기본값) ====
     public User(String email, String password, String name, String nickname) {
+        this(email, password, name, nickname, "USER");
+    }
+
+    public User(String email, String password, String name, String nickname, String role) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.nickname = nickname;
+<<<<<<< HEAD
         this.status = UserStatus.PENDING; // 명시적으로 상태 설정
     }
 
@@ -66,20 +95,18 @@ public class User extends BaseTimeEntity {
         this.status = UserStatus.ACTIVE;
         this.emailVerificationToken = null;
         this.tokenExpirationDate = null;
+=======
+        this.role = role;
+>>>>>>> origin/feature/rentaladd
     }
 
     // ==== 업데이트 로직 ====
-    public User update(String name) {
-        this.name = name;
-        return this;
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public void updatePassword(String newPassword) {
         this.password = newPassword;
-    }
-
-    public void updateNickname(String nickname) {
-        this.nickname = nickname;
     }
 
     // ==== 벌점 처리 ====

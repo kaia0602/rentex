@@ -60,7 +60,7 @@ const MDPagination = forwardRef(
         )}
       </Context.Provider>
     );
-  }
+  },
 );
 
 // Setting default values for the props of MDPagination

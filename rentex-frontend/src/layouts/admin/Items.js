@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { useCategories } from "components/Hooks/useCategories";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -9,6 +8,9 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 import MDButton from "components/MDButton";
+
+// ✅ api 클라이언트 사용
+import api from "api/client";
 
 function AdminItems() {
   const [items, setItems] = useState([]);
@@ -21,8 +23,8 @@ function AdminItems() {
   });
 
   useEffect(() => {
-    axios
-      .get("/api/partner/items") // 실제 관리자용 장비 목록 API로 변경 필요
+    api
+      .get("/partner/items") // ✅ baseURL 자동 + 토큰 자동
       .then((res) => {
         setItems(res.data);
       })

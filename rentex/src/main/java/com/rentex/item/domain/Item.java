@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rentex.category.domain.Category;
 import com.rentex.category.domain.SubCategory;
 import com.rentex.global.domain.BaseTimeEntity;
-import com.rentex.partner.domain.Partner;
+import com.rentex.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,67 +19,58 @@ import lombok.*;
 @Setter
 public class Item extends BaseTimeEntity {
 
-    // 장비 ID (기본 키)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // 장비 ID
 
-    // 장비명
     @Column(nullable = false, length = 100)
-    private String name;
+    private String name; // 장비명
 
-    // 장비 설명
-    private String description;
+    private String description; // 간단 설명
 
-    // 현재 재고 수량
     @Column(nullable = false)
-    private int stockQuantity;
+    private int stockQuantity; // 재고 수량
 
-    // 장비 상태 (사용 가능 여부)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ItemStatus status;
+    private ItemStatus status; // 장비 상태
 
-    // 장비를 소유한 파트너(업체)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partner_id", nullable = false)
-    private Partner partner;
+    private User partner; // 소유 파트너 (role = PARTNER)
 
     @Column(length = 500)
-    private String thumbnailUrl;
+    private String thumbnailUrl; // 대표 썸네일
 
-    @Column(length = 500)
-    private String descriptionImg;
+    @Lob
+    private String detailDescription; // 상세 설명
+
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "item_detail_images", joinColumns = @JoinColumn(name = "item_id"))
+    @Column(name = "image_url", length = 1000)
+    private List<String> detailImages = new ArrayList<>(); // 상세 이미지들
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     @JsonIgnore
-    private Category category;
+    private Category category; // 카테고리
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sub_category_id")
-    private SubCategory subCategory;
-
-    // 장비 상태 ENUM
-    public enum ItemStatus {
-        AVAILABLE,      // 사용 가능
-        UNAVAILABLE     // 사용 불가
-    }
-
-    // 재고 차감 메서드
-    public void decreaseStock(int quantity) {
-        if (this.stockQuantity < quantity) {
-            throw new IllegalStateException("재고 부족");
-        }
-        this.stockQuantity -= quantity;
-    }
-
-    // 재고 복구 메서드
-    public void increaseStock(int quantity) {
-        this.stockQuantity += quantity;
-    }
+    private SubCategory subCategory; // 서브 카테고리
 
     @Column(nullable = false)
     private int dailyPrice; // 하루 단가
 
+    public enum ItemStatus { AVAILABLE, UNAVAILABLE } // 상태 ENUM
+
+    public void decreaseStock(int quantity) { // 재고 차감
+        if (this.stockQuantity < quantity) throw new IllegalStateException("재고 부족");
+        this.stockQuantity -= quantity;
+    }
+
+    public void increaseStock(int quantity) { // 재고 복구
+        this.stockQuantity += quantity;
+    }
 }

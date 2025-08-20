@@ -21,7 +21,7 @@ function SignUp() {
     password: "",
     name: "",
     nickname: "",
-    userType: "USER",
+    userType: "USER", // UI에서는 userType으로 관리
     businessNo: "",
     contactEmail: "",
     contactPhone: "",
@@ -51,13 +51,17 @@ function SignUp() {
         password: form.password,
         name: form.name,
         nickname: form.nickname,
-        userType: form.userType,
+        userType: form.userType, // ✅ 백엔드에서는 role 필드 사용
         businessNo: form.userType === "PARTNER" ? form.businessNo : null,
         contactEmail: form.userType === "PARTNER" ? form.contactEmail : null,
         contactPhone: form.userType === "PARTNER" ? form.contactPhone : null,
       });
+<<<<<<< HEAD
 
       alert("회원가입이 완료되었습니다. 이메일 인증을 진행해주세요.");
+=======
+      alert("회원가입이 완료되었습니다."); // ✅ 실제 기능에 맞게 메시지 변경
+>>>>>>> origin/feature/rentaladd
       nav("/authentication/sign-in");
     } catch (err) {
       console.error(err);
@@ -225,13 +229,16 @@ function SignUp() {
                 </MDTypography>
               </MDTypography>
             </MDBox>
+
+            {/* ✅ 구글 로그인 버튼 환경변수화 */}
             <MDBox mt={2}>
               <MDButton
                 variant="outlined"
                 color="info"
                 fullWidth
                 onClick={() => {
-                  window.location.href = "http://localhost:8080/oauth2/authorization/google";
+                  const base = process.env.REACT_APP_API_BASE || "http://localhost:8080";
+                  window.location.href = `${base}/oauth2/authorization/google`;
                 }}
               >
                 Google로 로그인

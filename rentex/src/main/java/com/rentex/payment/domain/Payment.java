@@ -46,4 +46,8 @@ public class Payment {
     public enum PaymentStatus {
         SUCCESS, FAILED, PENDING
     }
+
+    public void updateStatus(PaymentStatus status) {
+        this.status = status;
+    }
 }

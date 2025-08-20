@@ -7,8 +7,24 @@ import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import React, { useEffect, useState } from "react";
+import api from "api/client"; // axios 인스턴스
 
 function PartnerDashboard() {
+  const [itemCount, setItemCount] = useState(0);
+
+  useEffect(() => {
+    const fetchItemCount = async () => {
+      try {
+        const res = await api.get("/partner/items/count");
+        setItemCount(res.data);
+      } catch (error) {
+        console.error("장비 수 조회 실패:", error);
+      }
+    };
+    fetchItemCount();
+  }, []);
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -27,7 +43,7 @@ function PartnerDashboard() {
                 등록 장비 수
               </MDTypography>
               <MDTypography variant="h5" fontWeight="bold">
-                8개
+                {itemCount}개
               </MDTypography>
             </Card>
           </Grid>
