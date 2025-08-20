@@ -14,6 +14,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import api from "api/client";
+import { getToken, getUserIdFromToken } from "utils/auth";
 
 const nf = new Intl.NumberFormat("ko-KR");
 const NOW = new Date();
@@ -23,10 +24,11 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 export default function PartnerStatisticsIndex() {
   const [year, setYear] = useState(NOW.getFullYear());
   const [month, setMonth] = useState(NOW.getMonth() + 1);
+  const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
-  const [userId, setUserId] = useState(12);
 
+  // 컬럼
   const columns = useMemo(
     () => [
       { Header: "아이템", accessor: "itemName", align: "center" },
@@ -38,6 +40,7 @@ export default function PartnerStatisticsIndex() {
     [],
   );
 
+  // 행
   const rows = useMemo(
     () =>
       (data?.details || []).map((d) => ({
@@ -52,12 +55,25 @@ export default function PartnerStatisticsIndex() {
     [data],
   );
 
-  const fetchData = async () => {
+  // 마운트: 토큰 로드 → userId 추출
+  useEffect(() => {
+    const t = getToken();
+    const uid = t ? getUserIdFromToken(t) : null;
+    if (uid) setUserId(uid);
+  }, []);
+
+  // userId 준비 + 연/월 변경 시 호출
+  useEffect(() => {
+    if (Number.isInteger(userId) && userId > 0) fetchData(userId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, year, month]);
+
+  const fetchData = async (uid) => {
+    if (!Number.isInteger(uid) || uid <= 0) return;
     setLoading(true);
     try {
-      const res = await api.get(`/partner/statistics/${userId}`, { params: { year, month } });
-      if (res.status !== 200) throw new Error(`detail ${res.status}`);
-
+      // 백엔드: GET /api/partner/statistics/{userId}?year=&month=
+      const res = await api.get(`/partner/statistics/${uid}`, { params: { year, month } });
       const payload = res.data ?? {};
       const details = Array.isArray(payload.details)
         ? payload.details
@@ -67,7 +83,7 @@ export default function PartnerStatisticsIndex() {
       const summary = payload.summary ?? null;
 
       const totalRentals = Number(
-        summary?.totalRentals ?? details.reduce((a, d) => a + Number(d.rentalCount || 0), 0),
+        payload?.totalRentals ?? details.reduce((a, d) => a + Number(d.rentalcounts || 0), 0),
       );
       const totalQuantity = Number(
         summary?.totalQuantity ?? details.reduce((a, d) => a + Number(d.quantity || 0), 0),
@@ -90,27 +106,18 @@ export default function PartnerStatisticsIndex() {
 
       setData({ totalRentals, totalQuantity, totalDays, totalRevenue, details });
     } catch (e) {
-      console.error(e);
       const msg = e?.response
         ? `${e.response.status} ${e.response.statusText} ${e.response.data?.message ?? ""}`.trim()
         : e?.message ?? "unknown error";
       alert(`데이터를 불러오지 못했습니다.\n${msg}`);
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
-  // 최초 + 연/월 변경 시 자동 조회
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year, month]);
-
   const printStatement = () => {
-    if (!data) {
-      alert("출력할 데이터가 없습니다.");
-      return;
-    }
+    if (!data) return alert("출력할 데이터가 없습니다.");
     const today = new Date();
     const issued = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
       2,
@@ -131,61 +138,43 @@ export default function PartnerStatisticsIndex() {
       .join("");
 
     const title = `${year}년 ${month}월 파트너 월 정산서`;
-
     const html = `
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="utf-8"/>
-<title>${title}</title>
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"/><title>${title}</title>
 <style>
-  @page { size: A4; margin: 18mm; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "맑은 고딕", "Malgun Gothic", sans-serif; }
-  h1 { font-size: 20px; margin: 0 0 12px; }
-  .meta { font-size: 12px; margin-bottom: 12px; color: #444; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th, td { border: 1px solid #bbb; padding: 6px 8px; text-align: center; }
-  th { background: #f4f6f8; }
-  tfoot td { font-weight: 700; background: #fafafa; }
-  .right { text-align: right; }
-  .muted { color:#666; font-size:11px; margin-top:8px; }
-</style>
-</head>
-<body>
-  <h1>${title}</h1>
-  <div class="meta">
-    발행일: <b>${issued}</b><br/>
-    대여건수: <b>${data.totalRentals ?? 0}</b> / 총 수량: <b>${data.totalQuantity ?? 0}</b> /
-    총 일수: <b>${data.totalDays ?? 0}</b> / 총 수익: <b>${nf.format(
+@page { size: A4; margin: 18mm; }
+body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple SD Gothic Neo","맑은 고딕","Malgun Gothic",sans-serif; }
+h1 { font-size: 20px; margin: 0 0 12px; }
+.meta { font-size: 12px; margin-bottom: 12px; color: #444; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { border: 1px solid #bbb; padding: 6px 8px; text-align: center; }
+th { background: #f4f6f8; }
+tfoot td { font-weight: 700; background: #fafafa; }
+.right { text-align: right; }
+</style></head><body>
+<h1>${title}</h1>
+<div class="meta">
+  발행일: <b>${issued}</b><br/>
+  대여건수: <b>${data.totalRentals ?? 0}</b> / 총 수량: <b>${data.totalQuantity ?? 0}</b> /
+  총 일수: <b>${data.totalDays ?? 0}</b> / 총 수익: <b>${nf.format(
       Number(data.totalRevenue ?? 0),
     )}원</b>
-  </div>
-  <table>
-    <thead>
-      <tr>
-        <th>아이템</th>
-        <th>수량</th>
-        <th>일수</th>
-        <th>단가(원)</th>
-        <th>금액(원)</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${rowsHtml || `<tr><td colspan="5">자료 없음</td></tr>`}
-    </tbody>
-    <tfoot>
-      <tr>
-        <td>합계</td>
-        <td>${data.totalQuantity ?? 0}</td>
-        <td>${data.totalDays ?? 0}</td>
-        <td class="right">-</td>
-        <td class="right">${nf.format(Number(data.totalRevenue ?? 0))}</td>
-      </tr>
-    </tfoot>
-  </table>
-  <div class="muted">* 브라우저 인쇄 대화상자에서 “대상: PDF로 저장”을 선택하세요.</div>
-</body>
-</html>`.trim();
+</div>
+<table>
+  <thead>
+    <tr><th>아이템</th><th>수량</th><th>일수</th><th>단가(원)</th><th>금액(원)</th></tr>
+  </thead>
+  <tbody>${rowsHtml || `<tr><td colspan="5">자료 없음</td></tr>`}</tbody>
+  <tfoot>
+    <tr>
+      <td>합계</td>
+      <td>${data.totalQuantity ?? 0}</td>
+      <td>${data.totalDays ?? 0}</td>
+      <td class="right">-</td>
+      <td class="right">${nf.format(Number(data.totalRevenue ?? 0))}</td>
+    </tr>
+  </tfoot>
+</table>
+</body></html>`.trim();
 
     const w = window.open("", "PRINT", "width=1024,height=768");
     if (!w) return;
@@ -194,16 +183,6 @@ export default function PartnerStatisticsIndex() {
     w.focus();
     w.print();
     w.close();
-
-    w.addEventListener(
-      "load",
-      () => {
-        w.focus();
-        w.print();
-        w.close();
-      },
-      { once: true },
-    );
   };
 
   return (
@@ -214,7 +193,6 @@ export default function PartnerStatisticsIndex() {
           <Grid item>
             <MDTypography variant="h5">내 월별 통계</MDTypography>
           </Grid>
-
           <Grid item>
             <Select value={year} onChange={(e) => setYear(Number(e.target.value))} size="small">
               {YEARS.map((y) => (
@@ -237,7 +215,7 @@ export default function PartnerStatisticsIndex() {
             <MDTypography
               component="button"
               variant="button"
-              onClick={fetchData}
+              onClick={() => Number.isInteger(userId) && userId > 0 && fetchData(userId)}
               sx={{ px: 2, py: 0.75, border: "1px solid #ccc", borderRadius: 1 }}
             >
               조회

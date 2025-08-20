@@ -136,7 +136,7 @@ public class UserService {
         user.withdraw();
 
         // hard delete 하고 싶으면 이걸로 교체:
-        // userRepository.deleteById(userId);
+//         userRepository.deleteById(userId);
     }
 
     /** ID로 강제 조회 */
