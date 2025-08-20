@@ -18,12 +18,20 @@ public class MyPageDTO {
     private List<RentalInfo> rentalHistory;
     private List<PenaltyInfo> penaltyHistory;
 
+    // Partner 전용
+    private String businessNo;
+    private String contactEmail;
+    private String contactPhone;
+
     public static MyPageDTO from(User user, List<Rental> rentals, List<Penalty> penalties) {
         return MyPageDTO.builder()
                 .email(user.getEmail())
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .role(user.getRole())
+                .businessNo(user.getBusinessNo() != null ? user.getBusinessNo() : "")
+                .contactEmail(user.getContactEmail() != null ? user.getContactEmail() : "")
+                .contactPhone(user.getContactPhone() != null ? user.getContactPhone() : "")
                 .penaltyPoints(user.getPenaltyPoints()) // ✅ User 엔티티에서 바로 가져옴
                 .rentalHistory(rentals.stream().map(RentalInfo::from).collect(Collectors.toList()))
                 .penaltyHistory(penalties.stream().map(PenaltyInfo::from).collect(Collectors.toList()))
