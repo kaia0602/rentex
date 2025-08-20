@@ -103,12 +103,26 @@ public class UserService {
         return MyPageDTO.from(user, rentals, penalties);
     }
 
-    /** 프로필 수정 */
     @Transactional
     public void updateProfile(Long userId, ProfileUpdateRequestDTO requestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        user.updateNickname(requestDTO.getNickname());
+
+        if (requestDTO.getNickname() != null) {
+            user.updateNickname(requestDTO.getNickname());
+        }
+        if (requestDTO.getBusinessNo() != null) {
+            user.updateBusinessNo(requestDTO.getBusinessNo());
+        }
+        if (requestDTO.getContactEmail() != null) {
+            user.updateContactEmail(requestDTO.getContactEmail());
+        }
+        if (requestDTO.getContactPhone() != null) {
+            user.updateContactPhone(requestDTO.getContactPhone());
+        }
+        if (requestDTO.getName() != null) { // 업체명
+            user.updateName(requestDTO.getName());
+        }
     }
 
     /** 회원 탈퇴 */
