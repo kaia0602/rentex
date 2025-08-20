@@ -82,7 +82,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req, HttpServletResponse res) {
         try {
-            log.info("✅ [1/8] 로그인 요청 수신: {}", req.getEmail());
 
             // 이메일 인증 상태 확인
             User user = userService.findByEmail(req.getEmail())
@@ -92,28 +91,23 @@ public class AuthController {
                 log.warn("로그인 실패: 이메일 미인증 사용자. 이메일: {}", req.getEmail());
                 return ResponseEntity.status(401).body("로그인 실패: 이메일 인증이 필요합니다.");
             }
-            log.info("✅ [2/8] 사용자 상태 확인 완료 (ACTIVE)");
 
             // 1) 스프링 시큐리티로 인증 시도
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
             );
-            log.info("✅ [3/8] Spring Security 인증 성공 (Authenticated user)");
 
             // 2) Access Token 발급 (DB의 최신 Role 사용)
             String authorities = auth.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(","));
-            log.info("✅ [4/8] 토큰 생성을 위한 권한 정보 추출: {}", authorities);
 
             String accessToken = jwtTokenProvider.createAccessToken(user.getId(), authorities);
-            log.info("✅ [5/8] Access Token 생성 완료");
 
             // 3) Refresh Token 발급 (보안을 위해 권한 미포함)
             String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
-            log.info("✅ [6/8] Refresh Token 생성 완료");
 
-            // ✅ 추가된 로그: 발급된 토큰을 콘솔에 출력합니다.
+            // 토큰 테스트용
             log.info("⭐ [로그인 성공] 발급된 Access Token: {}", accessToken);
             log.info("⭐ [로그인 성공] 발급된 Refresh Token: {}", refreshToken);
 
@@ -126,11 +120,9 @@ public class AuthController {
                     .maxAge(60L * 60L * 24L * 14L)
                     .build();
             res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-            log.info("✅ [7/8] Refresh Token 쿠키 설정 완료");
 
             // 5) 액세스 토큰을 헤더와 바디 둘 다로 반환
             LoginResponseDTO responseBody = new LoginResponseDTO(accessToken, user.getId(), user.getName(), user.getRole());
-            log.info("✅ [8/8] 최종 응답 생성 완료. 클라이언트로 응답을 전송합니다.");
             return ResponseEntity.ok()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                     .body(responseBody);
@@ -167,14 +159,12 @@ public class AuthController {
                 return ResponseEntity.status(401).body(Map.of("message", "계정이 비활성화되어 리프레시할 수 없습니다."));
             }
 
-            // --- 개선안 적용 ---
-            // 1) 새 Access Token 발급 (DB의 최신 Role 사용)
+            // 1) 새 Access Token 발급
             String authorities = "ROLE_" + user.getRole();
             String newAccessToken = jwtTokenProvider.createAccessToken(user.getId(), authorities);
 
-            // 2) 새 Refresh Token 발급 (보안을 위해 권한 미포함, 토큰 회전)
+            // 2) 새 Refresh Token 발급
             String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getId());
-            // --- 개선안 적용 끝 ---
 
             ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, newRefreshToken)
                     .httpOnly(true).secure(true).sameSite("Lax").path("/").maxAge(60L * 60L * 24L * 14L).build();

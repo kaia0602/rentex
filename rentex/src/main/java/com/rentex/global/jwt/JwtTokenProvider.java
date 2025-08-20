@@ -106,7 +106,7 @@ public class JwtTokenProvider {
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256);
 
-        // 권한 정보가 있는 경우에만 'auth' 클레임을 추가합니다.
+        // 권한 정보가 있는 경우에만 'auth' 클레임을 추가
         if (authorities != null && !authorities.isEmpty()) {
             builder.claim(AUTHORITIES_KEY, authorities);
         }
