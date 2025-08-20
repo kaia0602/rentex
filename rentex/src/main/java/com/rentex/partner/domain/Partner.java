@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package com.rentex.partner.domain;
 
 import com.rentex.user.domain.User;
@@ -38,7 +37,6 @@ public class Partner extends User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
-=======
 //package com.rentex.partner.domain;
 //
 //import com.rentex.user.domain.User;
@@ -72,4 +70,3 @@ public class Partner extends User {
 //    @UpdateTimestamp
 //    private LocalDateTime updatedAt;
 //}
->>>>>>> origin/feature/rentaladd

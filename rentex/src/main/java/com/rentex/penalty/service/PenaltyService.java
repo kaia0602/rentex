@@ -21,41 +21,24 @@ public class PenaltyService {
     private final PenaltyRepository penaltyRepository;
     private final RentalRepository rentalRepository;
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> origin/feature/user-auth
-    @Transactional
-    public Penalty getPenaltyByUser(User user) {
-        // 사용자의 벌점 정보를 찾고, 만약 없다면 orElseGet 내부 로직을 실행합니다.
-        return penaltyRepository.findByUserId(user.getId())
-                .orElseGet(() -> {
-                    // Repository에 새로 추가한 네이티브 쿼리를 호출합니다.
-                    penaltyRepository.createDefaultPenaltyForUser(user.getId());
-                    // 추가된 정보를 다시 조회하여 반환합니다.
-                    return penaltyRepository.findByUserId(user.getId())
-                            .orElseThrow(() -> new IllegalStateException("기본 벌점 정보 생성에 실패했습니다."));
-                });
-<<<<<<< HEAD
-    }
-
-
-    @Transactional
-    public void resetPenalty(User user) {
-        Penalty p = getPenaltyByUser(user);
-        p.reset();
-=======
-    }
-
-
-=======
-    /** ✅ 유저의 전체 벌점 내역 조회 */
+    /**
+     * 특정 사용자의 모든 벌점 내역을 조회합니다.
+     *
+     * @param user 조회할 사용자
+     * @return 벌점 기록 리스트
+     */
     @Transactional(readOnly = true)
     public List<Penalty> getPenaltiesByUser(User user) {
         return penaltyRepository.findByUser_Id(user.getId());
     }
 
-    /** ✅ 가장 최신 벌점 가져오기 */
+    /**
+     * 특정 사용자의 가장 최근 벌점 기록을 조회합니다.
+     *
+     * @param user 조회할 사용자
+     * @return 가장 최근 Penalty 객체
+     * @throws IllegalArgumentException 벌점 정보가 없는 경우
+     */
     @Transactional(readOnly = true)
     public Penalty getLatestPenalty(User user) {
         return penaltyRepository.findByUser_Id(user.getId()).stream()
@@ -63,7 +46,12 @@ public class PenaltyService {
                 .orElseThrow(() -> new IllegalArgumentException("벌점 정보가 없습니다."));
     }
 
-    /** ✅ 최신 벌점 + 최근 대여 3건 */
+    /**
+     * 특정 사용자의 최신 벌점 정보와 최근 대여 3건의 정보를 함께 조회합니다.
+     *
+     * @param user 조회할 사용자
+     * @return 벌점과 대여 정보가 결합된 DTO 리스트
+     */
     @Transactional(readOnly = true)
     public List<PenaltyWithRentalDTO> getPenaltyWithRentals(User user) {
         Penalty latestPenalty = getLatestPenalty(user);
@@ -83,18 +71,25 @@ public class PenaltyService {
                         .build()
                 )
                 .toList();
->>>>>>> origin/feature/user-auth
     }
 
-    /** ✅ 벌점 초기화 (== 유저의 모든 벌점을 paid 처리) */
->>>>>>> origin/feature/rentaladd
+    /**
+     * 특정 사용자의 모든 벌점 기록을 초기화합니다. (모든 기록을 '납부 완료' 처리)
+     *
+     * @param user 초기화할 사용자
+     */
     @Transactional
     public void resetPenalty(User user) {
         List<Penalty> penalties = getPenaltiesByUser(user);
         penalties.forEach(Penalty::reset);
     }
 
-    /** ✅ 벌점 증가 (새 row 생성) */
+    /**
+     * 특정 사용자에게 벌점을 부과합니다. (새로운 벌점 기록을 생성)
+     *
+     * @param user  벌점을 부과할 사용자
+     * @param score 부과할 점수
+     */
     @Transactional
     public void increasePenalty(User user, int score) {
         Penalty penalty = Penalty.builder()
@@ -104,15 +99,4 @@ public class PenaltyService {
                 .build();
         penaltyRepository.save(penalty);
     }
-<<<<<<< HEAD
-
-    @Transactional
-    public void increasePenalty(Long userId, int score) {
-        penaltyRepository.increasePenalty(userId, score);
-    }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin/feature/rentaladd
->>>>>>> origin/feature/user-auth
 }

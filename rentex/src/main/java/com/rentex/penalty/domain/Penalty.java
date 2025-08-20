@@ -34,6 +34,7 @@ public class Penalty extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
+    @Builder.Default
     private PenaltyStatus status = PenaltyStatus.VALID;
 
     @CreationTimestamp
@@ -51,11 +52,14 @@ public class Penalty extends BaseTimeEntity {
         this.paid = true;
     }
 
-    /** 상태 헬퍼 */
+    /**
+     * 상태 헬퍼
+     */
     public void markDeleted() {
         this.status = PenaltyStatus.DELETED;
         this.deletedAt = LocalDateTime.now();
     }
+
     public void markCleared() {
         this.status = PenaltyStatus.CLEARED;
         this.clearedAt = LocalDateTime.now();

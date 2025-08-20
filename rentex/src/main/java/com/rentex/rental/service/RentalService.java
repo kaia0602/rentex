@@ -245,15 +245,6 @@ public class RentalService {
         return rentals.map(RentalResponseDto::from);
     }
 
-<<<<<<< HEAD
-    @Transactional(readOnly = true)
-    public List<Rental> findByUser(User user) {
-        return rentalRepository.findByUser(user);
-    }
-
-
-}
-=======
     // 특정 유저가 대여한 장비 목록 조회
     @Transactional(readOnly = true)
     public List<Item> getItemsRentedByUser(Long userId) {
@@ -323,6 +314,12 @@ public class RentalService {
         }
     }
 
+    // === 마이 페이지 ID 조회 ====
+    @Transactional(readOnly = true)
+    public List<Rental> findByUserId(Long userId) {
+        return rentalRepository.findByUserId(userId);
+    }
+
     // === 내부 유틸 ===
     private ActionActor getActorType(User actor) {
         if ("ADMIN".equals(actor.getRole())) return ActionActor.ADMIN;
@@ -331,4 +328,3 @@ public class RentalService {
         throw new AccessDeniedException("권한이 없습니다.");
     }
 }
->>>>>>> origin/feature/rentaladd

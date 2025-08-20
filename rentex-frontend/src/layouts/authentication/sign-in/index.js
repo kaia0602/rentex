@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Link, useNavigate, useSearchParams} from "react-router-dom"; // useSearchParams 추가
+import {Link, useNavigate, useSearchParams} from "react-router-dom";
 import Card from "@mui/material/Card";
 import GoogleIcon from "@mui/icons-material/Google";
 import MDBox from "components/MDBox";
@@ -7,15 +7,12 @@ import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
-<<<<<<< HEAD
-=======
-import api from "api/client"; // axios 인스턴스
-import { setToken } from "utils/auth"; // ✅ 토큰 저장 유틸
->>>>>>> origin/feature/rentaladd
+
+import api from "api/client";
+import {setToken} from "utils/auth";
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
 import NaverIcon from "assets/images/icons/NaverIcon";
-import api from "api/client";
-import MDSnackbar from "components/MDSnackbar"; // 추가
+import MDSnackbar from "components/MDSnackbar";
 
 function Basic() {
     const nav = useNavigate();
@@ -24,7 +21,7 @@ function Basic() {
     const [loading, setLoading] = useState(false);
     const [loginFailed, setLoginFailed] = useState(false);
     const [viewMode, setViewMode] = useState("login");
-    const [searchParams] = useSearchParams(); // 추가
+    const [searchParams] = useSearchParams();
 
     const [resetStep, setResetStep] = useState("enterEmail");
     const [resetForm, setResetForm] = useState({
@@ -43,98 +40,31 @@ function Basic() {
     });
     const closeSnackbar = () => setSnackbar({...snackbar, open: false});
 
-<<<<<<< HEAD
-    const handleSetRememberMe = () => setRememberMe(!rememberMe);
-
     const onChange = (e) => {
         const {name, value} = e.target;
         setForm((prev) => ({...prev, [name]: value}));
         setLoginFailed(false);
     };
-=======
-  const onSubmit = async (e) => {
-    e.preventDefault();
 
-    // ✅ 여기서 form 값 확인
-    console.log("login 요청 DTO:", form);
-
-    try {
-      setLoading(true);
-      const res = await api.post("/auth/login", {
-        email: form.email,
-        password: form.password,
-      });
-
-      // ✅ 응답 필드 우선순위: accessToken → token → 전체 데이터
-      const token = res.data?.accessToken || res.data?.token || res.data;
-      if (token) {
-        setToken(token); // ✅ 통일된 키로 저장
-        alert("로그인 성공!");
-        nav("/"); // 필요하면 "/dashboard"로 변경
-      } else {
-        alert("로그인 실패: 토큰이 없습니다.");
-      }
-    } catch (err) {
-      console.error(err);
-      const msg =
-        err.response?.data?.message ||
-        JSON.stringify(err.response?.data) ||
-        "로그인 중 오류가 발생했습니다.";
-      alert(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
->>>>>>> origin/feature/rentaladd
-
-    const onResetFormChange = (e) => {
-        const {name, value} = e.target;
-        setResetForm((prev) => ({...prev, [name]: value}));
-        setResetError("");
-    };
-
-<<<<<<< HEAD
-    // ✅ 이메일 인증 완료 알림 로직 추가
-    useEffect(() => {
-        if (searchParams.get("verified") === "true") {
-            setSnackbar({
-                open: true,
-                color: "success",
-                title: "인증 완료",
-                content: "이메일 인증이 성공적으로 완료되었습니다. 이제 로그인할 수 있습니다.",
-            });
-        }
-    }, [searchParams]);
-=======
-            {/* Google OAuth 버튼 */}
-            <MDBox mt={2}>
-              <MDButton
-                variant="outlined"
-                color="info"
-                fullWidth
-                onClick={() => {
-                  // API_BASE에서 /api 부분 제거
-                  const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
-                  const serverBase = apiBase.replace(/\/api$/, "");
-                  window.location.href = `${serverBase}/oauth2/authorization/google`;
-                }}
-              >
-                <GoogleIcon sx={{ mr: 1 }} />
-                Google로 로그인
-              </MDButton>
-            </MDBox>
->>>>>>> origin/feature/rentaladd
-
+    // ✅ 충돌 지점을 제거하고 onSubmit 메서드를 하나로 통합
     const onSubmit = async (e) => {
         e.preventDefault();
+
         try {
             setLoading(true);
-            const res = await api.post("/api/auth/login", {email: form.email, password: form.password});
-            const authHeader = res.headers["authorization"];
+            const res = await api.post("/auth/login", {
+                email: form.email,
+                password: form.password,
+            });
 
-            if (authHeader && authHeader.startsWith("Bearer ")) {
-                const token = authHeader.substring(7);
-                localStorage.setItem("accessToken", token);
+            // ✅ 토큰을 가져오는 로직 개선: 헤더와 바디를 모두 확인
+            const authHeader = res.headers["authorization"];
+            const token = authHeader?.startsWith("Bearer ")
+                ? authHeader.substring(7)
+                : res.data?.accessToken || res.data?.token || null;
+
+            if (token) {
+                setToken(token);
                 setSnackbar({
                     open: true,
                     color: "success",
@@ -147,12 +77,12 @@ function Basic() {
                     open: true,
                     color: "error",
                     title: "로그인 실패",
-                    content: "응답에 유효한 토큰이 없습니다.",
+                    content: "유효한 토큰이 없습니다.",
                 });
             }
         } catch (err) {
             console.error(err);
-            const msg = err.response?.data || "이메일 또는 비밀번호가 올바르지 않습니다.";
+            const msg = err.response?.data?.message || err.response?.data || "로그인 중 오류가 발생했습니다.";
             setSnackbar({
                 open: true,
                 color: "error",
@@ -165,13 +95,30 @@ function Basic() {
         }
     };
 
-    // ... (handleSendCode, handleVerifyAndReset 함수는 그대로 유지)
+    const onResetFormChange = (e) => {
+        const {name, value} = e.target;
+        setResetForm((prev) => ({...prev, [name]: value}));
+        setResetError("");
+    };
+
+    useEffect(() => {
+        if (searchParams.get("verified") === "true") {
+            setSnackbar({
+                open: true,
+                color: "success",
+                title: "인증 완료",
+                content: "이메일 인증이 성공적으로 완료되었습니다. 이제 로그인할 수 있습니다.",
+            });
+        }
+    }, [searchParams]);
+
+    // 비밀번호 재설정 관련 함수
     const handleSendCode = async (e) => {
         e.preventDefault();
         setLoading(true);
         setResetError("");
         try {
-            await api.post("/api/auth/password-reset/request", {email: resetForm.email});
+            await api.post("/auth/password-reset/request", {email: resetForm.email});
             setSnackbar({
                 open: true,
                 color: "success",
@@ -179,7 +126,6 @@ function Basic() {
                 content: "인증 코드가 이메일로 발송되었습니다.",
             });
             setResetStep("enterCodeAndPassword");
-            // ✅ 이메일은 유지하고, 나머지 필드만 초기화
             setResetForm((prev) => ({
                 ...prev,
                 code: "",
@@ -205,7 +151,7 @@ function Basic() {
         setLoading(true);
         setResetError("");
         try {
-            await api.post("/api/auth/password-reset/verify", {
+            await api.post("/auth/password-reset/verify", {
                 email: resetForm.email,
                 code: resetForm.code,
                 newPassword: resetForm.newPassword,
@@ -218,7 +164,6 @@ function Basic() {
             });
             setViewMode("login");
             setResetStep("enterEmail");
-            // ✅ 전체 resetForm 상태를 초기화
             setResetForm({email: "", code: "", newPassword: "", confirmPassword: ""});
         } catch (err) {
             const msg = err.response?.data || "비밀번호 변경에 실패했습니다. 인증 코드를 확인해주세요.";
@@ -251,7 +196,6 @@ function Basic() {
                         </MDTypography>
                     )}
                 </MDBox>
-
                 <MDBox pt={4} pb={3} px={3}>
                     {viewMode === "login" ? (
                         <>
@@ -306,29 +250,35 @@ function Basic() {
                                     </MDButton>
                                 </MDBox>
                             </MDBox>
+
+                            {/* ✅ OAuth 버튼 로직 통합 */}
                             <MDBox mt={2}>
                                 <MDButton
                                     variant="outlined"
                                     color="info"
                                     fullWidth
                                     onClick={() => {
-                                        window.location.href = "http://localhost:8080/oauth2/authorization/google";
+                                        const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
+                                        const serverBase = apiBase.replace(/\/api$/, "");
+                                        window.location.href = `${serverBase}/oauth2/authorization/google`;
                                     }}
                                 >
                                     <GoogleIcon sx={{mr: 1}}/> Google로 로그인
                                 </MDButton>
-                                <MDBox mt={2}>
-                                    <MDButton
-                                        variant="outlined"
-                                        color="info"
-                                        fullWidth
-                                        onClick={() => {
-                                            window.location.href = "http://localhost:8080/oauth2/authorization/naver";
-                                        }}
-                                    >
-                                        <NaverIcon sx={{mr: 1}}/> Naver로 로그인
-                                    </MDButton>
-                                </MDBox>
+                            </MDBox>
+                            <MDBox mt={2}>
+                                <MDButton
+                                    variant="outlined"
+                                    color="info"
+                                    fullWidth
+                                    onClick={() => {
+                                        const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
+                                        const serverBase = apiBase.replace(/\/api$/, "");
+                                        window.location.href = `${serverBase}/oauth2/authorization/naver`;
+                                    }}
+                                >
+                                    <NaverIcon sx={{mr: 1}}/> Naver로 로그인
+                                </MDButton>
                             </MDBox>
                             <MDBox mt={3} mb={1} textAlign="center">
                                 <MDTypography variant="button" color="text">
@@ -373,7 +323,6 @@ function Basic() {
                                     </MDBox>
                                 </MDBox>
                             )}
-
                             {resetStep === "enterCodeAndPassword" && (
                                 <MDBox component="form" role="form" onSubmit={handleVerifyAndReset}>
                                     <MDBox mb={2}>
@@ -419,7 +368,6 @@ function Basic() {
                                     </MDBox>
                                 </MDBox>
                             )}
-
                             {resetError && (
                                 <MDBox mt={2} textAlign="center">
                                     <MDTypography variant="caption" color="error">
@@ -427,7 +375,6 @@ function Basic() {
                                     </MDTypography>
                                 </MDBox>
                             )}
-
                             <MDBox mt={3} mb={1} textAlign="center">
                                 <MDTypography
                                     component="a"
@@ -444,8 +391,6 @@ function Basic() {
                     )}
                 </MDBox>
             </Card>
-
-            {/* ✅ 스낵바 컴포넌트 추가 */}
             <MDSnackbar
                 color={snackbar.color}
                 icon={snackbar.color === "success" ? "check" : "warning"}

@@ -36,21 +36,27 @@ public class MyPageController {
         User user = userService.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
 
-        List<Rental> allRentals = rentalService.findByUser(user);
+        // 1. 특정 사용자의 모든 대여 내역을 ID 기반으로 조회합니다.
+        List<Rental> allRentals = rentalService.findByUserId(userId);
 
+        // 2. 현재 대여 중인 내역의 수를 계산합니다.
         long rentalsInProgress = allRentals.stream()
                 .filter(rental -> rental.getStatus() != null && "RENTED".equals(rental.getStatus().toString()))
                 .count();
 
+        // 3. 미납된 벌점이 있는지 확인합니다.
         boolean hasUnpaidPenalty = false;
         try {
-            Penalty penalty = penaltyService.getPenaltyByUser(user);
-            hasUnpaidPenalty = !penalty.isPaid();
+            List<Penalty> penalties = penaltyService.getPenaltiesByUser(user);
+            hasUnpaidPenalty = penalties.stream()
+                    .anyMatch(penalty -> !penalty.isPaid());
         } catch (IllegalArgumentException e) {
             hasUnpaidPenalty = false;
         }
 
+        // 4. 최근 대여 내역 5개를 DTO로 변환합니다.
         List<MyPageResponseDTO.RecentRentalDTO> recentRentals = allRentals.stream()
+                .sorted((r1, r2) -> r2.getCreatedAt().compareTo(r1.getCreatedAt())) // 최신순 정렬
                 .limit(5)
                 .map(rental -> {
                     String itemName = (rental.getItem() != null) ? rental.getItem().getName() : "알 수 없는 장비";
@@ -70,6 +76,7 @@ public class MyPageController {
                 })
                 .collect(Collectors.toList());
 
+        // 5. 모든 정보를 담은 최종 DTO를 반환합니다.
         MyPageResponseDTO response = MyPageResponseDTO.builder()
                 .userName(user.getName())
                 .summary(MyPageResponseDTO.SummaryDTO.builder()
