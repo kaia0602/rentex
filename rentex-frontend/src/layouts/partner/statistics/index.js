@@ -1,11 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import MDBox from "components/MDBox";
@@ -15,7 +13,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-import api from "api/client"; // ✅ 수정됨
+import api from "api/client";
 
 const nf = new Intl.NumberFormat("ko-KR");
 const NOW = new Date();
@@ -25,9 +23,9 @@ const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
 export default function PartnerStatisticsIndex() {
   const [year, setYear] = useState(NOW.getFullYear());
   const [month, setMonth] = useState(NOW.getMonth() + 1);
-  const [partnerId, setPartnerId] = useState(""); // 미입력 시 1로 처리
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
+  const [userId, setUserId] = useState(12);
 
   const columns = useMemo(
     () => [
@@ -57,33 +55,10 @@ export default function PartnerStatisticsIndex() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      let pid = partnerId?.toString().trim() ? Number(partnerId) : null;
+      const res = await api.get(`/partner/statistics/${userId}`, { params: { year, month } });
+      if (res.status !== 200) throw new Error(`detail ${res.status}`);
 
-      if (pid == null) {
-        const listRes = await api.get(`/partner/statistics`, { params: { year, month } });
-        if (listRes.status !== 200) throw new Error(`summary ${listRes.status}`);
-        const list = Array.isArray(listRes.data) ? listRes.data : [];
-        if (list.length === 0) {
-          setData({
-            totalRentals: 0,
-            totalQuantity: 0,
-            totalDays: 0,
-            totalRevenue: 0,
-            details: [],
-          });
-          setLoading(false);
-          return;
-        }
-        pid = list[0].partnerId;
-        setPartnerId(String(pid));
-      }
-
-      const detailRes = await api.get(`/partner/statistics/${pid}`, {
-        params: { year, month },
-      });
-      if (detailRes.status !== 200) throw new Error(`detail ${detailRes.status}`);
-
-      const payload = detailRes.data ?? {};
+      const payload = res.data ?? {};
       const details = Array.isArray(payload.details)
         ? payload.details
         : Array.isArray(payload)
@@ -124,6 +99,12 @@ export default function PartnerStatisticsIndex() {
       setLoading(false);
     }
   };
+
+  // 최초 + 연/월 변경 시 자동 조회
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [year, month]);
 
   const printStatement = () => {
     if (!data) {
@@ -225,11 +206,6 @@ export default function PartnerStatisticsIndex() {
     );
   };
 
-  useEffect(() => {
-    fetchData(); // 초기 1회 로딩
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year, month]);
-
   return (
     <DashboardLayout>
       <DashboardNavbar />
@@ -238,6 +214,7 @@ export default function PartnerStatisticsIndex() {
           <Grid item>
             <MDTypography variant="h5">내 월별 통계</MDTypography>
           </Grid>
+
           <Grid item>
             <Select value={year} onChange={(e) => setYear(Number(e.target.value))} size="small">
               {YEARS.map((y) => (

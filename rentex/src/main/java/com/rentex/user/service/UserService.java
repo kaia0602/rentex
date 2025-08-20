@@ -54,6 +54,10 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
 
+        // userType이 null이면 USER로 기본 세팅
+//        String role = (requestDTO.getUserType() == null) ? "USER" : requestDTO.getUserType().toUpperCase();
+
+        // userType 기반 role 결정 (서버에서만)
         String role = "USER";
         if ("PARTNER".equalsIgnoreCase(requestDTO.getUserType())) {
             role = "PARTNER";

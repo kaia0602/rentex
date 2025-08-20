@@ -18,13 +18,24 @@ public class PartnerController {
     private final UserService userService;
 
     /** 파트너 생성 (회원가입 시 role = PARTNER 강제 세팅) */
+//    @PostMapping
+//    public ResponseEntity<Long> create(@RequestBody SignUpRequestDTO dto) {
+//        dto.setUserType("PARTNER"); // ✅ role 강제 지정
+//        Long savedId = userService.signUp(dto);
+//        return ResponseEntity.ok(savedId);
+//    }
+
+    /** 파트너 생성 (회원가입 DTO에서 userType 확인 후 서버에서 role 결정) */
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody SignUpRequestDTO dto) {
-        dto.setUserType("PARTNER"); // ✅ role 강제 지정
+        // 서버가 결정: userType이 PARTNER이면 role = PARTNER, 아니면 USER
+        if (!"PARTNER".equalsIgnoreCase(dto.getUserType())) {
+            throw new IllegalArgumentException("파트너 회원만 생성할 수 있습니다.");
+        }
+
         Long savedId = userService.signUp(dto);
         return ResponseEntity.ok(savedId);
     }
-
     /** 전체 파트너 조회 */
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAll() {

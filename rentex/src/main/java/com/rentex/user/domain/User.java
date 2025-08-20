@@ -35,7 +35,8 @@ public class User extends BaseTimeEntity {
 
     // USER / PARTNER / ADMIN
     @Column(nullable = false, length = 20)
-    private String role;
+    @Builder.Default
+    private String role = "USER";
 
     @Builder.Default
     private int penaltyPoints = 0;
