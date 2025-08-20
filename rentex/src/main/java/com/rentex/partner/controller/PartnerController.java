@@ -17,14 +17,6 @@ public class PartnerController {
 
     private final UserService userService;
 
-    /** 파트너 생성 (회원가입 시 role = PARTNER 강제 세팅) */
-//    @PostMapping
-//    public ResponseEntity<Long> create(@RequestBody SignUpRequestDTO dto) {
-//        dto.setUserType("PARTNER"); // ✅ role 강제 지정
-//        Long savedId = userService.signUp(dto);
-//        return ResponseEntity.ok(savedId);
-//    }
-
     /** 파트너 생성 (회원가입 DTO에서 userType 확인 후 서버에서 role 결정) */
     @PostMapping
     public ResponseEntity<Long> create(@RequestBody SignUpRequestDTO dto) {

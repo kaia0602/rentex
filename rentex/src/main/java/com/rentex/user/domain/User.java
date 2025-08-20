@@ -75,6 +75,23 @@ public class User extends BaseTimeEntity {
         this.password = newPassword;
     }
 
+    // 파트너 전용 필드 업데이트
+    public void updateBusinessNo(String businessNo) {
+        this.businessNo = businessNo;
+    }
+
+    public void updateContactEmail(String contactEmail) {
+        this.contactEmail = contactEmail;
+    }
+
+    public void updateContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public void updateName(String name) { // 업체명 (일반 유저도 가능)
+        this.name = name;
+    }
+
     // ==== 벌점 처리 ====
     public void addPenalty(int points) {
         this.penaltyPoints += points;
