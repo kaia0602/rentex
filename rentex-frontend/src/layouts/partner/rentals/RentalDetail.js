@@ -167,12 +167,14 @@ function PartnerRentalDetail() {
                       <MDTypography variant="button" color="text">
                         상태
                       </MDTypography>
-                      <Chip
-                        label={rental.statusLabel || rental.status}
-                        color={statusColors[rental.status] || "default"}
-                        variant="outlined"
-                        sx={{ fontWeight: "bold", mt: 1 }}
-                      />
+                      <MDBox mt={1}>
+                        <Chip
+                          label={rental.statusLabel || rental.status}
+                          color={statusColors[rental.status] || "default"}
+                          variant="outlined"
+                          sx={{ fontWeight: "bold" }}
+                        />
+                      </MDBox>
                     </Grid>
 
                     <Grid item xs={12} sm={6}>
@@ -181,6 +183,15 @@ function PartnerRentalDetail() {
                       </MDTypography>
                       <MDTypography variant="h6" color="info" fontWeight="medium">
                         {formatDateTime(rental.createdAt)}
+                      </MDTypography>
+                    </Grid>
+
+                    <Grid item xs={12} sm={6}>
+                      <MDTypography variant="button" color="text">
+                        대여료
+                      </MDTypography>
+                      <MDTypography variant="h6" color="success" fontWeight="medium">
+                        {rental.totalFee?.toLocaleString()} 원
                       </MDTypography>
                     </Grid>
                   </Grid>
@@ -236,19 +247,38 @@ function PartnerRentalDetail() {
                   {history.map((h, idx) => (
                     <TimelineItem key={idx}>
                       <TimelineSeparator>
-                        <TimelineDot color="primary" />
+                        <TimelineDot
+                          color={
+                            h.toStatus === "APPROVED"
+                              ? "info"
+                              : h.toStatus === "RENTED"
+                              ? "success"
+                              : h.toStatus === "RETURN_REQUESTED"
+                              ? "warning"
+                              : h.toStatus === "RETURNED"
+                              ? "primary"
+                              : "secondary"
+                          }
+                        />
                         {idx < history.length - 1 && <TimelineConnector />}
                       </TimelineSeparator>
                       <TimelineContent>
+                        {/* ✅ 한글 상태명 */}
                         <MDTypography variant="body2" fontWeight="medium">
-                          {h.toStatus}
+                          {h.toStatusLabel}
                         </MDTypography>
+
+                        {/* 시간 */}
                         <MDTypography variant="caption" color="info" fontWeight="medium">
-                          {formatDateTime(h.createdAt)} {/* ✅ T 제거, 분까지만 */}
+                          {formatDateTime(h.createdAt)}
                         </MDTypography>
-                        <MDTypography variant="caption" color="text.secondary" display="block">
-                          {h.actor} – {h.description}
-                        </MDTypography>
+
+                        {/* 닉네임 + 메시지 */}
+                        {h.actorName && (
+                          <MDTypography variant="caption" color="text.secondary" display="block">
+                            {h.actorName} – {h.message || ""}
+                          </MDTypography>
+                        )}
                       </TimelineContent>
                     </TimelineItem>
                   ))}

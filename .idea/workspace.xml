@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-up/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/authentication/sign-up/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/domain/BaseTimeEntity$BaseTimeEntityBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/global/domain/BaseTimeEntity$BaseTimeEntityBuilder.class" afterDir="false" />
@@ -14,6 +15,16 @@
       <change beforePath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$RentalInfo$RentalInfoBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/build/classes/java/main/com/rentex/user/dto/MyPageDTO$RentalInfo$RentalInfoBuilder.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rentex/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/rental/dto/RentalRequestDTO.java" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/utils/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/utils/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/AdminPenaltyUserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/AdminPenaltyUserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/AdminPenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/AdminPenaltyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" afterDir="false" />
+>>>>>>> origin/feature/rentaladd
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,12 +87,18 @@
     &quot;Gradle.rentex 빌드.executor&quot;: &quot;Run&quot;,
     &quot;Gradle.소스 다운로드.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+<<<<<<< HEAD
     &quot;Node.js.TestDashboard.jsx.executor&quot;: &quot;Run&quot;,
+=======
+    &quot;Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;데이터베이스 연결 매개변수가 발견됨&quot;,
+    &quot;Notification.DoNotAsk-DatabaseConfigFileWatcher.found&quot;: &quot;true&quot;,
+>>>>>>> origin/feature/rentaladd
     &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
     &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
     &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
     &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+<<<<<<< HEAD
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
@@ -105,6 +122,20 @@
     &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.prettier&quot;,
     &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2025.1.2\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+=======
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.RentexApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/penalty-payment&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Administrator/Documents/rentex&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
+>>>>>>> origin/feature/rentaladd
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -152,6 +183,7 @@
       <workItem from="1754617068649" duration="10770000" />
       <workItem from="1754976553776" duration="4659000" />
       <workItem from="1755041502590" duration="8891000" />
+<<<<<<< HEAD
       <workItem from="1755134215349" duration="881000" />
       <workItem from="1755135317015" duration="16105000" />
       <workItem from="1755158671004" duration="682000" />
@@ -159,6 +191,11 @@
       <workItem from="1755170932195" duration="2949000" />
       <workItem from="1755390082927" duration="4843000" />
       <workItem from="1755433214886" duration="8489000" />
+=======
+      <workItem from="1755129717892" duration="13248000" />
+      <workItem from="1755562112072" duration="19961000" />
+      <workItem from="1755648400117" duration="8818000" />
+>>>>>>> origin/feature/rentaladd
     </task>
     <servers />
   </component>

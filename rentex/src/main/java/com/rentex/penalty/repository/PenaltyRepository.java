@@ -1,6 +1,7 @@
 package com.rentex.penalty.repository;
 
 import com.rentex.penalty.domain.Penalty;
+import com.rentex.penalty.domain.PenaltyStatus;
 import com.rentex.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -48,7 +49,7 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
      * 특정 유저의 모든 패널티를 초기화 (0점, 납부처리)
      */
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE Penalty p SET p.point = 0, p.paid = true WHERE p.user.id = :userId")
+    @Query("UPDATE Penalty p SET p.point = 0, p.paid = true, p.status = 'DELETED' WHERE p.user.id = :userId")
     void resetPenalty(@Param("userId") Long userId);
 
     /**
@@ -59,4 +60,31 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Penalty p SET p.point = p.point + :point, p.paid = false WHERE p.user.id = :userId")
     void increasePenalty(@Param("userId") Long userId, @Param("point") int point);
+<<<<<<< HEAD
 }
+=======
+
+    /** 특정 유저의 패널티 전체 조회 (User 함께 fetch) */
+    @Query("""
+        SELECT p
+        FROM Penalty p
+        JOIN FETCH p.user u
+        WHERE u.id = :userId
+    """)
+    List<Penalty> findAllByUserId(@Param("userId") Long userId);
+
+    long countByUserAndStatus(User user, PenaltyStatus status);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        update Penalty p
+           set p.status = :to,
+               p.deletedAt = CURRENT_TIMESTAMP
+         where p.user = :user
+           and p.status = :from
+    """)
+    int bulkUpdateStatusByUser(User user,
+                               PenaltyStatus from,
+                               PenaltyStatus to);
+}
+>>>>>>> origin/feature/rentaladd

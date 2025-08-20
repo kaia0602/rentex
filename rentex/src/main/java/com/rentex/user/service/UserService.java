@@ -171,14 +171,18 @@ public class UserService {
         return MyPageDTO.from(user, rentals, penalties);
     }
 
+<<<<<<< HEAD
     /**
      * 프로필 수정
      */
+=======
+>>>>>>> origin/feature/rentaladd
     @Transactional
     public void updateProfile(Long userId, ProfileUpdateRequestDTO requestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+<<<<<<< HEAD
         if (requestDTO.getName() != null && !requestDTO.getName().isBlank()) {
             user.setName(requestDTO.getName());
         }
@@ -191,6 +195,22 @@ public class UserService {
             if (user instanceof Partner partner) {
                 partner.setContactPhone(requestDTO.getPhone());
             }
+=======
+        if (requestDTO.getNickname() != null) {
+            user.updateNickname(requestDTO.getNickname());
+        }
+        if (requestDTO.getBusinessNo() != null) {
+            user.updateBusinessNo(requestDTO.getBusinessNo());
+        }
+        if (requestDTO.getContactEmail() != null) {
+            user.updateContactEmail(requestDTO.getContactEmail());
+        }
+        if (requestDTO.getContactPhone() != null) {
+            user.updateContactPhone(requestDTO.getContactPhone());
+        }
+        if (requestDTO.getName() != null) { // 업체명
+            user.updateName(requestDTO.getName());
+>>>>>>> origin/feature/rentaladd
         }
     }
 
@@ -213,7 +233,16 @@ public class UserService {
         }
 
         penaltyRepository.deleteByUser_Id(userId);
+<<<<<<< HEAD
         user.withdraw(); // Soft Delete
+=======
+
+        // soft delete
+        user.withdraw();
+
+        // hard delete 하고 싶으면 이걸로 교체:
+//         userRepository.deleteById(userId);
+>>>>>>> origin/feature/rentaladd
     }
 
     /**

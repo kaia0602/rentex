@@ -105,7 +105,7 @@ function PartnerItemDetail() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.put(`/api/partner/items/${id}`, buildFormData(), {
+      await api.put(`/partner/items/${id}`, buildFormData(), {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("수정 성공!");
