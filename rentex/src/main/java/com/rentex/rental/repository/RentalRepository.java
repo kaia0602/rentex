@@ -3,7 +3,6 @@ package com.rentex.rental.repository;
 import com.rentex.item.domain.Item;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
-
 import com.rentex.user.domain.User; // ✅ 우리 도메인 User import
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,30 +35,33 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query("SELECT r FROM Rental r WHERE r.user.id = :userId")
     List<Rental> findByUserId(@Param("userId") Long userId);
 
+    /** 대여 가능 여부 확인 시 기간 겹치는 렌탈 조회 */
     @Query("""
-    SELECT r FROM Rental r
-    WHERE r.item.id = :itemId
-      AND r.status IN ('REQUESTED', 'APPROVED', 'RENTED')
-      AND (
-            (r.startDate <= :endDate AND r.endDate >= :startDate)
-          )
-""")
+        SELECT r FROM Rental r
+        WHERE r.item.id = :itemId
+          AND r.status IN ('REQUESTED', 'APPROVED', 'SHIPPED', 'RECEIVED')
+          AND (
+                (r.startDate <= :endDate AND r.endDate >= :startDate)
+              )
+    """)
     List<Rental> findConflictingRentals(
             @Param("itemId") Long itemId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
 
-    @Query("SELECT r FROM Rental r WHERE r.status = 'RENTED' AND r.endDate < :today AND r.isOverdue = false")
+    /** 연체된 렌탈 조회 (RECEIVED 상태에서 반납기한 초과) */
+    @Query("SELECT r FROM Rental r WHERE r.status = 'RECEIVED' AND r.endDate < :today AND r.isOverdue = false")
     List<Rental> findOverdueRentals(@Param("today") LocalDate today);
 
+    /** 특정 아이템이 주어진 기간에 이미 예약/대여 중인지 여부 */
     @Query("""
-    SELECT COUNT(r) > 0
-    FROM Rental r
-    WHERE r.item.id = :itemId
-      AND r.status IN ('APPROVED', 'RENTED', 'RETURN_REQUESTED')
-      AND r.startDate <= :endDate
-      AND r.endDate >= :startDate
+        SELECT COUNT(r) > 0
+        FROM Rental r
+        WHERE r.item.id = :itemId
+          AND r.status IN ('APPROVED', 'SHIPPED', 'RECEIVED', 'RETURN_REQUESTED')
+          AND r.startDate <= :endDate
+          AND r.endDate >= :startDate
     """)
     boolean existsConflictingRental(@Param("itemId") Long itemId,
                                     @Param("startDate") LocalDate startDate,
@@ -92,7 +94,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     /** 특정 파트너의 요청 상태별 대여 목록 조회 */
     Page<Rental> findByItemPartnerIdAndStatus(Long partnerId, RentalStatus status, Pageable pageable);
 
-    /** 특정파트너의 전체 조회 목록*/
+    /** 특정 파트너의 전체 조회 목록 */
     @Query("SELECT r FROM Rental r " +
             "JOIN r.item i " +
             "WHERE i.partner.id = :partnerId " +
@@ -101,6 +103,3 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
                                             @Param("status") RentalStatus status,
                                             Pageable pageable);
 }
-
-
-

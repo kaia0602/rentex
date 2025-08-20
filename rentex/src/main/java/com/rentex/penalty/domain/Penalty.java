@@ -1,10 +1,13 @@
 package com.rentex.penalty.domain;
 
 import com.rentex.global.domain.BaseTimeEntity;
+import com.rentex.rental.domain.Rental;
 import com.rentex.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -32,6 +35,11 @@ public class Penalty extends BaseTimeEntity {
 
     private boolean paid;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rental_id", nullable = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)   // 렌탈 삭제 시 rental_id = null
+    private Rental rental;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
     private PenaltyStatus status = PenaltyStatus.VALID;
@@ -57,8 +65,8 @@ public class Penalty extends BaseTimeEntity {
         this.status = PenaltyStatus.DELETED;
         this.deletedAt = LocalDateTime.now();
     }
-    public void markCleared() {
+    public void markCleared(LocalDateTime clearedAt) {
         this.status = PenaltyStatus.CLEARED;
-        this.clearedAt = LocalDateTime.now();
+        this.clearedAt = clearedAt;
     }
 }

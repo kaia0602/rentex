@@ -5,9 +5,13 @@ import com.rentex.item.domain.Item;
 import com.rentex.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,7 +33,7 @@ public class Rental extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Item item;
 
-    // 현재 대여 상태 (REQUESTED, APPROVED, RENTED, RETURN_REQUESTED, RETURNED)
+    // 현재 대여 상태 (REQUESTED → APPROVED → SHIPPED → RECEIVED → RETURN_REQUESTED → RETURNED)
     @Enumerated(EnumType.STRING)
     private RentalStatus status;
 
@@ -42,10 +46,10 @@ public class Rental extends BaseTimeEntity {
     // 대여 종료 예정일
     private LocalDate endDate;
 
-    // 실제 대여가 시작된 시점 (관리자가 수령 승인한 시점)
+    // 실제 대여가 시작된 시점 (사용자가 수령 확인한 시점)
     private LocalDateTime rentedAt;
 
-    // 실제 반납이 완료된 시점 (관리자가 반납 승인한 시점)
+    // 실제 반납이 완료된 시점 (파트너가 반납 승인한 시점)
     @Setter
     private LocalDateTime returnedAt;
 
@@ -60,6 +64,10 @@ public class Rental extends BaseTimeEntity {
 
     // 파트너가 반납 검수한 시각
     private LocalDateTime partnerReturnCheckedAt;
+
+    @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)   // 렌탈 삭제 시 히스토리도 함께 삭제
+    private List<RentalHistory> histories = new ArrayList<>();
 
     // 연체 여부
     @Builder.Default
@@ -84,12 +92,12 @@ public class Rental extends BaseTimeEntity {
         this.status = newStatus;
     }
 
-    // 대여 시작 처리 메서드 (APPROVED → RENTED)
-    public void start() {
-        if (this.status != RentalStatus.APPROVED) {
-            throw new IllegalStateException("승인된 상태여야 수령할 수 있습니다.");
+    // 사용자 수령 처리 메서드 (SHIPPED → RECEIVED)
+    public void receive() {
+        if (this.status != RentalStatus.SHIPPED) {
+            throw new IllegalStateException("배송 중 상태여야 수령할 수 있습니다.");
         }
-        this.status = RentalStatus.RENTED;
-        this.rentedAt = LocalDateTime.now();
+        this.status = RentalStatus.RECEIVED;
+        this.rentedAt = LocalDateTime.now(); // ✅ 수령 시점을 대여 시작점으로 기록
     }
 }

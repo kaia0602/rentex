@@ -35,6 +35,11 @@ public class Payment {
     @Column(nullable = false, length = 20)
     private PaymentStatus status;
 
+    // 결제 유형 (대여/벌점)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PaymentType type;
+
     // 결제 일시
     @Column(nullable = false)
     private LocalDateTime paidAt;

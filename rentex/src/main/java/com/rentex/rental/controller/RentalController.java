@@ -58,14 +58,25 @@ public class RentalController {
         return ResponseEntity.ok().build();
     }
 
-    /** 장비 수령 처리 (PARTNER, ADMIN 가능) */
-    @PatchMapping("/{rentalId}/start")
-    public ResponseEntity<Void> startRental(
+    /** 장비 배송 처리 (PARTNER, ADMIN 가능) */
+    @PatchMapping("/{rentalId}/ship")
+    public ResponseEntity<Void> shipRental(
             @PathVariable Long rentalId,
             Principal principal
     ) {
         User user = userService.getUserById(Long.parseLong(principal.getName()));
-        rentalService.startRental(rentalId, user);
+        rentalService.shipRental(rentalId, user);
+        return ResponseEntity.ok().build();
+    }
+
+    /** 장비 수령 확인 (USER, ADMIN 가능) */
+    @PatchMapping("/{rentalId}/receive")
+    public ResponseEntity<Void> confirmReceiveRental(
+            @PathVariable Long rentalId,
+            Principal principal
+    ) {
+        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        rentalService.confirmReceiveRental(rentalId, user);
         return ResponseEntity.ok().build();
     }
 

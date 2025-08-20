@@ -53,6 +53,11 @@ public class RentalService {
 
     // 대여 요청 생성 (USER 또는 ADMIN)
     public void requestRental(RentalRequestDto requestDto, User actor) {
+        // 벌점 차단
+        if (actor.getPenaltyPoints() >= 3) {
+            throw new AccessDeniedException("벌점 3점 이상으로 대여가 제한되었습니다. 패널티 결제를 먼저 진행하세요.");
+        }
+
         Item item = itemRepository.findById(requestDto.itemId())
                 .orElseThrow(() -> new ItemNotFoundException("해당 장비가 존재하지 않습니다."));
 
@@ -62,14 +67,14 @@ public class RentalService {
 
         boolean isOverlapping = rentalRepository.existsByItemAndStatusIn(
                 item,
-                List.of(RentalStatus.REQUESTED, RentalStatus.APPROVED, RentalStatus.RENTED)
+                List.of(RentalStatus.REQUESTED, RentalStatus.APPROVED, RentalStatus.SHIPPED, RentalStatus.RECEIVED)
         );
         if (isOverlapping) {
             throw new ItemUnavailableException("이미 대여 중이거나 승인 대기 중인 장비입니다.");
         }
 
         Rental rental = Rental.builder()
-                .user(getManagedActor(actor)) // ✅ 영속화된 user 저장
+                .user(getManagedActor(actor))
                 .item(item)
                 .quantity(requestDto.quantity())
                 .startDate(requestDto.startDate())
@@ -119,25 +124,56 @@ public class RentalService {
         ));
     }
 
-    // 장비 수령 처리 (PARTNER 또는 ADMIN)
-    public void startRental(Long rentalId, User actor) {
+    // 장비 배송 처리 (PARTNER 또는 ADMIN)
+    public void shipRental(Long rentalId, User actor) {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RentalNotFoundException("해당 대여 정보를 찾을 수 없습니다."));
 
         if (rental.getStatus() != RentalStatus.APPROVED) {
-            throw new InvalidRentalStateException("승인 상태여야 수령이 가능합니다.");
+            throw new InvalidRentalStateException("승인된 상태여야 배송할 수 있습니다.");
         }
 
-        rental.start();
+        RentalStatus from = rental.getStatus();
+        rental.changeStatus(RentalStatus.SHIPPED);
 
         User managedActor = getManagedActor(actor);
         rentalHistoryRepository.save(
                 RentalHistory.of(
                         rental,
-                        RentalStatus.APPROVED,
-                        RentalStatus.RENTED,
+                        from,
+                        RentalStatus.SHIPPED,
                         getActorType(managedActor),
-                        "장비를 수령 처리함",
+                        "장비를 배송 처리함",
+                        managedActor
+                )
+        );
+    }
+
+    // 장비 수령 확인 (USER 또는 ADMIN)
+    public void confirmReceiveRental(Long rentalId, User actor) {
+        Rental rental = rentalRepository.findById(rentalId)
+                .orElseThrow(() -> new RentalNotFoundException("해당 대여 정보를 찾을 수 없습니다."));
+
+        if (rental.getStatus() != RentalStatus.SHIPPED) {
+            throw new InvalidRentalStateException("배송 중 상태여야 수령 확인이 가능합니다.");
+        }
+
+        if (!rental.getUser().getId().equals(actor.getId())
+                && !"ADMIN".equals(actor.getRole())) {
+            throw new AccessDeniedException("본인 대여건만 수령 확인 가능합니다.");
+        }
+
+        RentalStatus from = rental.getStatus();
+        rental.receive(); // ✅ 엔티티 메서드 (status=RECEIVED, rentedAt 기록)
+
+        User managedActor = getManagedActor(actor);
+        rentalHistoryRepository.save(
+                RentalHistory.of(
+                        rental,
+                        from,
+                        RentalStatus.RECEIVED,
+                        getActorType(managedActor),
+                        "장비 수령을 확인했습니다.",
                         managedActor
                 )
         );
@@ -148,8 +184,8 @@ public class RentalService {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RentalNotFoundException("해당 대여가 없습니다."));
 
-        if (rental.getStatus() != RentalStatus.RENTED) {
-            throw new InvalidRentalStateException("대여중 상태여야 반납 요청이 가능합니다.");
+        if (rental.getStatus() != RentalStatus.RECEIVED) { // ✅ RENTED → RECEIVED
+            throw new InvalidRentalStateException("수령 완료 상태여야 반납 요청이 가능합니다.");
         }
 
         if (!rental.getUser().getId().equals(actor.getId())

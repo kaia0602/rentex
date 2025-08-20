@@ -10,6 +10,7 @@ public record PaymentResponseDTO(
         int amount,
         String method,
         String status,
+        String type,              // RENTAL / PENALTY 구분 추가
         LocalDateTime paidAt
 ) {
     public static PaymentResponseDTO from(Payment payment) {
@@ -18,6 +19,7 @@ public record PaymentResponseDTO(
                 .amount(payment.getAmount())
                 .method(payment.getMethod().name())
                 .status(payment.getStatus().name())
+                .type(payment.getType().name())     // PaymentType 매핑
                 .paidAt(payment.getPaidAt())
                 .build();
     }

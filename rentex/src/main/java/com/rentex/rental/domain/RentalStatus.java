@@ -1,11 +1,12 @@
 package com.rentex.rental.domain;
 
 public enum RentalStatus {
-    REQUESTED("요청됨", "gray"),
-    APPROVED("승인됨", "blue"),
-    RENTED("대여중", "green"),
-    RETURN_REQUESTED("반납 요청", "orange"),
-    RETURNED("반납 완료", "black"),
+    REQUESTED("대여 요청", "gray"),          // 사용자
+    APPROVED("대여 승인", "blue"),          // 파트너
+    SHIPPED("배송 중", "cyan"),             // 파트너
+    RECEIVED("장비 수령", "green"),         // 사용자
+    RETURN_REQUESTED("반납 요청", "orange"), // 사용자
+    RETURNED("반납 완료", "black"),         // 파트너
     CANCELED("취소됨", "lightgray"),
     REJECTED("거절됨", "red");
 

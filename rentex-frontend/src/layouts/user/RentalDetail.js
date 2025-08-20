@@ -181,6 +181,7 @@ function RentalDetail() {
 
               {/* 버튼 & 안내 영역 */}
               <MDBox display="flex" justifyContent="flex-end" gap={1}>
+                {/* 목록 이동 버튼 */}
                 <MDButton
                   variant="outlined"
                   color="dark"
@@ -190,7 +191,28 @@ function RentalDetail() {
                   목록으로
                 </MDButton>
 
-                {rental.status === "RENTED" && (
+                {/* 상태별 버튼 */}
+                {rental.status === "SHIPPED" && (
+                  <MDButton
+                    variant="contained"
+                    color="success"
+                    sx={{ minWidth: 140 }}
+                    onClick={async () => {
+                      try {
+                        await api.patch(`/rentals/${id}/receive`);
+                        alert("수령 확인이 완료되었습니다.");
+                        fetchRentalDetail();
+                        fetchHistory();
+                      } catch (err) {
+                        alert("수령 확인 실패");
+                      }
+                    }}
+                  >
+                    수령 확인
+                  </MDButton>
+                )}
+
+                {rental.status === "RECEIVED" && (
                   <MDButton
                     variant="contained"
                     color="warning"
@@ -202,8 +224,7 @@ function RentalDetail() {
                         fetchRentalDetail();
                         fetchHistory();
                       } catch (err) {
-                        console.error("❌ 반납 요청 실패:", err);
-                        alert("반납 요청에 실패했습니다.");
+                        alert("반납 요청 실패");
                       }
                     }}
                   >
@@ -246,7 +267,7 @@ function RentalDetail() {
                   }}
                 >
                   <MDTypography variant="body2" color="info" fontWeight="medium">
-                    관리자가 승인했습니다. 파트너가 장비 수령을 확인할 때까지 기다려주세요.
+                    관리자가 승인했습니다. 장비 배송 준비중입니다.
                   </MDTypography>
                 </Card>
               )}
@@ -301,17 +322,12 @@ function RentalDetail() {
                         {idx < history.length - 1 && <TimelineConnector />}
                       </TimelineSeparator>
                       <TimelineContent>
-                        {/* ✅ 한글 상태 라벨 표시 */}
                         <MDTypography variant="body2" fontWeight="medium">
                           {h.toStatusLabel || h.toStatus}
                         </MDTypography>
-
-                        {/* 시간 */}
                         <MDTypography variant="caption" color="info" fontWeight="medium">
                           {formatDateTime(h.createdAt)}
                         </MDTypography>
-
-                        {/* 닉네임 + 메시지 */}
                         <MDTypography variant="caption" color="text.secondary" display="block">
                           {h.actorName} – {h.message || ""}
                         </MDTypography>

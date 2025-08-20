@@ -97,6 +97,14 @@ public class User extends BaseTimeEntity {
         this.penaltyPoints += points;
     }
 
+    public void decreasePenalty(int points) {
+        this.penaltyPoints = Math.max(0, this.penaltyPoints - points);
+    }
+
+    public void resetPenaltyPoints() {
+        this.penaltyPoints = 0;
+    }
+
     // ==== 탈퇴 처리 ====
     public void withdraw() {
         this.withdrawnAt = LocalDateTime.now();
