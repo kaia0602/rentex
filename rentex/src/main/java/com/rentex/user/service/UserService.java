@@ -129,8 +129,16 @@ public class UserService {
             throw new IllegalArgumentException("소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
         }
 
+        // 이전 비밀번호와 같은지 확인
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("새로운 비밀번호는 이전 비밀번호와 같을 수 없습니다.");
+        }
+
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.updatePassword(encodedPassword);
+
+        userRepository.save(user);
+
     }
 
     @Transactional(readOnly = true)
@@ -186,9 +194,26 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
+    /**
+     * 이메일 또는 ID로 사용자를 조회합니다.
+     * 전달된 문자열이 숫자 형식이면 ID로, 그렇지 않으면 이메일로 조회합니다.
+     *
+     * @param emailOrId 사용자 이메일 또는 ID 문자열
+     * @return 조회된 User 객체
+     * @throws IllegalArgumentException 사용자를 찾을 수 없을 때 발생
+     */
     @Transactional(readOnly = true)
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + email));
+    public User getUserByEmail(String emailOrId) {
+        // ✅ [수정] 전달된 값이 숫자인지 판별하는 로직 추가
+        if (emailOrId != null && emailOrId.matches("\\d+")) {
+            // 숫자 형식일 경우, Long으로 변환하여 ID로 사용자를 조회
+            Long userId = Long.parseLong(emailOrId);
+            return userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
+        } else {
+            // 기존 로직: 이메일로 사용자를 조회합니다.
+            return userRepository.findByEmail(emailOrId)
+                    .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + emailOrId));
+        }
     }
 }

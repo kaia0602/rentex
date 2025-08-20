@@ -1,7 +1,6 @@
 package com.rentex.user.service;
 
 
-import com.rentex.user.repository.UserRepository;
 import com.rentex.user.domain.User;
 import com.rentex.user.repository.UserRepository;
 import lombok.Getter;
@@ -10,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -36,10 +35,8 @@ public class VerificationService {
 
         verificationCodes.put(email, new VerificationInfo(code, expirationTime));
 
-        // ✅ HTML 템플릿 생성 메서드를 호출하여 내용을 만듭니다.
         String htmlContent = createPasswordResetEmailTemplate(code);
 
-        // ✅ 생성된 HTML 내용을 이메일로 발송합니다.
         emailService.sendHtmlMessage(
                 email,
                 "[Rentex] 비밀번호 재설정 인증 코드입니다.",

@@ -1,10 +1,11 @@
 package com.rentex.user.controller;
 
+import com.rentex.user.service.UserService;
 import com.rentex.user.service.VerificationService;
-import com.rentex.user.service.UserService; // 기존 UserService
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @RestController
@@ -19,7 +20,6 @@ public class PasswordResetController {
     @PostMapping("/request")
     public ResponseEntity<String> requestPasswordReset(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
-        // TODO: 해당 이메일이 DB에 존재하는지 먼저 확인하는 로직 추가하면 더 좋음
         verificationService.generateAndSendCode(email);
         return ResponseEntity.ok("인증 코드가 이메일로 발송되었습니다.");
     }
@@ -32,10 +32,16 @@ public class PasswordResetController {
         String newPassword = payload.get("newPassword");
 
         if (verificationService.verifyCode(email, code)) {
-            userService.resetPassword(email, newPassword); // UserService에 이 메서드 추가 필요
+            userService.resetPassword(email, newPassword);
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
         } else {
             return ResponseEntity.badRequest().body("인증 코드가 유효하지 않습니다.");
         }
+    }
+
+    // 3. 구비밀번호와 신비밀번호가 같을 시 나타나는 에러코드를 캐치
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
 }

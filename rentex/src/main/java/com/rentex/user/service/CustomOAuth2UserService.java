@@ -34,12 +34,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails()
                 .getUserInfoEndpoint().getUserNameAttributeName();
 
-        // OAuthAttributes를 통해 제공자별로 다른 사용자 정보를 표준화합니다.
+        // OAuthAttributes를 통해 제공자별로 다른 사용자 정보를 표준화
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
 
-        // [수정] 어떤 소셜 로그인이든 공통된 키(email, name)로 정보를 꺼낼 수 있도록 데이터를 평탄화합니다.
+        // [수정] 어떤 소셜 로그인이든 공통된 키(email, name)로 정보를 꺼낼 수 있도록 데이터를 평탄화
         Map<String, Object> principalAttributes = new HashMap<>(attributes.getAttributes());
         principalAttributes.put("email", attributes.getEmail());
         principalAttributes.put("name", attributes.getName());

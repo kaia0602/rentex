@@ -9,6 +9,7 @@ import com.rentex.user.service.EmailService;
 import com.rentex.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private static final String REFRESH_COOKIE = "refresh_token";
@@ -80,11 +82,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO req, HttpServletResponse res) {
         try {
+
             // 이메일 인증 상태 확인
             User user = userService.findByEmail(req.getEmail())
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
             if (user.getStatus() != User.UserStatus.ACTIVE) {
+                log.warn("로그인 실패: 이메일 미인증 사용자. 이메일: {}", req.getEmail());
                 return ResponseEntity.status(401).body("로그인 실패: 이메일 인증이 필요합니다.");
             }
 
@@ -93,16 +97,19 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
             );
 
-            // --- 개선안 적용 ---
             // 2) Access Token 발급 (DB의 최신 Role 사용)
             String authorities = auth.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(","));
+
             String accessToken = jwtTokenProvider.createAccessToken(user.getId(), authorities);
 
             // 3) Refresh Token 발급 (보안을 위해 권한 미포함)
             String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
-            // --- 개선안 적용 끝 ---
+
+            // 토큰 테스트용
+            log.info("⭐ [로그인 성공] 발급된 Access Token: {}", accessToken);
+            log.info("⭐ [로그인 성공] 발급된 Refresh Token: {}", refreshToken);
 
             // 4) 리프레시 토큰을 HttpOnly 쿠키에 저장
             ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, refreshToken)
@@ -115,11 +122,14 @@ public class AuthController {
             res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             // 5) 액세스 토큰을 헤더와 바디 둘 다로 반환
+            LoginResponseDTO responseBody = new LoginResponseDTO(accessToken, user.getId(), user.getName(), user.getRole());
             return ResponseEntity.ok()
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                    .body(new LoginResponseDTO(accessToken, user.getId(), user.getName(), user.getRole()));
+                    .body(responseBody);
 
         } catch (Exception e) {
+            // 예외 발생 시, 전체 스택 트레이스를 로그로 남겨 원인 파악을 용이하게 합니다.
+            log.error("로그인 처리 중 예외 발생", e);
             return ResponseEntity.status(401).body("로그인 실패: " + e.getMessage());
         }
     }
@@ -149,14 +159,12 @@ public class AuthController {
                 return ResponseEntity.status(401).body(Map.of("message", "계정이 비활성화되어 리프레시할 수 없습니다."));
             }
 
-            // --- 개선안 적용 ---
-            // 1) 새 Access Token 발급 (DB의 최신 Role 사용)
+            // 1) 새 Access Token 발급
             String authorities = "ROLE_" + user.getRole();
             String newAccessToken = jwtTokenProvider.createAccessToken(user.getId(), authorities);
 
-            // 2) 새 Refresh Token 발급 (보안을 위해 권한 미포함, 토큰 회전)
+            // 2) 새 Refresh Token 발급
             String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getId());
-            // --- 개선안 적용 끝 ---
 
             ResponseCookie cookie = ResponseCookie.from(REFRESH_COOKIE, newRefreshToken)
                     .httpOnly(true).secure(true).sameSite("Lax").path("/").maxAge(60L * 60L * 24L * 14L).build();
