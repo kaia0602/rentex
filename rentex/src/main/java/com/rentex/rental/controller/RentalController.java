@@ -103,14 +103,14 @@ public class RentalController {
         return ResponseEntity.ok(result);
     }
 
-    /** 대여 상세 조회 */
+    /** 대여 상세 조회 (USER, ADMIN 공용) */
     @GetMapping("/{id}")
-    public RentalDetailResponseDto getRentalDetail(
+    public ResponseEntity<RentalResponseDto> getRentalDetail(
             @PathVariable Long id,
             Principal principal
     ) {
         User user = userService.getUserById(Long.parseLong(principal.getName()));
-        return rentalService.getRentalDetail(id, user);
+        return ResponseEntity.ok(rentalService.getRentalDetail(id, user));
     }
 
     /** 대여 히스토리 조회 */

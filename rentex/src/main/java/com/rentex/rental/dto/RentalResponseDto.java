@@ -24,13 +24,20 @@ public record RentalResponseDto(
         LocalDateTime createdAt,
         String userName,        // ✅ 본명
         String userNickname,     // ✅ 닉네임
-        String thumbnailUrl
+        String thumbnailUrl,
+        int totalFee
 ) {
     public static RentalResponseDto from(Rental rental) {
         int dDay = Period.between(LocalDate.now(), rental.getEndDate()).getDays();
 
         String name = rental.getUser() != null ? rental.getUser().getName() : "(알 수 없음)";
         String nickname = rental.getUser() != null ? rental.getUser().getNickname() : "(알 수 없음)";
+
+        // ✅ 대여일수 (시작~끝 포함, 최소 1일)
+        int rentalDays = Period.between(rental.getStartDate(), rental.getEndDate()).getDays() + 1;
+
+        // ✅ 총 대여료 계산 (하루 단가 × 수량 × 일수)
+        int totalFee = rental.getItem().getDailyPrice() * rental.getQuantity() * rentalDays;
 
         return new RentalResponseDto(
                 rental.getId(),
@@ -47,7 +54,8 @@ public record RentalResponseDto(
                 rental.getCreatedAt(),
                 name,       // ✅ 이름
                 nickname,    // ✅ 닉네임
-                rental.getItem().getThumbnailUrl()
+                rental.getItem().getThumbnailUrl(),
+                totalFee
         );
     }
 }

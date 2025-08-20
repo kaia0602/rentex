@@ -4,10 +4,8 @@ import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Button from "@mui/material/Button";
-import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
+import TextField from "@mui/material/TextField";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -115,6 +113,7 @@ function PartnerRentalManage() {
         item: r.itemName,
         user: r.userNickname,
         period: `${r.startDate} ~ ${r.endDate}`,
+        status: r.status, // ✅ enum 값 그대로
         statusLabel: r.statusLabel,
         requestDate: r.createdAt,
       }));
@@ -135,25 +134,32 @@ function PartnerRentalManage() {
       <MDBox pt={6} pb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel id="status-label">대여 상태</InputLabel>
-              <Select
-                labelId="status-label"
-                value={status}
-                label="대여 상태"
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                {rentalStatusOptions.map((opt) => (
-                  <MenuItem key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <TextField
+              select
+              fullWidth
+              label="대여 상태"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              sx={{
+                "& .MuiInputBase-root": {
+                  height: 40,
+                  fontSize: "0.9rem",
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: "0.9rem",
+                },
+              }}
+            >
+              {rentalStatusOptions.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
         </Grid>
 
-        <MDBox mt={3}>
+        <MDBox mt={5}>
           <Card>
             <MDBox
               mx={2}

@@ -11,6 +11,7 @@ import com.rentex.rental.exception.*;
 import com.rentex.rental.repository.RentalHistoryRepository;
 import com.rentex.rental.repository.RentalRepository;
 import com.rentex.user.domain.User;
+import com.rentex.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,13 @@ public class RentalService {
     private final ItemRepository itemRepository;
     private final RentalRepository rentalRepository;
     private final RentalHistoryRepository rentalHistoryRepository;
+    private final UserRepository userRepository;
+
+    // === 공통: actor 영속화 ===
+    private User getManagedActor(User actor) {
+        return userRepository.findById(actor.getId())
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+    }
 
     // 대여 가능 여부 확인 API 처리
     public AvailabilityResponseDto checkAvailability(Long itemId, LocalDate startDate, LocalDate endDate) {
@@ -61,21 +69,23 @@ public class RentalService {
         }
 
         Rental rental = Rental.builder()
-                .user(actor) // ADMIN도 직접 요청 가능
+                .user(getManagedActor(actor)) // ✅ 영속화된 user 저장
                 .item(item)
                 .quantity(requestDto.quantity())
-                .startDate(requestDto.startDate())   // ✅ 추가
-                .endDate(requestDto.endDate())       // ✅ 추가
+                .startDate(requestDto.startDate())
+                .endDate(requestDto.endDate())
                 .status(RentalStatus.REQUESTED)
                 .build();
         rentalRepository.save(rental);
 
+        User managedActor = getManagedActor(actor);
         rentalHistoryRepository.save(RentalHistory.of(
                 rental,
                 null,
                 RentalStatus.REQUESTED,
-                getActorType(actor),
-                actor.getRole() + "가 대여 요청함"
+                getActorType(managedActor),
+                "대여 요청함",
+                managedActor
         ));
     }
 
@@ -98,12 +108,14 @@ public class RentalService {
         RentalStatus from = rental.getStatus();
         rental.changeStatus(RentalStatus.APPROVED);
 
+        User managedActor = getManagedActor(actor);
         rentalHistoryRepository.save(RentalHistory.of(
                 rental,
                 from,
                 RentalStatus.APPROVED,
-                getActorType(actor),
-                actor.getRole() + "가 대여를 승인함"
+                getActorType(managedActor),
+                "대여를 승인함",
+                managedActor
         ));
     }
 
@@ -118,13 +130,15 @@ public class RentalService {
 
         rental.start();
 
+        User managedActor = getManagedActor(actor);
         rentalHistoryRepository.save(
                 RentalHistory.of(
                         rental,
                         RentalStatus.APPROVED,
                         RentalStatus.RENTED,
-                        getActorType(actor),
-                        actor.getRole() + "가 장비를 수령 처리함"
+                        getActorType(managedActor),
+                        "장비를 수령 처리함",
+                        managedActor
                 )
         );
     }
@@ -138,7 +152,6 @@ public class RentalService {
             throw new InvalidRentalStateException("대여중 상태여야 반납 요청이 가능합니다.");
         }
 
-        // ADMIN은 누구의 Rental이든 반납 요청 가능
         if (!rental.getUser().getId().equals(actor.getId())
                 && !"ADMIN".equals(actor.getRole())) {
             throw new AccessDeniedException("본인 대여건만 반납 요청 가능합니다.");
@@ -147,12 +160,14 @@ public class RentalService {
         RentalStatus from = rental.getStatus();
         rental.changeStatus(RentalStatus.RETURN_REQUESTED);
 
+        User managedActor = getManagedActor(actor);
         rentalHistoryRepository.save(RentalHistory.of(
                 rental,
                 from,
                 RentalStatus.RETURN_REQUESTED,
-                getActorType(actor),
-                actor.getRole() + "가 반납을 요청했습니다."
+                getActorType(managedActor),
+                "반납을 요청했습니다.",
+                managedActor
         ));
     }
 
@@ -169,12 +184,14 @@ public class RentalService {
         rental.setReturnedAt(LocalDateTime.now());
         rental.getItem().increaseStock(rental.getQuantity());
 
+        User managedActor = getManagedActor(actor);
         rentalHistoryRepository.save(RentalHistory.of(
                 rental,
                 RentalStatus.RETURN_REQUESTED,
                 RentalStatus.RETURNED,
-                getActorType(actor),
-                actor.getRole() + "가 반납을 확인하였습니다."
+                getActorType(managedActor),
+                "반납을 확인하였습니다.",
+                managedActor
         ));
     }
 
@@ -188,7 +205,8 @@ public class RentalService {
     }
 
     // 대여 상세 조회 (본인만 가능, 단 ADMIN은 전체 가능)
-    public RentalDetailResponseDto getRentalDetail(Long rentalId, User actor) {
+    @Transactional(readOnly = true)
+    public RentalResponseDto getRentalDetail(Long rentalId, User actor) {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RentalNotFoundException("대여 내역을 찾을 수 없습니다."));
 
@@ -197,17 +215,7 @@ public class RentalService {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
 
-        return new RentalDetailResponseDto(
-                rental.getId(),
-                rental.getItem().getName(),
-                rental.getQuantity(),
-                rental.getStatus(),
-                rental.getStartDate(),
-                rental.getEndDate(),
-                rental.getRentedAt(),
-                rental.getReturnedAt(),
-                rental.getItem().getThumbnailUrl()
-        );
+        return RentalResponseDto.from(rental);
     }
 
     // 대여 가능 여부 단순 확인
@@ -218,18 +226,9 @@ public class RentalService {
 
     // 특정 대여의 히스토리 리스트 조회
     public List<RentalHistoryResponseDto> getRentalHistory(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RentalNotFoundException("해당 대여가 존재하지 않습니다."));
-
-        return rentalHistoryRepository.findByRentalOrderByCreatedAtAsc(rental)
+        return rentalHistoryRepository.findByRentalOrderByCreatedAtAsc(rentalId)
                 .stream()
-                .map(history -> new RentalHistoryResponseDto(
-                        history.getFromStatus(),
-                        history.getToStatus(),
-                        history.getActor(),
-                        history.getDescription(),
-                        history.getCreatedAt()
-                ))
+                .map(RentalHistoryResponseDto::from)
                 .toList();
     }
 
@@ -255,7 +254,6 @@ public class RentalService {
     @Transactional(readOnly = true)
     public Page<RentalResponseDto> getPartnerRentalRequests(User actor, RentalStatus status, Pageable pageable) {
         if ("ADMIN".equals(actor.getRole())) {
-            // ADMIN은 모든 파트너 요청 조회 가능
             Page<Rental> rentals = rentalRepository.findAllByStatus(
                     status != null ? status : RentalStatus.REQUESTED,
                     pageable
@@ -286,7 +284,6 @@ public class RentalService {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RentalNotFoundException("대여 내역이 존재하지 않습니다."));
 
-        // ADMIN은 모든 대여 접근 가능, PARTNER는 자기 소속 아이템만 접근 가능
         if ("PARTNER".equals(actor.getRole()) &&
                 !rental.getItem().getPartner().getId().equals(actor.getId())) {
             throw new AccessDeniedException("본인 소속 장비 대여 내역만 조회할 수 있습니다.");
@@ -300,7 +297,7 @@ public class RentalService {
         if ("ADMIN".equals(loginUser.getRole())) {
             Page<Rental> rentals = (status != null)
                     ? rentalRepository.findAllByStatus(status, pageable)
-                    : rentalRepository.findAll(pageable); // ✅ null이면 전체 조회로 처리
+                    : rentalRepository.findAll(pageable);
             return rentals.map(RentalResponseDto::from);
 
         } else if ("PARTNER".equals(loginUser.getRole())) {
