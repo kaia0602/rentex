@@ -48,7 +48,7 @@ public interface UserPenaltyRepository extends JpaRepository<Penalty, Long> {
           u.id             AS userId,
           u.name           AS name,
           u.email          AS email,
-          u.penalty_points AS penaltyPoints,
+          p.point AS penaltyPoints,
           COALESCE(COUNT(p.id), 0) AS activeEntries,
           MAX(p.given_at)  AS lastGivenAt
         FROM users u

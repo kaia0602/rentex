@@ -24,8 +24,8 @@ public class AdminPenaltyRepository {
                  FROM penalty p WHERE p.user_id = u.id) AS penaltyPoints,
               (SELECT COUNT(*) FROM penalty p
                  WHERE p.user_id = u.id AND p.status = 'VALID') AS activeEntries,
-              (SELECT MAX(up.given_at) FROM user_penalty up
-                 WHERE up.user_id = u.id) AS lastGivenAt
+              (SELECT MAX(p.given_at) FROM penalty p
+                 WHERE p.user_id = u.id) AS lastGivenAt
             FROM users u
             WHERE (:q IS NULL OR :q = '' 
                    OR u.name LIKE CONCAT('%',:q,'%') 
@@ -75,7 +75,7 @@ public class AdminPenaltyRepository {
         int point = ((Number)row.get("point")).intValue();
 
         jdbc.update("""
-            UPDATE user_penalty
+            UPDATE penalty
                SET status = 'DELETED', deleted_at = NOW()
              WHERE id = :id AND status = 'VALID'
             """, Map.of("id", entryId));
@@ -91,7 +91,7 @@ public class AdminPenaltyRepository {
     public void resetUser(Long userId) {
         jdbc.update("UPDATE users SET penalty_points = 0 WHERE id = :u", Map.of("u", userId));
         jdbc.update("""
-            UPDATE user_penalty
+            UPDATEpenalty
                SET status = 'CLEARED', cleared_at = NOW()
              WHERE user_id = :u AND status = 'VALID'
             """, Map.of("u", userId));

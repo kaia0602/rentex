@@ -49,6 +49,7 @@ public class Penalty extends BaseTimeEntity {
     public void reset() {
         this.point = 0;
         this.paid = true;
+        this.status = PenaltyStatus.CLEARED;
     }
 
     /** 상태 헬퍼 */
