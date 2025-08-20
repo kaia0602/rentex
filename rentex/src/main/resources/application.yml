@@ -100,6 +100,7 @@ jwt:
   expiration-in-seconds: 3600
   access-token-expiration-in-seconds: 3600
   refresh-token-expiration-in-seconds: 1209600
+  
 
 logging:
   level:

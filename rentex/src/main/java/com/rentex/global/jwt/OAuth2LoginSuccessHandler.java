@@ -5,7 +5,6 @@ import com.rentex.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -25,10 +23,10 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final UserRepository userRepository;
 
     @Value("${app.frontend-url}")
-    private String frontendUrl;
+    private String frontendUrl; // 예: https://rentex-frontend.yourdomain.com
 
-    private static String nvl(String value, String defaultValue) {
-        return value == null || value.isBlank() ? defaultValue : value;
+    private static String nvl(String v, String alt) {
+        return v == null || v.isBlank() ? alt : v;
     }
 
     @Override
@@ -37,43 +35,55 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
+        // ── 1) 프로바이더별 attribute 안전 추출
         String email = oAuth2User.getAttribute("email");
         if (email == null) {
+            // 필요시 다른 키 시도 (ex. kakao_account.email, response.email 등)
             throw new IllegalStateException("OAuth2 공급자로부터 email을 가져오지 못했습니다.");
         }
-        String name = nvl(oAuth2User.getAttribute("name"), "소셜유저");
+        String name = nvl(oAuth2User.getAttribute("name"),
+                nvl(oAuth2User.getAttribute("nickname"), "소셜유저"));
 
-        // DB에 사용자가 없으면 새로 생성 (Find or Create)
+        // ── 2) 유저 조회/생성
         User user = userRepository.findByEmail(email).orElseGet(() -> {
-            User newUser = User.builder()
+            // 최초 소셜 로그인 사용자는 비밀번호 사용 안 함 → 고정 문자열
+            return User.builder()
                     .email(email)
                     .name(name)
                     .nickname(name)
-                    .role("USER")
-                    .password("SOCIAL_LOGIN_PASSWORD") // 소셜 로그인 사용자는 비밀번호를 사용하지 않음
-                    .status(User.UserStatus.ACTIVE) // 소셜 로그인은 바로 활성 상태
+                    .role("USER")                  // 기본 권한
+                    .password("SOCIAL_LOGIN_PASSWORD")
                     .build();
-            return userRepository.save(newUser);
         });
 
-        Long userId = user.getId();
-        String role = user.getRole();
+        // 신규 생성된 경우 저장
+        if (user.getId() == null) {
+            user = userRepository.save(user);
+        }
 
-        // JWT 토큰 발급
-        String accessToken = jwtTokenProvider.createAccessToken(userId, role);
+        Long userId = user.getId();
+        String role = user.getRole(); // USER / PARTNER / ADMIN
+
+        // ── 3) 토큰 발급 (ROLE 반영)
+        String accessToken = jwtTokenProvider.createAccessTokenByUserId(userId, role);
         String refreshToken = jwtTokenProvider.createRefreshToken(userId);
 
-        // 리프레시 토큰을 HttpOnly 쿠키로 저장
+        // ── 4) 리프레시 토큰을 HttpOnly 쿠키로 저장
+        // 운영(프론트와 도메인 분리/HTTPS)에서는 .secure(true).sameSite("None") 필수
         ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
-                .secure(true)       // 운영 환경(HTTPS)에서는 true로 설정
-                .sameSite("Lax")
+                .secure(false)         // TODO: prod에서는 true
+                .sameSite("Lax")       // TODO: 크로스도메인이면 "None" + secure(true)
                 .path("/")
-                .maxAge(60L * 60L * 24L * 14L) // 2주
+                .maxAge(60L * 60L * 24L * 14L) // 14일
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        // 프론트엔드로 Access Token과 함께 리다이렉트
+        // ── 5) 편의: 헤더에도 액세스 토큰 추가
+        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+
+        // ── 6) 프론트로 리다이렉트 (현재 구조 유지)
+        // 보안상 쿼리스트링 전달은 노출 가능성 있음 → 나중에 one-time code or postMessage로 개선 고려
         response.sendRedirect(frontendUrl + "/oauth-redirect?token=" + accessToken);
     }
 }

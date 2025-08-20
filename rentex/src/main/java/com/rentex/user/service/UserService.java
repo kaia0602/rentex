@@ -1,14 +1,12 @@
 package com.rentex.user.service;
 
 import com.rentex.admin.dto.UserResponseDTO;
-import com.rentex.partner.domain.Partner;
 import com.rentex.penalty.domain.Penalty;
 import com.rentex.penalty.repository.PenaltyRepository;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
 import com.rentex.rental.repository.RentalRepository;
 import com.rentex.user.domain.User;
-import com.rentex.user.domain.User.UserStatus;
 import com.rentex.user.dto.MyPageDTO;
 import com.rentex.user.dto.ProfileUpdateRequestDTO;
 import com.rentex.user.dto.SignUpRequestDTO;
@@ -17,16 +15,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +33,6 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RentalRepository rentalRepository;
     private final PenaltyRepository penaltyRepository;
-    private final EmailService emailService;
 
     /**
      * 이메일로 조회
@@ -63,77 +59,27 @@ public class UserService {
 
         String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
 
-        User newUser;
+        // userType이 null이면 USER로 기본 세팅
+//        String role = (requestDTO.getUserType() == null) ? "USER" : requestDTO.getUserType().toUpperCase();
+
+        // userType 기반 role 결정 (서버에서만)
+        String role = "USER";
         if ("PARTNER".equalsIgnoreCase(requestDTO.getUserType())) {
-            newUser = Partner.builder()
-                    .email(requestDTO.getEmail())
-                    .password(encodedPassword)
-                    .name(requestDTO.getName())
-                    .nickname(requestDTO.getNickname())
-                    .businessNo(requestDTO.getBusinessNo())
-                    .contactEmail(requestDTO.getContactEmail())
-                    .contactPhone(requestDTO.getContactPhone())
-                    .status(UserStatus.PENDING)
-                    .build();
-        } else {
-            newUser = new User(
-                    requestDTO.getEmail(),
-                    encodedPassword,
-                    requestDTO.getName(),
-                    requestDTO.getNickname());
+            role = "PARTNER";
         }
 
-        String verificationToken = UUID.randomUUID().toString();
-        newUser.setEmailVerificationToken(verificationToken);
-        newUser.setTokenExpirationDate(LocalDateTime.now().plusHours(24));
+        User newUser = User.builder()
+                .email(requestDTO.getEmail())
+                .password(encodedPassword)
+                .name(requestDTO.getName())
+                .nickname(requestDTO.getNickname())
+                .role(role) // USER / PARTNER / ADMIN
+                .businessNo(requestDTO.getBusinessNo())
+                .contactEmail(requestDTO.getContactEmail())
+                .contactPhone(requestDTO.getContactPhone())
+                .build();
 
-        User savedUser = userRepository.save(newUser);
-
-        // HTML 이메일 전송
-        String verificationUrl = "http://localhost:8080/api/auth/verify-email?token=" + verificationToken;
-        String htmlContent = "<!DOCTYPE html>" +
-                "<html lang='ko'>" +
-                "<head>" +
-                "<meta charset='UTF-8'>" +
-                "</head>" +
-                "<body style=\"font-family: 'Apple SD Gothic Neo', 'sans-serif' !important;\">" +
-                "  <div style=\"max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);\">" +
-                "    <div style=\"font-size: 24px; font-weight: bold; color: #333; text-align: center; margin-bottom: 20px;\">Rentex 회원가입 인증</div>" +
-                "    <div style=\"font-size: 16px; color: #555; line-height: 1.6;\">" +
-                "      <p>회원가입을 완료하려면 아래 버튼을 클릭하여 이메일을 인증해주세요.</p>" +
-                "      <div style=\"text-align: center; margin: 20px 0;\">" +
-                "        <a href=\"" + verificationUrl + "\" style=\"display: inline-block; padding: 15px 30px; font-size: 18px; color: #ffffff; background-color: #007bff; border-radius: 5px; text-decoration: none; font-weight: bold;\">" +
-                "          이메일 인증하기" +
-                "        </a>" +
-                "      </div>" +
-                "      <p>만약 회원가입을 요청하지 않으셨다면, 이 이메일을 무시하셔도 됩니다.</p>" +
-                "    </div>" +
-                "    <div style=\"font-size: 12px; color: #999; text-align: center; margin-top: 20px;\">" +
-                "      <p>본 이메일은 발신 전용입니다.</p>" +
-                "      <p>&copy; 2025 Rentex. All Rights Reserved.</p>" +
-                "    </div>" +
-                "  </div>" +
-                "</body>" +
-                "</html>";
-        emailService.sendHtmlMessage(savedUser.getEmail(), "[Rentex] 회원가입 이메일 인증", htmlContent);
-
-        return savedUser.getId();
-    }
-
-    /**
-     * 이메일 인증 토큰으로 사용자 찾는 메서드 추가
-     */
-    public Optional<User> findByEmailVerificationToken(String token) {
-        return userRepository.findByEmailVerificationToken(token);
-    }
-
-    /**
-     * 사용자 상태 업데이트 메서드 추가
-     */
-    @Transactional
-    public void activateUser(User user) {
-        user.activateAccount();
-        userRepository.save(user);
+        return userRepository.save(newUser).getId();
     }
 
     /**
@@ -148,13 +94,8 @@ public class UserService {
             throw new IllegalArgumentException("소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
         }
 
-        if (passwordEncoder.matches(newPassword, user.getPassword())) {
-            throw new IllegalArgumentException("새로운 비밀번호는 이전 비밀번호와 같을 수 없습니다.");
-        }
-
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.updatePassword(encodedPassword);
-        userRepository.save(user);
     }
 
     /**
@@ -171,31 +112,11 @@ public class UserService {
         return MyPageDTO.from(user, rentals, penalties);
     }
 
-<<<<<<< HEAD
-    /**
-     * 프로필 수정
-     */
-=======
->>>>>>> origin/feature/rentaladd
     @Transactional
     public void updateProfile(Long userId, ProfileUpdateRequestDTO requestDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-<<<<<<< HEAD
-        if (requestDTO.getName() != null && !requestDTO.getName().isBlank()) {
-            user.setName(requestDTO.getName());
-        }
-
-        if (requestDTO.getNickname() != null && !requestDTO.getNickname().isBlank()) {
-            user.setNickname(requestDTO.getNickname());
-        }
-
-        if (requestDTO.getPhone() != null && !requestDTO.getPhone().isBlank()) {
-            if (user instanceof Partner partner) {
-                partner.setContactPhone(requestDTO.getPhone());
-            }
-=======
         if (requestDTO.getNickname() != null) {
             user.updateNickname(requestDTO.getNickname());
         }
@@ -210,7 +131,6 @@ public class UserService {
         }
         if (requestDTO.getName() != null) { // 업체명
             user.updateName(requestDTO.getName());
->>>>>>> origin/feature/rentaladd
         }
     }
 
@@ -222,27 +142,26 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+        // 아직 반납하지 않은 대여가 있으면 탈퇴 불가
         if (rentalRepository.existsByUserAndStatusNotIn(
                 user,
                 Arrays.asList(RentalStatus.RETURNED, RentalStatus.CANCELED, RentalStatus.REJECTED))) {
             throw new IllegalStateException("아직 반납하지 않은 대여 건이 있어 탈퇴할 수 없습니다.");
         }
 
+        // 미결제 패널티가 있으면 탈퇴 불가
         if (penaltyRepository.existsByUserAndPaidFalse(user)) {
             throw new IllegalStateException("패널티가 결제되지 않아 계정을 삭제할 수 없습니다.");
         }
 
+        // ✅ 패널티 레코드 선삭제
         penaltyRepository.deleteByUser_Id(userId);
-<<<<<<< HEAD
-        user.withdraw(); // Soft Delete
-=======
 
         // soft delete
         user.withdraw();
 
         // hard delete 하고 싶으면 이걸로 교체:
 //         userRepository.deleteById(userId);
->>>>>>> origin/feature/rentaladd
     }
 
     /**
@@ -252,6 +171,20 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + id));
+    }
+
+    // =====================================
+    // ✅ 관리자 조회용
+    // =====================================
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getAllUsers() {
+        return userRepository.findAllUsersForAdmin();
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getUsersByRole(String role) {
+        return userRepository.findAllByRole(role.toUpperCase());
     }
 
     /**
@@ -268,25 +201,14 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public Authentication buildAuthentication(User user) {
-        UserDetails details = org.springframework.security.core.userdetails.User
+        // 스프링 시큐리티 UserDetails 구성
+        UserBuilder builder = org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
-                .password(user.getPassword())
+                .password(user.getPassword()) // 패스워드는 토큰 생성 시 검증에 쓰이지 않지만 형태 맞춰둠
                 .authorities(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-                .build();
+                .accountExpired(false).accountLocked(false).credentialsExpired(false).disabled(false);
+
+        UserDetails details = builder.build();
         return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
-    }
-
-    // =====================================
-    // ✅ 관리자 조회용
-    // =====================================
-
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAllUsersForAdmin();
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserResponseDTO> getUsersByRole(String role) {
-        return userRepository.findAllByRole(role.toUpperCase());
     }
 }

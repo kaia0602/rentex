@@ -10,12 +10,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -44,25 +41,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     // 여기에서 JWT를 생성하고 응답 헤더에 추가
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
-        // 1. Authentication 객체에서 UserDetails를 꺼냅니다.
-        User userDetails = (User) authResult.getPrincipal();
+        // authResult 객체를 그대로 넘겨 토큰 생성
+        String accessToken = jwtTokenProvider.createAccessToken(authResult);
 
-        // 2. UserDetails에서 사용자 ID(PK)를 추출합니다. (getUsername()이 ID를 반환하도록 설정했음)
-        Long userId = Long.parseLong(userDetails.getUsername());
-
-        // 3. UserDetails에서 권한 정보를 문자열로 변환합니다.
-        String authorities = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        // 4. 추출한 userId와 authorities를 사용하여 Access Token을 생성합니다.
-        String accessToken = jwtTokenProvider.createAccessToken(userId, authorities);
-        String refreshToken = jwtTokenProvider.createRefreshToken(userId);
-
-        // 5. 응답 헤더에 Access Token과 Refresh Token을 추가합니다.
         response.addHeader("Authorization", "Bearer " + accessToken);
-        response.addHeader("Refresh-Token", refreshToken); // Refresh Token도 함께 전달
-        response.getWriter().write("Login successful. Tokens are in the response headers.");
+        response.getWriter().write("Login successful. Token is in the Authorization header.");
         response.getWriter().flush();
     }
 

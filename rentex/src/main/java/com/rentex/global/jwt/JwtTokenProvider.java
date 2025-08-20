@@ -1,3 +1,4 @@
+// src/main/java/com/rentex/global/jwt/JwtTokenProvider.java
 package com.rentex.global.jwt;
 
 import io.jsonwebtoken.*;
@@ -25,13 +26,15 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
+
     private final Key key;
     private final long accessTokenValidityInMilliseconds;
     private final long refreshTokenValidityInMilliseconds;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
-                            @Value("${jwt.access-token-expiration-in-seconds}") long accessExpSec,
+                            @Value("${jwt.expiration-in-seconds}") long accessExpSec,
                             @Value("${jwt.refresh-token-expiration-in-seconds}") long refreshExpSec) {
+        // HS256 키는 최소 256bit(=32바이트) 이상 권장. 짧으면 여기서 예외 날 수 있음.
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenValidityInMilliseconds = accessExpSec * 1000;
         this.refreshTokenValidityInMilliseconds = refreshExpSec * 1000;
@@ -42,47 +45,64 @@ public class JwtTokenProvider {
        ===================================================== */
 
     /**
-     * 사용자의 ID와 역할을 기반으로 Access Token을 생성합니다.
-     *
-     * @param userId 사용자의 고유 ID (PK)
-     * @param role   사용자의 역할 (e.g., "USER", "ADMIN")
-     * @return 생성된 Access Token
+     * PK + ROLE 기반 Access Token 생성 (권장)
      */
-    public String createAccessToken(Long userId, String role) {
-        String authorities = "ROLE_" + role;
+    public String createAccessTokenByUserId(Long userId, String role) {
+        String authorities = "ROLE_" + role; // USER/PARTNER/ADMIN → ROLE_*
         return createToken(userId, authorities, accessTokenValidityInMilliseconds);
     }
 
     /**
-     * Refresh Token을 생성합니다. (권한 정보를 포함하지 않음)
-     *
-     * @param userId 사용자의 고유 ID (PK)
-     * @return 생성된 Refresh Token
+     * Refresh Token 생성 (subject=userId, 더 긴 만료)
      */
     public String createRefreshToken(Long userId) {
-        return createToken(userId, null, refreshTokenValidityInMilliseconds);
+        // refresh에는 권한 클레임이 꼭 필요하진 않지만, 일관성 위해 최소 ROLE 표기
+        return createToken(userId, "ROLE_USER", refreshTokenValidityInMilliseconds);
     }
 
     /* =====================================================
-       파싱 / 검증 / 인증 변환
+       레거시/호환 메서드 (가능하면 위 오버로드 사용 권장)
        ===================================================== */
 
     /**
-     * 토큰의 유효성을 검증합니다.
-     *
-     * @param token 검증할 토큰
-     * @return 유효하면 true
+     * Authentication 기반 AccessToken 생성.
+     * principal의 username이 "userId" 문자열이라고 가정된 레거시 방식.
+     * 이메일을 username으로 쓰는 환경이면 사용하지 말 것.
+     */
+    public String createAccessToken(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        String username = ((User) authentication.getPrincipal()).getUsername();
+        try {
+            Long userId = Long.valueOf(username); // username이 PK가 아닐 수 있음(이메일인 경우 X)
+            return createToken(userId, authorities, accessTokenValidityInMilliseconds);
+        } catch (NumberFormatException e) {
+            log.warn("[JwtTokenProvider] principal.username이 숫자형 PK가 아님. createAccessTokenByUserId(...) 사용 권장");
+            throw new IllegalStateException("principal username이 userId가 아닙니다. createAccessTokenByUserId를 사용하세요.");
+        }
+    }
+
+
+
+    /* =====================================================
+       파싱/검증/인증 변환
+       ===================================================== */
+
+    /**
+     * 토큰 유효성 검증
      */
     public boolean validateToken(String token) {
         if (!StringUtils.hasText(token) || token.chars().filter(ch -> ch == '.').count() != 2) {
-            log.error("Invalid JWT token format.");
+            log.error("Invalid JWT token format");
             return false;
         }
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            log.warn("Expired JWT token.");
+            log.warn("Expired JWT token");
             return false;
         } catch (JwtException | IllegalArgumentException e) {
             log.error("Invalid JWT token: {}", e.getMessage());
@@ -91,10 +111,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 토큰에서 UserId(subject)를 추출합니다.
-     *
-     * @param token 추출할 토큰
-     * @return 사용자 ID (PK)
+     * 토큰에서 userId(subject) 추출
      */
     public Long getUserIdFromToken(String token) {
         Claims claims = parseClaims(token);
@@ -102,10 +119,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 토큰에서 Authentication 객체를 생성하여 반환합니다. (Spring Security 컨텍스트에서 사용)
-     *
-     * @param token 인증 정보를 생성할 토큰
-     * @return 생성된 Authentication 객체
+     * 토큰에서 Authentication 생성 (리소스 서버에서 사용)
      */
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
@@ -120,20 +134,15 @@ public class JwtTokenProvider {
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
+        // subject=userId 이므로 username에 id 문자열 세팅
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
     /* =====================================================
-       내부 유틸리티 메서드
+       내부 유틸
        ===================================================== */
 
-    /**
-     * 토큰을 파싱하여 클레임(정보)을 추출하는 내부 메서드.
-     *
-     * @param token 파싱할 토큰
-     * @return 토큰에 담긴 Claims
-     */
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -142,28 +151,16 @@ public class JwtTokenProvider {
                 .getBody();
     }
 
-    /**
-     * 토큰을 생성하는 핵심 내부 메서드.
-     *
-     * @param userId         토큰의 주체 (subject)가 될 사용자 ID
-     * @param authorities    토큰에 담을 권한 정보 (nullable)
-     * @param validityMillis 만료 시간 (밀리초)
-     * @return 생성된 JWT 문자열
-     */
     private String createToken(Long userId, String authorities, long validityMillis) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityMillis);
 
-        JwtBuilder builder = Jwts.builder()
+        return Jwts.builder()
                 .setSubject(String.valueOf(userId))
+                .claim(AUTHORITIES_KEY, authorities)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(key, SignatureAlgorithm.HS256);
-
-        if (StringUtils.hasText(authorities)) {
-            builder.claim(AUTHORITIES_KEY, authorities);
-        }
-
-        return builder.compact();
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 }

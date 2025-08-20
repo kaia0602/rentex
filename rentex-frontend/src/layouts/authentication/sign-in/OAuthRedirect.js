@@ -1,27 +1,26 @@
-import {useEffect} from "react";
-import {useNavigate} from "react-router-dom";
-import {setToken} from "utils/auth";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { setToken } from "utils/auth";
 
 function OAuthRedirect() {
-    const nav = useNavigate();
+  const nav = useNavigate();
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const token = params.get("token");
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
 
-        if (token) {
-            setToken(token);
-            alert("소셜 로그인 성공!");
+    if (token) {
+      setToken(token);
+      alert("소셜 로그인 성공!");
 
-            // ✅ 로그인 성공하면 대시보드로 이동
-            nav("/dashboard");
+      // ✅ 로그인 성공하면 대시보드로 이동
+      nav("/dashboard");
+    } else {
+      nav("/authentication/sign-in");
+    }
+  }, [nav]);
 
-        } else {
-            nav("/authentication/sign-in");
-        }
-    }, [nav]);
-
-    return <div>로그인 처리 중...</div>;
+  return <div>로그인 처리 중...</div>;
 }
 
 export default OAuthRedirect;
