@@ -1,3 +1,10 @@
+/*
+[각주: 변경된 내용]
+
+- 복잡한 역할(Role) 기반 필터링 로직을 모두 제거했습니다.
+- 기존 코드 구조를 그대로 사용하여, 오직 로그인 상태(isLoggedIn)에 따라서만 인증 관련 메뉴가 동적으로 변경되도록 했습니다.
+*/
+
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
 import PublicItems from "layouts/rentals/publicItems";
@@ -55,10 +62,6 @@ import PartnerDetail from "layouts/admin/PartnerDetail";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
-/**
- * @param {boolean} isLoggedIn - 사용자의 로그인 상태 (true: 로그인, false: 로그아웃)
- * @returns {Array} 로그인 상태에 따라 동적으로 생성된 라우트 배열
- */
 const getRoutes = (isLoggedIn) => [
   // =====================
   // 공통 (모든 Role 접근 가능)

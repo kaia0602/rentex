@@ -25,12 +25,12 @@ import NaverIcon from "assets/images/icons/NaverIcon";
 import api from "api/client";
 import { setToken } from "utils/auth";
 
-// 1. AuthContext에서 useAuth 훅을 가져옵니다.
+// AuthContext에서 useAuth 훅을 가져옵니다.
 import { useAuth } from "contexts/AuthContext";
 
 function Basic() {
-  // 2. AuthContext의 login 함수를 준비합니다.
-  const { login } = useAuth();
+  // 이제 isLoggedIn 상태도 함께 가져옵니다.
+  const { isLoggedIn, login } = useAuth();
   const nav = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -45,12 +45,27 @@ function Basic() {
     confirmPassword: "",
   });
   const [resetError, setResetError] = useState("");
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    color: "info",
-    title: "",
-    content: "",
-  });
+  const [snackbar, setSnackbar] = useState({ open: false, color: "info", title: "", content: "" });
+
+  // --- [추가된 부분] ---
+  // isLoggedIn 상태가 true로 바뀌는 것을 감지하면 대시보드로 이동시킵니다.
+  useEffect(() => {
+    if (isLoggedIn) {
+      setSnackbar({
+        open: true,
+        color: "success",
+        title: "로그인 성공",
+        content: "환영합니다! 대시보드로 이동합니다.",
+      });
+      // 1초 후에 대시보드로 이동
+      const timer = setTimeout(() => {
+        nav("/dashboard");
+      }, 1000);
+
+      // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn, nav]);
 
   const closeSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
@@ -76,16 +91,9 @@ function Basic() {
 
       if (token) {
         setToken(token);
-        // 3. 로그인 성공 시 login() 함수를 호출하여 앱 전체에 상태 변경을 알립니다.
+        // login() 함수를 호출하여 상태 변경을 알리기만 합니다.
+        // 페이지 이동(nav) 로직은 useEffect가 처리합니다.
         login();
-
-        setSnackbar({
-          open: true,
-          color: "success",
-          title: "로그인 성공",
-          content: "환영합니다!",
-        });
-        setTimeout(() => nav("/dashboard"), 1000);
       } else {
         throw new Error("유효한 토큰이 없습니다.");
       }
@@ -104,7 +112,7 @@ function Basic() {
     }
   };
 
-  // ... (비밀번호 재설정 등 나머지 코드는 그대로 유지) ...
+  // ... (비밀번호 재설정 등 나머지 코드는 기존과 동일하게 유지) ...
   const onResetFormChange = (e) => {
     const { name, value } = e.target;
     setResetForm((prev) => ({ ...prev, [name]: value }));
