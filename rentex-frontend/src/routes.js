@@ -4,11 +4,13 @@ import PublicItems from "layouts/rentals/publicItems";
 import PublicItemDetail from "layouts/rentals/publicItemDetail";
 import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
-import Notifications from "layouts/notifications";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
-
+import NoticeList from "layouts/notice/NoticeList";
+import NoticeDetail from "layouts/notice/NoticeDetail";
+import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
+import { getCurrentUser } from "utils/auth";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 
 // 유저 관련
@@ -102,11 +104,32 @@ const routes = [
   {
     type: "collapse",
     name: "공지사항",
-    key: "notifications",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/notifications",
-    component: <Notifications />,
+    key: "notice",
+    icon: <Icon fontSize="small">campaign</Icon>,
+    route: "/notice",
+    component: <NoticeList />,
     // role: ["USER", "PARTNER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "공지 상세 (숨김)",
+    key: "notice-detail",
+    route: "/notice/:id",
+    component: <NoticeDetail />,
+  },
+  {
+    type: "collapse",
+    name: "공지 작성 (숨김)",
+    key: "notice-new",
+    route: "/admin/notice/new",
+    component: <AdminNoticeForm />,
+  },
+  {
+    type: "collapse",
+    name: "공지 수정 (숨김)",
+    key: "notice-edit",
+    route: "/admin/notice/:id/edit",
+    component: <AdminNoticeForm mode="edit" />,
   },
   {
     type: "collapse",
