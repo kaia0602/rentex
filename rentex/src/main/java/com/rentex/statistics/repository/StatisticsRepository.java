@@ -69,6 +69,9 @@ public class StatisticsRepository {
     }
 
 
+
+
+
     /** 관리자 - 특정 파트너 아이템별 정산 */
     public List<AdminPartnerItemDetailDTO> adminPartnerItemDetails(Long partnerId, LocalDate from, LocalDate to) {
         String sql = """

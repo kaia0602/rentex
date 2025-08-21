@@ -14,6 +14,8 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import api from "api/client";
+import { TextField } from "@mui/material";
+import MDButton from "components/MDButton";
 
 const NOW = new Date();
 const YEARS = [NOW.getFullYear() - 1, NOW.getFullYear(), NOW.getFullYear() + 1];
@@ -26,6 +28,8 @@ export default function AdminStatistics() {
   const [month, setMonth] = useState(NOW.getMonth() + 1);
   const [loading, setLoading] = useState(false);
   const [list, setList] = useState([]);
+  const [q, setQ] = useState("");
+  const [composing, setComposing] = useState(false);
 
   const columns = useMemo(
     () => [
@@ -115,7 +119,7 @@ export default function AdminStatistics() {
             </Select>
           </Grid>
 
-          <Grid item>
+          {/* <Grid item>
             <MDTypography
               component="button"
               variant="button"
@@ -124,7 +128,27 @@ export default function AdminStatistics() {
             >
               조회
             </MDTypography>
+          </Grid> */}
+          {/* <Grid item>
+            <TextField
+              size="small"
+              placeholder="업체명 검색"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onCompositionStart={() => setComposing(true)}
+              onCompositionEnd={() => {
+                setComposing(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") refresh();
+              }}
+            />
           </Grid>
+          <Grid item>
+            <MDButton variant="outlined" onClick={""}>
+              검색
+            </MDButton>
+          </Grid>*/}
         </Grid>
 
         <Card>

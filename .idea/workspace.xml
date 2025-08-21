@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/utils/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/utils/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/domain/Penalty.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/AdminPenaltyUserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/dto/AdminPenaltyUserDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/AdminPenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/AdminPenaltyRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/PenaltyRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/repository/StatisticsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/repository/StatisticsRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +49,9 @@
   &quot;associatedIndex&quot;: 5
 }</component>
   <component name="ProjectId" id="30tXwCgismkXyPZwDoNsArMDk3l" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -123,7 +120,8 @@
       <workItem from="1755041502590" duration="8891000" />
       <workItem from="1755129717892" duration="13248000" />
       <workItem from="1755562112072" duration="19961000" />
-      <workItem from="1755648400117" duration="8818000" />
+      <workItem from="1755648400117" duration="14995000" />
+      <workItem from="1755733958393" duration="12355000" />
     </task>
     <servers />
   </component>
