@@ -1,26 +1,46 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+
+// AuthContext와 토큰 저장 함수를 가져옵니다.
+import { useAuth } from "contexts/AuthContext";
 import { setToken } from "utils/auth";
 
-function OAuthRedirect() {
-  const nav = useNavigate();
+// 로딩 중임을 표시하기 위한 컴포넌트
+import MDBox from "components/MDBox";
+import CircularProgress from "@mui/material/CircularProgress";
+
+function OAuthRedirectPage() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+    // URL 파라미터에서 'token'을 가져옵니다.
+    // (백엔드에서 보내주는 파라미터 이름이 다르다면 'token' 부분을 수정해야 합니다.)
+    const accessToken = searchParams.get("token");
 
-    if (token) {
-      setToken(token);
-      alert("소셜 로그인 성공!");
-
-      // ✅ 로그인 성공하면 대시보드로 이동
-      nav("/dashboard");
+    if (accessToken) {
+      // 토큰이 있다면,
+      // 1. 토큰을 브라우저 저장소에 저장합니다.
+      setToken(accessToken);
+      // 2. React 앱 전체에 로그인 상태임을 알립니다.
+      login();
+      // 3. 앱의 메인 화면으로 이동합니다.
+      navigate("/dashboard");
     } else {
-      nav("/authentication/sign-in");
+      // 토큰이 없다면 에러를 출력하고 로그인 페이지로 돌려보냅니다.
+      console.error("소셜 로그인 토큰이 URL에 없습니다.");
+      alert("로그인에 실패했습니다.");
+      navigate("/authentication/sign-in");
     }
-  }, [nav]);
+  }, [searchParams, login, navigate]);
 
-  return <div>로그인 처리 중...</div>;
+  // 토큰을 처리하는 동안 잠시 보여줄 로딩 화면
+  return (
+    <MDBox display="flex" justifyContent="center" alignItems="center" height="100vh">
+      <CircularProgress />
+    </MDBox>
+  );
 }
 
-export default OAuthRedirect;
+export default OAuthRedirectPage;
