@@ -24,6 +24,7 @@ import RentalDetail from "layouts/user/RentalDetail";
 import PenaltyPage from "layouts/user/PenaltyPage";
 import PayPenalty from "layouts/user/PayPenalty";
 import PaymentHistory from "layouts/user/PaymentHistory";
+import PaymentDetail from "layouts/user/PaymentDetail";
 
 // 업체(파트너) 관련
 import PartnerDashboard from "layouts/partner";
@@ -200,16 +201,16 @@ const routes = [
     display: false,
     // role: ["USER", "ADMIN"],
   },
-  {
-    type: "collapse",
-    name: "대여 상세",
-    key: "rental-detail",
-    route: "/mypage/rentals/:id",
-    component: <RentalDetail />,
-    noCollapse: true,
-    display: false,
-    // role: ["USER", "ADMIN"],
-  },
+  // { 중복 주석처리
+  //   type: "collapse",
+  //   name: "대여 상세",
+  //   key: "rental-detail",
+  //   route: "/mypage/rentals/:id",
+  //   component: <RentalDetail />,
+  //   noCollapse: true,
+  //   display: false,
+  //   // role: ["USER", "ADMIN"],
+  // },
   {
     type: "collapse",
     name: "내 대여 내역",
@@ -257,7 +258,14 @@ const routes = [
     component: <PaymentHistory />,
     // role: ["USER", "ADMIN"],
   },
-
+  {
+    type: "route",
+    name: "결제 상세",
+    key: "payment-detail",
+    route: "/mypage/payments/:id",
+    component: <PaymentDetail />,
+    display: false, // 사이드바에 표시하지 않음
+  },
   // =====================
   // 파트너 관련
   // =====================

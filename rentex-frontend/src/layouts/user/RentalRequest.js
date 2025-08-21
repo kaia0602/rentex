@@ -102,7 +102,10 @@ function RentalRequest() {
                   {item.name}
                 </MDTypography>
                 <MDTypography variant="body2" color="textSecondary">
-                  {item.category?.name} / {item.subCategory?.name}
+                  {item.categoryName ?? "-"} / {item.subCategoryName ?? "-"}
+                </MDTypography>
+                <MDTypography variant="body2" color="textSecondary">
+                  업체: {item.partnerName ?? "-"}
                 </MDTypography>
                 <MDTypography variant="body2" sx={{ mt: 1 }}>
                   재고: {item.stockQuantity ?? "-"} 개

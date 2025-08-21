@@ -192,6 +192,30 @@ function RentalDetail() {
                 </MDButton>
 
                 {/* 상태별 버튼 */}
+                {rental.status === "REQUESTED" && (
+                  <MDButton
+                    variant="outlined"
+                    color="error"
+                    sx={{ minWidth: 140 }}
+                    onClick={async () => {
+                      const reason = prompt("취소 사유를 입력하세요."); // 🔑 간단 버전 (원하면 MUI Dialog로 대체)
+                      if (!reason) return;
+
+                      try {
+                        await api.patch(`/rentals/${id}/cancel`, { reason });
+                        alert("대여 요청이 취소되었습니다.");
+                        fetchRentalDetail();
+                        fetchHistory();
+                      } catch (err) {
+                        console.error("❌ 취소 실패:", err);
+                        alert("취소 요청 중 오류가 발생했습니다.");
+                      }
+                    }}
+                  >
+                    취소하기
+                  </MDButton>
+                )}
+
                 {rental.status === "SHIPPED" && (
                   <MDButton
                     variant="contained"

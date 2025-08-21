@@ -200,25 +200,48 @@ function PartnerRentalDetail() {
                   목록으로
                 </MDButton>
 
-                {/* 승인 단계 */}
+                {/* 승인/거절 단계 */}
                 {rental.status === "REQUESTED" && (
-                  <MDButton
-                    variant="contained"
-                    color="success"
-                    sx={{ minWidth: 140 }}
-                    onClick={async () => {
-                      try {
-                        await api.patch(`/rentals/${id}/approve`);
-                        alert("승인 처리 완료");
-                        fetchRentalDetail();
-                        fetchHistory();
-                      } catch (err) {
-                        alert("승인 처리 실패");
-                      }
-                    }}
-                  >
-                    승인 처리
-                  </MDButton>
+                  <>
+                    <MDButton
+                      variant="contained"
+                      color="success"
+                      sx={{ minWidth: 140 }}
+                      onClick={async () => {
+                        try {
+                          await api.patch(`/rentals/${id}/approve`);
+                          alert("승인 처리 완료");
+                          fetchRentalDetail();
+                          fetchHistory();
+                        } catch (err) {
+                          alert("승인 처리 실패");
+                        }
+                      }}
+                    >
+                      승인 처리
+                    </MDButton>
+
+                    <MDButton
+                      variant="outlined"
+                      color="error"
+                      sx={{ minWidth: 140 }}
+                      onClick={async () => {
+                        const reason = prompt("거절 사유를 입력하세요."); // 🔑 간단 버전
+                        if (!reason) return;
+
+                        try {
+                          await api.patch(`/rentals/${id}/reject`, { reason });
+                          alert("거절 처리 완료");
+                          fetchRentalDetail();
+                          fetchHistory();
+                        } catch (err) {
+                          alert("거절 처리 실패");
+                        }
+                      }}
+                    >
+                      거절 처리
+                    </MDButton>
+                  </>
                 )}
 
                 {/* 배송 단계 */}

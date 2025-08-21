@@ -57,6 +57,8 @@ function RentalPay() {
         startDate,
         endDate,
         quantity,
+        amount,
+        method: "CARD",
       });
 
       setTimeout(() => {
@@ -67,14 +69,16 @@ function RentalPay() {
       }, 2000);
     } catch (e) {
       console.error("결제 실패:", e);
+
+      const backendMsg = e?.response?.data?.message;
       setToastSeverity("error");
-      setToastMsg("결제에 실패했습니다. 다시 시도해주세요.");
+      setToastMsg(backendMsg || "결제에 실패했습니다. 다시 시도해주세요.");
       setToastOpen(true);
 
-      // ❌ 실패했을 때 2초 뒤 이전 페이지로 이동
-      setTimeout(() => navigate(-1), 2000);
-    } finally {
-      setTimeout(() => setPaying(false), 3000);
+      // 벌점 차단일 경우는 뒤로 이동 ❌
+      if (!backendMsg?.includes("벌점")) {
+        setTimeout(() => navigate(-1), 2000);
+      }
     }
   };
 

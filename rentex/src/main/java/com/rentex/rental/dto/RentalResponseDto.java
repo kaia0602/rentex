@@ -25,7 +25,9 @@ public record RentalResponseDto(
         String userName,        // ✅ 본명
         String userNickname,     // ✅ 닉네임
         String thumbnailUrl,
-        int totalFee
+        int totalFee,
+        String categoryName,   // ✅ 카테고리명
+        String partnerName     // ✅ 업체명
 ) {
     public static RentalResponseDto from(Rental rental) {
         // 기본값
@@ -61,7 +63,9 @@ public record RentalResponseDto(
                 name,       // 본명
                 nickname,   // 닉네임
                 rental.getItem().getThumbnailUrl(),
-                totalFee
+                totalFee,
+                rental.getItem().getCategory() != null ? rental.getItem().getCategory().getName() : null, // ✅ 카테고리
+                rental.getItem().getPartner() != null ? rental.getItem().getPartner().getName() : null   // ✅ 업체명
         );
     }
 }

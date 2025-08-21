@@ -11,6 +11,8 @@ import com.rentex.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -81,6 +83,7 @@ public class PaymentService {
                 .status(PaymentStatus.PENDING)
                 .type(PaymentType.RENTAL)    // ✅ 대여 결제
                 .paidAt(LocalDateTime.now())
+                .status(Payment.PaymentStatus.SUCCESS)
                 .build();
         paymentRepository.save(payment);
 
@@ -97,5 +100,15 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public List<Payment> getPaymentHistory(User user) {
         return paymentRepository.findAllByUser(user);
+    }
+
+    // PaymentService.java
+    public Payment getByIdForUser(Long id, User owner) {
+        Payment p = paymentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("결제 내역이 존재하지 않습니다."));
+        if (!p.getUser().getId().equals(owner.getId())) {
+            throw new AccessDeniedException("본인 결제 내역만 조회할 수 있습니다.");
+        }
+        return p;
     }
 }

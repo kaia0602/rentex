@@ -3,7 +3,7 @@ package com.rentex.rental.repository;
 import com.rentex.item.domain.Item;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
-import com.rentex.user.domain.User; // ✅ 우리 도메인 User import
+import com.rentex.user.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,14 +35,12 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query("SELECT r FROM Rental r WHERE r.user.id = :userId")
     List<Rental> findByUserId(@Param("userId") Long userId);
 
-    /** 대여 가능 여부 확인 시 기간 겹치는 렌탈 조회 */
+    /** 대여 가능 여부 확인 시 기간 겹치는 렌탈 조회 (RETURN_REQUESTED 포함으로 통일) */
     @Query("""
         SELECT r FROM Rental r
         WHERE r.item.id = :itemId
-          AND r.status IN ('REQUESTED', 'APPROVED', 'SHIPPED', 'RECEIVED')
-          AND (
-                (r.startDate <= :endDate AND r.endDate >= :startDate)
-              )
+          AND r.status IN ('REQUESTED', 'APPROVED', 'SHIPPED', 'RECEIVED', 'RETURN_REQUESTED')
+          AND (r.startDate <= :endDate AND r.endDate >= :startDate)
     """)
     List<Rental> findConflictingRentals(
             @Param("itemId") Long itemId,
@@ -78,7 +76,8 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
         join fetch i.partner p
         where r.startDate <= :monthEnd and r.endDate >= :monthStart
     """)
-    List<Rental> findAllOverlapping(LocalDate monthStart, LocalDate monthEnd);
+    List<Rental> findAllOverlapping(@Param("monthStart") LocalDate monthStart,
+                                    @Param("monthEnd") LocalDate monthEnd);
 
     /** 특정 파트너의 해당 월 겹침 렌탈 */
     @Query("""
@@ -89,7 +88,9 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
         where p.id = :partnerId
           and r.startDate <= :monthEnd and r.endDate >= :monthStart
     """)
-    List<Rental> findAllByPartnerOverlapping(Long partnerId, LocalDate monthStart, LocalDate monthEnd);
+    List<Rental> findAllByPartnerOverlapping(@Param("partnerId") Long partnerId,
+                                             @Param("monthStart") LocalDate monthStart,
+                                             @Param("monthEnd") LocalDate monthEnd);
 
     /** 특정 파트너의 요청 상태별 대여 목록 조회 */
     Page<Rental> findByItemPartnerIdAndStatus(Long partnerId, RentalStatus status, Pageable pageable);
@@ -102,4 +103,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     Page<Rental> findByPartnerItemAndStatus(@Param("partnerId") Long partnerId,
                                             @Param("status") RentalStatus status,
                                             Pageable pageable);
+
+
 }
