@@ -26,11 +26,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query(value = "SELECT * FROM item WHERE partner_id = :partnerId", nativeQuery = true)
     List<Item> findItemsByPartnerIdNative(@Param("partnerId") Long partnerId);
 
-    // ✅ 파트너 아이템 개수 조회
+    // 등록 장비 수
     Long countByPartnerId(Long partnerId);
-
-    // 또는 nativeQuery 사용 가능
-    // @Query(value = "SELECT COUNT(*) FROM item WHERE partner_id = :partnerId", nativeQuery = true)
-    // Long countByPartnerIdNative(@Param("partnerId") Long partnerId);
 
 }

@@ -3,6 +3,7 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Icon from "@mui/material/Icon";
 import { Link } from "react-router-dom";
+import { getToken, getUserIdFromToken } from "utils/auth";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -12,6 +13,7 @@ import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import PartnerMonthlyRevenueChart from "./components/PartnerMonthlyRevenueChart";
 
 // Partner Header
 import Header from "layouts/partner/components/Header";
@@ -32,31 +34,46 @@ function Overview() {
   const [itemCount, setItemCount] = useState(0);
   const [pendingCount, setPendingCount] = useState(0);
   const [activeCount, setActiveCount] = useState(0);
+  const [returnRequestedCount, setReturnRequestedCount] = useState(0);
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const NOW = new Date();
+  const token = getToken();
+  const partnerId = token ? getUserIdFromToken(token) : null;
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      if (!partnerId) return;
+
+      try {
+        const res = await api.get(`/partner/statistics/${partnerId}`, {
+          params: { year: NOW.getFullYear(), month: NOW.getMonth() + 1 },
+        });
+        const data = res.data;
+        // totalRevenue는 이미 백엔드에서 계산되어 내려옴
+        setTotalRevenue(data?.totalRevenue ?? 0);
+      } catch (error) {
+        console.error("총 수익 조회 실패:", error);
+        setTotalRevenue(0);
+      }
+    };
+
+    fetchRevenue();
+  }, [partnerId]);
 
   useEffect(() => {
-    // 등록 장비 수 조회
-    const fetchItemCount = async () => {
+    const fetchDashboard = async () => {
       try {
-        const res = await api.get("/partner/items/count");
-        setItemCount(res.data);
+        const res = await api.get("/admin/partners/dashboard"); // PartnerDashboardDTO 반환
+        const data = res.data;
+        setItemCount(data.registeredItemCount);
+        setPendingCount(data.pendingRentalCount);
+        setActiveCount(data.activeRentalCount || 0); // activeCount가 DTO에 없다면 0 처리
+        setReturnRequestedCount(data.returnRequestedCount || 0);
       } catch (error) {
-        console.error("장비 수 조회 실패:", error);
+        console.error("대시보드 정보 조회 실패:", error);
       }
     };
 
-    // 대여 요청 및 대여 중 장비 수 조회
-    const fetchRentalCounts = async () => {
-      try {
-        const res = await api.get("/partner/rentals/counts"); // { pending: 2, active: 3 } 형태
-        setPendingCount(res.data.pending);
-        setActiveCount(res.data.active);
-      } catch (error) {
-        console.error("대여 수 조회 실패:", error);
-      }
-    };
-
-    fetchItemCount();
-    fetchRentalCounts();
+    fetchDashboard();
   }, []);
 
   return (
@@ -69,51 +86,165 @@ function Overview() {
           <Grid container spacing={3}>
             {/* 왼쪽 등록 장비 */}
             <Grid item xs={12} md={3}>
-              <Card sx={{ p: 3, height: "100%" }}>
-                <MDTypography variant="subtitle1" color="text">
-                  등록 장비
-                </MDTypography>
-                <MDTypography variant="h5" fontWeight="bold">
-                  {itemCount}개
-                </MDTypography>
+              <Card
+                sx={{
+                  p: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  height: "100%",
+                }}
+              >
+                <MDBox>
+                  <MDTypography variant="subtitle1" color="text">
+                    등록 장비
+                  </MDTypography>
+                  <MDTypography variant="h5" fontWeight="bold" sx={{ mt: 1 }}>
+                    {itemCount === 0
+                      ? "등록된 장비가 없습니다!"
+                      : `현재 ${itemCount}개의 장비가 등록되어 있습니다.`}
+                  </MDTypography>
+                </MDBox>
+                <MDBox mt={2}>
+                  <Link to="/partner/items" style={{ textDecoration: "none", color: "#1976d2" }}>
+                    자세히 보기 →
+                  </Link>
+                </MDBox>
               </Card>
             </Grid>
 
-            {/* 가운데 2행 */}
-            <Grid item xs={12} md={6}>
+            {/* 가운데 3행 */}
+            <Grid item xs={12} md={5}>
               <Grid container spacing={3} direction="column">
+                {/* 대기 중인 대여 요청 */}
                 <Grid item>
-                  <Card sx={{ p: 3 }}>
-                    <MDTypography variant="subtitle1" color="text">
-                      대기 중인 대여 요청
-                    </MDTypography>
-                    <MDTypography variant="h5" fontWeight="bold">
-                      {pendingCount}건
-                    </MDTypography>
+                  <Card
+                    sx={{
+                      p: 3,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <MDBox>
+                      <MDTypography variant="subtitle1" color="text">
+                        대기 중인 대여 요청
+                      </MDTypography>
+                      <MDTypography variant="h5" fontWeight="bold" sx={{ mt: 1 }}>
+                        {pendingCount === 0
+                          ? "현재 대여 중인 요청이 없습니다!"
+                          : `현재 ${pendingCount}건의 대여 요청이 있습니다.`}
+                      </MDTypography>
+                    </MDBox>
+                    <MDBox mt={2}>
+                      <Link
+                        to="/partner/rentals"
+                        style={{ textDecoration: "none", color: "#1976d2" }}
+                      >
+                        자세히 보기 →
+                      </Link>
+                    </MDBox>
                   </Card>
                 </Grid>
+
+                {/* 대여 중인 장비 */}
                 <Grid item>
-                  <Card sx={{ p: 3 }}>
-                    <MDTypography variant="subtitle1" color="text">
-                      대여 중인 장비
-                    </MDTypography>
-                    <MDTypography variant="h5" fontWeight="bold">
-                      {activeCount}건
-                    </MDTypography>
+                  <Card
+                    sx={{
+                      p: 3,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <MDBox>
+                      <MDTypography variant="subtitle1" color="text">
+                        대여 중인 장비
+                      </MDTypography>
+                      <MDTypography variant="h5" fontWeight="bold" sx={{ mt: 1 }}>
+                        {activeCount === 0
+                          ? "현재 대여중인 장비가 없습니다!"
+                          : `현재 ${activeCount}개의 장비가 대여중입니다.`}
+                      </MDTypography>
+                    </MDBox>
+                    <MDBox mt={2}>
+                      <Link
+                        to="/partner/rentals/manage"
+                        style={{ textDecoration: "none", color: "#1976d2" }}
+                      >
+                        자세히 보기 →
+                      </Link>
+                    </MDBox>
+                  </Card>
+                </Grid>
+
+                {/* 반납 요청 중인 장비 */}
+                <Grid item>
+                  <Card
+                    sx={{
+                      p: 3,
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "100%",
+                    }}
+                  >
+                    <MDBox>
+                      <MDTypography variant="subtitle1" color="text">
+                        반납 요청 중인 장비
+                      </MDTypography>
+                      <MDTypography variant="h5" fontWeight="bold" sx={{ mt: 1 }}>
+                        {returnRequestedCount === 0
+                          ? "현재 반납 요청 중인 장비가 없습니다!"
+                          : `현재 ${returnRequestedCount}개의 장비가 반납 요청 중입니다.`}
+                      </MDTypography>
+                    </MDBox>
+                    <MDBox mt={2}>
+                      <Link
+                        to="/partner/rentals/manage"
+                        style={{ textDecoration: "none", color: "#1976d2" }}
+                      >
+                        자세히 보기 →
+                      </Link>
+                    </MDBox>
                   </Card>
                 </Grid>
               </Grid>
             </Grid>
 
             {/* 오른쪽 이번 달 수익 */}
-            <Grid item xs={12} md={3}>
-              <Card sx={{ p: 3, height: "100%" }}>
-                <MDTypography variant="subtitle1" color="text">
-                  이번 달 수익
-                </MDTypography>
-                <MDTypography variant="h5" fontWeight="bold" color="success">
-                  105,000원
-                </MDTypography>
+            <Grid item xs={12} md={4}>
+              <Card
+                sx={{
+                  p: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  height: "100%",
+                }}
+              >
+                <MDBox>
+                  <MDTypography variant="subtitle1" color="text">
+                    이번 달 수익
+                  </MDTypography>
+                  <MDTypography variant="h5" fontWeight="bold" color="success" sx={{ mt: 1 }}>
+                    총 수익: <b>{totalRevenue.toLocaleString()}원</b>
+                  </MDTypography>
+                </MDBox>
+                {/* 월별 그래프 추가 */}
+                <MDBox mt={4} height={300}>
+                  <PartnerMonthlyRevenueChart year={NOW.getFullYear()} partnerId={partnerId} />
+                </MDBox>
+                <MDBox mt={2}>
+                  <Link
+                    to="/partner/statistics"
+                    style={{ textDecoration: "none", color: "#1976d2" }}
+                  >
+                    자세히 보기 →
+                  </Link>
+                </MDBox>
               </Card>
             </Grid>
           </Grid>

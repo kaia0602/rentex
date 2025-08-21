@@ -1,6 +1,8 @@
 package com.rentex.user.service;
 
 import com.rentex.admin.dto.UserResponseDTO;
+import com.rentex.item.repository.ItemRepository;
+import com.rentex.partner.dto.PartnerDashboardDTO;
 import com.rentex.penalty.domain.Penalty;
 import com.rentex.penalty.repository.PenaltyRepository;
 import com.rentex.rental.domain.Rental;
@@ -34,6 +36,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RentalRepository rentalRepository;
     private final PenaltyRepository penaltyRepository;
+    private final ItemRepository  itemRepository;
 
     /** 이메일로 조회 */
     public Optional<User> findByEmail(String email) {
@@ -125,6 +128,7 @@ public class UserService {
         }
     }
 
+
     /** 회원 탈퇴 */
     @Transactional
     public void withdrawUser(Long userId) {
@@ -194,4 +198,6 @@ public class UserService {
         UserDetails details = builder.build();
         return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
     }
+
+
 }

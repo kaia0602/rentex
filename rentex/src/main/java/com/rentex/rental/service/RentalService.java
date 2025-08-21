@@ -2,6 +2,7 @@ package com.rentex.rental.service;
 
 import com.rentex.item.domain.Item;
 import com.rentex.item.repository.ItemRepository;
+import com.rentex.partner.dto.PartnerDashboardDTO;
 import com.rentex.rental.domain.ActionActor;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalHistory;
@@ -15,6 +16,7 @@ import com.rentex.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -314,5 +316,15 @@ public class RentalService {
         if ("PARTNER".equals(actor.getRole())) return ActionActor.PARTNER;
         if ("USER".equals(actor.getRole())) return ActionActor.USER;
         throw new AccessDeniedException("권한이 없습니다.");
+    }
+
+    @Transactional(readOnly = true)
+    public PartnerDashboardDTO getDashboard(Long partnerId) {
+        Long registeredCount = itemRepository.countByPartnerId(partnerId);
+        Long pendingRentalCount = rentalRepository.countPendingByPartnerId(partnerId);
+        Long returnRequestedCount = rentalRepository.countReturnRequestedByPartnerId(partnerId);
+        Long activeRentalCount = rentalRepository.countActiveByPartnerId(partnerId);
+
+        return new PartnerDashboardDTO(registeredCount, pendingRentalCount, returnRequestedCount, activeRentalCount);
     }
 }

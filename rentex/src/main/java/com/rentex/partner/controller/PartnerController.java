@@ -1,11 +1,14 @@
 package com.rentex.partner.controller;
 
 import com.rentex.admin.dto.UserResponseDTO;
+import com.rentex.partner.dto.PartnerDashboardDTO;
+import com.rentex.rental.service.RentalService;
 import com.rentex.user.domain.User;
 import com.rentex.user.dto.SignUpRequestDTO;
 import com.rentex.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.List;
 public class PartnerController {
 
     private final UserService userService;
+    private final RentalService rentalService;
 
     /** 파트너 생성 (회원가입 DTO에서 userType 확인 후 서버에서 role 결정) */
     @PostMapping
@@ -50,4 +54,17 @@ public class PartnerController {
         userService.withdrawUser(id); // ✅ UserService 탈퇴 로직 재사용
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<PartnerDashboardDTO> getDashboard(
+            @AuthenticationPrincipal org.springframework.security.core.userdetails.UserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).build();
+        }
+        Long partnerId = Long.parseLong(userDetails.getUsername());
+        PartnerDashboardDTO dto = rentalService.getDashboard(partnerId);
+        return ResponseEntity.ok(dto);
+    }
+
 }
