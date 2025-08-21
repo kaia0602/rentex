@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class MyPageDTO {
     private String email, name, nickname, role;
     private int penaltyPoints;
+    private String profileImageUrl;
     private List<RentalInfo> rentalHistory;
     private List<PenaltyInfo> penaltyHistory;
 
@@ -25,6 +26,7 @@ public class MyPageDTO {
                 .nickname(user.getNickname())
                 .role(user.getRole())
                 .penaltyPoints(user.getPenaltyPoints()) // ✅ User 엔티티에서 바로 가져옴
+                .profileImageUrl(user.getProfileImageUrl())
                 .rentalHistory(rentals.stream().map(RentalInfo::from).collect(Collectors.toList()))
                 .penaltyHistory(penalties.stream().map(PenaltyInfo::from).collect(Collectors.toList()))
                 .build();

@@ -33,6 +33,10 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String nickname;
 
+    // 프로필 이미지 (구글/네이버/카카오 등 소셜 로그인용)
+    @Column(length = 300)
+    private String profileImageUrl;
+
     // USER / PARTNER / ADMIN
     @Column(nullable = false, length = 20)
     @Builder.Default
@@ -75,6 +79,9 @@ public class User extends BaseTimeEntity {
         this.password = newPassword;
     }
 
+    public void updateProfileImage(String profileImageUrl) { // 추가
+        this.profileImageUrl = profileImageUrl;
+    }
     // 파트너 전용 필드 업데이트
     public void updateBusinessNo(String businessNo) {
         this.businessNo = businessNo;

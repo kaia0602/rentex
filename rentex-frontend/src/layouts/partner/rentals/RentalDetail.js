@@ -55,7 +55,7 @@ function PartnerRentalDetail() {
 
   const fetchRentalDetail = async () => {
     try {
-      const res = await api.get(`/rentals/${id}`);
+      const res = await api.get(`/rentals/partner/${id}`);
       setRental(res.data);
     } catch (err) {
       console.error("❌ 상세 조회 실패:", err);
