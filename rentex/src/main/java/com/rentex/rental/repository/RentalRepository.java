@@ -105,4 +105,17 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
                                             Pageable pageable);
 
 
+    // REQUESTED 상태인 대여 수
+    @Query("SELECT COUNT(r) FROM Rental r WHERE r.item.partner.id = :partnerId AND r.status = 'REQUESTED'")
+    Long countPendingByPartnerId(@Param("partnerId") Long partnerId);
+
+    // RETURN_REQUESTED 상태인 대여 수 추가 가능
+    @Query("SELECT COUNT(r) FROM Rental r WHERE r.item.partner.id = :partnerId AND r.status = 'RETURN_REQUESTED'")
+    Long countReturnRequestedByPartnerId(@Param("partnerId") Long partnerId);
+
+    // 로그인한 파트너가 등록한 장비 중 RECEIVED 상태인 대여 수
+    @Query("SELECT COUNT(r) FROM Rental r WHERE r.item.partner.id = :partnerId AND r.status = 'RECEIVED'")
+    Long countActiveByPartnerId(@Param("partnerId") Long partnerId);
+
 }
+
