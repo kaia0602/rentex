@@ -57,7 +57,7 @@ function SignUp() {
         contactPhone: form.userType === "PARTNER" ? form.contactPhone : null,
       });
 
-      alert("회원가입이 완료되었습니다. 가입한 이메일을 확인하여 인증 과정을 진행해주세요."); // ✅ 실제 기능에 맞게 메시지 변경
+      alert("회원가입이 완료되었습니다."); // ✅ 실제 기능에 맞게 메시지 변경
       nav("/authentication/sign-in");
     } catch (err) {
       console.error(err);

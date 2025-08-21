@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 // @mui material
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/Icon";
+import IconButton from "@mui/material/IconButton"; // IconButton은 @mui/material에서 가져옵니다.
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
 
@@ -20,7 +20,7 @@ import MDInput from "components/MDInput";
 import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 
-// ✅ 스타일 import
+// 스타일 import
 import {
   navbar,
   navbarContainer,
@@ -37,11 +37,14 @@ import {
   setOpenConfigurator,
 } from "context";
 
-// ✅ 토큰 유틸 & API 클라이언트
-import { getToken, clearToken } from "utils/auth";
+// [수정 1]: AuthContext에서 필요한 기능들을 가져옵니다.
+import { useAuth } from "contexts/AuthContext";
 import api from "api/client";
 
 function DashboardNavbar({ absolute, light, isMini }) {
+  // [수정 2]: useAuth 훅을 호출하여 로그인 상태와 로그아웃 함수를 가져옵니다.
+  const { isLoggedIn, logout } = useAuth();
+
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
@@ -50,28 +53,30 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [nickname, setNickname] = useState("");
   const navigate = useNavigate();
 
+  // [수정 3]: 사용자 정보는 로그인 상태(isLoggedIn)일 때만 불러옵니다.
   useEffect(() => {
-    const token = getToken();
-    if (!token) return;
+    // 로그인 상태가 아니면 API를 호출하지 않습니다.
+    if (!isLoggedIn) {
+      setNickname(""); // 로그아웃 시 닉네임 초기화
+      return;
+    }
 
     api
-      .get("/users/me") // ✅ baseURL 자동 + 토큰 자동 첨부됨
+      .get("/users/me")
       .then((res) => {
         setNickname(res.data.nickname);
       })
       .catch((err) => {
         console.error("사용자 정보 불러오기 실패:", err);
+        // 여기서 토큰이 만료되었거나 유효하지 않으면 강제 로그아웃 처리도 가능합니다.
+        // logout();
       });
-  }, []);
+  }, [isLoggedIn]); // isLoggedIn이 바뀔 때마다 이 효과를 다시 실행합니다.
 
-  // 로그아웃
-  const handleLogout = async () => {
-    try {
-      clearToken();
-      navigate("/authentication/sign-in");
-    } catch (err) {
-      console.error("로그아웃 실패:", err);
-    }
+  // [수정 4]: 로그아웃 핸들러가 AuthContext의 logout 함수를 사용하도록 수정합니다.
+  const handleLogout = () => {
+    logout(); // 이 함수가 토큰 삭제와 상태 변경을 모두 처리합니다.
+    navigate("/authentication/sign-in");
   };
 
   useEffect(() => {
@@ -115,46 +120,56 @@ function DashboardNavbar({ absolute, light, isMini }) {
     <AppBar
       position={absolute ? "absolute" : navbarType}
       color="inherit"
-      sx={(theme) => ({
-        ...navbar(theme, { transparentNavbar, absolute, light, darkMode }),
-      })}
+      sx={(theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode })}
     >
-      <Toolbar>
-        <MDBox color="inherit" mb={{ xs: 1, md: 0 }}>
+      <Toolbar sx={(theme) => navbarContainer(theme)}>
+        <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>
           <Breadcrumbs icon="home" title={route[route.length - 1]} route={route} light={light} />
         </MDBox>
         {isMini ? null : (
-          <MDBox display="flex" alignItems="center" ml="auto">
+          <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
             <MDBox pr={1}>
               <MDInput label="Search here" />
             </MDBox>
-
-            {/* ✅ 닉네임 표시 + 기본 간격 */}
-            {nickname && (
-              <MDBox display="flex" alignItems="center" pr={2} sx={{ ml: 1 }}>
-                <MDTypography variant="button" fontWeight="medium">
-                  👤 {nickname} 님
-                </MDTypography>
-              </MDBox>
-            )}
-
-            <IconButton size="small" color="inherit" onClick={handleLogout} sx={{ ml: 1 }}>
-              <Icon>logout</Icon>
-            </IconButton>
-
-            <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in">
-                <IconButton size="small" disableRipple sx={{ ml: 1 }}>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
-                </IconButton>
-              </Link>
+            <MDBox display="flex" alignItems="center" ml="auto">
+              {/* [수정 5]: 로그인 상태(isLoggedIn)에 따라 다른 UI를 보여줍니다. */}
+              {isLoggedIn ? (
+                // --- 로그인 상태일 때 ---
+                <>
+                  {nickname && (
+                    <MDBox display="flex" alignItems="center" pr={2}>
+                      <MDTypography variant="button" fontWeight="medium">
+                        👤 {nickname} 님
+                      </MDTypography>
+                    </MDBox>
+                  )}
+                  <IconButton
+                    size="small"
+                    color="inherit"
+                    onClick={handleLogout}
+                    sx={navbarIconButton}
+                  >
+                    <Icon title="로그아웃">logout</Icon>
+                  </IconButton>
+                </>
+              ) : (
+                // --- 로그아웃 상태일 때 ---
+                <Link to="/authentication/sign-in">
+                  <IconButton sx={navbarIconButton} size="small" disableRipple>
+                    <Icon sx={iconsStyle} title="로그인">
+                      login
+                    </Icon>{" "}
+                    {/* <--- 이렇게 아이콘 하나만 남깁니다 */}
+                  </IconButton>
+                </Link>
+              )}
 
               <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
+                sx={navbarIconButton}
                 onClick={handleMiniSidenav}
-                sx={{ ml: 1 }}
               >
                 <Icon sx={iconsStyle} fontSize="medium">
                   {miniSidenav ? "menu_open" : "menu"}
@@ -165,8 +180,8 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 size="small"
                 disableRipple
                 color="inherit"
+                sx={navbarIconButton}
                 onClick={handleConfiguratorOpen}
-                sx={{ ml: 1 }}
               >
                 <Icon sx={iconsStyle}>settings</Icon>
               </IconButton>
@@ -175,8 +190,11 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 size="small"
                 disableRipple
                 color="inherit"
+                sx={navbarIconButton}
+                aria-controls="notification-menu"
+                aria-haspopup="true"
+                variant="contained"
                 onClick={handleOpenMenu}
-                sx={{ ml: 1 }}
               >
                 <Icon sx={iconsStyle}>notifications</Icon>
               </IconButton>

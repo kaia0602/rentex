@@ -94,6 +94,12 @@ public class UserService {
             throw new IllegalArgumentException("소셜 로그인 사용자는 비밀번호를 변경할 수 없습니다.");
         }
 
+        // 새 비밀번호가 현재 비밀번호와 동일한지 확인합니다.
+        // passwordEncoder.matches(평문 비밀번호, 암호화된 비밀번호)
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new IllegalArgumentException("새 비밀번호는 이전 비밀번호와 같을 수 없습니다.");
+        }
+
         String encodedPassword = passwordEncoder.encode(newPassword);
         user.updatePassword(encodedPassword);
     }
