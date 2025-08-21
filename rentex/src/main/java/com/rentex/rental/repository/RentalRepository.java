@@ -113,11 +113,9 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     @Query("SELECT COUNT(r) FROM Rental r WHERE r.item.partner.id = :partnerId AND r.status = 'RETURN_REQUESTED'")
     Long countReturnRequestedByPartnerId(@Param("partnerId") Long partnerId);
 
-    // 로그인한 파트너가 등록한 장비 중 RENTED 상태인 대여 수
-    @Query("SELECT COUNT(r) FROM Rental r WHERE r.item.partner.id = :partnerId AND r.status = 'RENTED'")
+    // 로그인한 파트너가 등록한 장비 중 RECEIVED 상태인 대여 수
+    @Query("SELECT COUNT(r) FROM Rental r WHERE r.item.partner.id = :partnerId AND r.status = 'RECEIVED'")
     Long countActiveByPartnerId(@Param("partnerId") Long partnerId);
 
 }
 
-
-}

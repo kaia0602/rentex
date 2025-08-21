@@ -2,6 +2,7 @@ package com.rentex.rental.service;
 
 import com.rentex.item.domain.Item;
 import com.rentex.item.repository.ItemRepository;
+import com.rentex.partner.dto.PartnerDashboardDTO;
 import com.rentex.rental.domain.ActionActor;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalHistory;
@@ -510,6 +511,17 @@ public class RentalService {
         } else {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
+    }
+
+
+    @Transactional(readOnly = true)
+    public PartnerDashboardDTO getDashboard(Long partnerId) {
+        Long registeredCount = itemRepository.countByPartnerId(partnerId);
+        Long pendingRentalCount = rentalRepository.countPendingByPartnerId(partnerId);
+        Long returnRequestedCount = rentalRepository.countReturnRequestedByPartnerId(partnerId);
+        Long activeRentalCount = rentalRepository.countActiveByPartnerId(partnerId);
+
+        return new PartnerDashboardDTO(registeredCount, pendingRentalCount, returnRequestedCount, activeRentalCount);
     }
 
 }

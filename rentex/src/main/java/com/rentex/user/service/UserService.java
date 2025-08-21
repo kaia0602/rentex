@@ -36,7 +36,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RentalRepository rentalRepository;
     private final PenaltyRepository penaltyRepository;
-    private final ItemRepository  itemRepository;
+    private final ItemRepository itemRepository;
 
     /** 이메일로 조회 */
     public Optional<User> findByEmail(String email) {
