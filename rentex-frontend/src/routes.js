@@ -17,8 +17,6 @@ import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 import UserDashboard from "layouts/user";
 import MyPageHome from "layouts/user/MyPageHome";
 import EditProfile from "layouts/user/EditProfile";
-import ItemList from "layouts/user/ItemList";
-import ItemDetail from "layouts/user/ItemDetail";
 import RentalPay from "layouts/user/RentalPay";
 import RentalRequest from "layouts/user/RentalRequest";
 import MyRentals from "layouts/user/MyRentals";
@@ -26,6 +24,7 @@ import RentalDetail from "layouts/user/RentalDetail";
 import PenaltyPage from "layouts/user/PenaltyPage";
 import PayPenalty from "layouts/user/PayPenalty";
 import PaymentHistory from "layouts/user/PaymentHistory";
+import PaymentDetail from "layouts/user/PaymentDetail";
 
 // 업체(파트너) 관련
 import PartnerDashboard from "layouts/partner";
@@ -36,18 +35,13 @@ import PartnerRentalRequests from "layouts/partner/rentals";
 import PartnerRentalDetail from "layouts/partner/rentals/RentalDetail";
 import PartnerStatistics from "layouts/partner/statistics";
 import PartnerSettings from "layouts/partner/settings";
-import PartnerNotifications from "layouts/partner/notifications";
 import NewItemForm from "layouts/partner/items/new";
 
 // 관리자 관련
 import AdminDashboard from "layouts/admin";
-import AdminRentals from "layouts/admin/Rentals";
-import AdminReturns from "layouts/admin/Returns";
-import AdminItems from "layouts/admin/Items";
 import AdminPartners from "layouts/admin/Partners";
 import AdminPenalties from "layouts/admin/Penalties";
 import AdminStatistics from "layouts/admin/Statistics";
-import AdminReceipts from "layouts/admin/Receipts";
 import AdminUsers from "layouts/admin/Users";
 import AdminPenaltyDetail from "layouts/admin/PenaltyDetail";
 import PartnerStatisticsDetail from "layouts/admin/PartnerStatisticsDetail";
@@ -223,16 +217,16 @@ const routes = [
     display: false,
     // role: ["USER", "ADMIN"],
   },
-  {
-    type: "collapse",
-    name: "대여 상세",
-    key: "rental-detail",
-    route: "/mypage/rentals/:id",
-    component: <RentalDetail />,
-    noCollapse: true,
-    display: false,
-    // role: ["USER", "ADMIN"],
-  },
+  // { 중복 주석처리
+  //   type: "collapse",
+  //   name: "대여 상세",
+  //   key: "rental-detail",
+  //   route: "/mypage/rentals/:id",
+  //   component: <RentalDetail />,
+  //   noCollapse: true,
+  //   display: false,
+  //   // role: ["USER", "ADMIN"],
+  // },
   {
     type: "collapse",
     name: "내 대여 내역",
@@ -280,7 +274,14 @@ const routes = [
     component: <PaymentHistory />,
     // role: ["USER", "ADMIN"],
   },
-
+  {
+    type: "route",
+    name: "결제 상세",
+    key: "payment-detail",
+    route: "/mypage/payments/:id",
+    component: <PaymentDetail />,
+    display: false, // 사이드바에 표시하지 않음
+  },
   // =====================
   // 파트너 관련
   // =====================
@@ -372,15 +373,6 @@ const routes = [
     component: <PartnerSettings />,
     // role: ["PARTNER", "ADMIN"],
   },
-  {
-    type: "collapse",
-    name: "알림",
-    key: "partner-notifications",
-    icon: <Icon fontSize="small">notifications</Icon>,
-    route: "/partner/notifications",
-    component: <PartnerNotifications />,
-    // role: ["PARTNER", "ADMIN"],
-  },
 
   // =====================
   // 관리자 관련
@@ -397,33 +389,6 @@ const routes = [
     icon: <Icon fontSize="small">admin_panel_settings</Icon>,
     route: "/test/admin",
     component: <AdminDashboard />,
-    // role: ["ADMIN"],
-  },
-  {
-    type: "collapse",
-    name: "대여 승인",
-    key: "admin-rentals",
-    route: "/admin/rentals",
-    icon: <i className="material-icons">assignment</i>,
-    component: <AdminRentals />,
-    // role: ["ADMIN"],
-  },
-  {
-    type: "collapse",
-    name: "반납 검수",
-    key: "admin-returns",
-    route: "/admin/returns",
-    icon: <i className="material-icons">assignment_return</i>,
-    component: <AdminReturns />,
-    // role: ["ADMIN"],
-  },
-  {
-    type: "collapse",
-    name: "장비 관리",
-    key: "admin-items",
-    route: "/admin/items",
-    icon: <i className="material-icons">inventory</i>,
-    component: <AdminItems />,
     // role: ["ADMIN"],
   },
   {
@@ -460,15 +425,6 @@ const routes = [
     route: "/admin/statistics",
     icon: <i className="material-icons">bar_chart</i>,
     component: <AdminStatistics />,
-    // role: ["ADMIN"],
-  },
-  {
-    type: "collapse",
-    name: "수령 승인",
-    key: "admin-receipts",
-    route: "/admin/receipts",
-    icon: <i className="material-icons">check_circle</i>,
-    component: <AdminReceipts />,
     // role: ["ADMIN"],
   },
   {

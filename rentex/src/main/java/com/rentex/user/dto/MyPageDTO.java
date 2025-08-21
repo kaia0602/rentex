@@ -15,8 +15,14 @@ import java.util.stream.Collectors;
 public class MyPageDTO {
     private String email, name, nickname, role;
     private int penaltyPoints;
+    private String profileImageUrl;
     private List<RentalInfo> rentalHistory;
     private List<PenaltyInfo> penaltyHistory;
+
+    // Partner 전용
+    private String businessNo;
+    private String contactEmail;
+    private String contactPhone;
 
     public static MyPageDTO from(User user, List<Rental> rentals, List<Penalty> penalties) {
         return MyPageDTO.builder()
@@ -24,7 +30,11 @@ public class MyPageDTO {
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .role(user.getRole())
+                .businessNo(user.getBusinessNo() != null ? user.getBusinessNo() : "")
+                .contactEmail(user.getContactEmail() != null ? user.getContactEmail() : "")
+                .contactPhone(user.getContactPhone() != null ? user.getContactPhone() : "")
                 .penaltyPoints(user.getPenaltyPoints()) // ✅ User 엔티티에서 바로 가져옴
+                .profileImageUrl(user.getProfileImageUrl())
                 .rentalHistory(rentals.stream().map(RentalInfo::from).collect(Collectors.toList()))
                 .penaltyHistory(penalties.stream().map(PenaltyInfo::from).collect(Collectors.toList()))
                 .build();

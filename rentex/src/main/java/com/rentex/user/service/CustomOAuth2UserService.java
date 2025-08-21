@@ -46,20 +46,22 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> {
-                    // 기존 유저라면 이름/닉네임만 업데이트
                     entity.updateNickname(attributes.getName());
+                    entity.updateProfileImage(attributes.getPicture()); // 프로필 이미지 업데이트
                     return entity;
                 })
                 .orElse(User.builder()
                         .email(attributes.getEmail())
-                        .password("SOCIAL_LOGIN_PASSWORD") // ✅ 소셜 로그인 전용 비번 표시
+                        .password("SOCIAL_LOGIN_PASSWORD")
                         .name(attributes.getName())
-                        .nickname(attributes.getName()) // 닉네임은 임시로 name 사용
-                        .role("USER") // 기본 USER
+                        .nickname(attributes.getName())
+                        .role("USER")
+                        .profileImageUrl(attributes.getPicture()) // 신규 생성 시도 저장
                         .build()
                 );
 
         return userRepository.save(user);
     }
+
 
 }

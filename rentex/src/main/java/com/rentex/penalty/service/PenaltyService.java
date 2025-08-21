@@ -1,6 +1,7 @@
 package com.rentex.penalty.service;
 
 import com.rentex.penalty.domain.Penalty;
+import com.rentex.penalty.dto.MyPenaltyResponseDTO;
 import com.rentex.penalty.dto.PenaltyWithRentalDTO;
 import com.rentex.penalty.repository.PenaltyRepository;
 import com.rentex.rental.domain.Rental;
@@ -21,13 +22,13 @@ public class PenaltyService {
     private final PenaltyRepository penaltyRepository;
     private final RentalRepository rentalRepository;
 
-    /** ✅ 유저의 전체 벌점 내역 조회 */
+    /** 유저의 전체 벌점 내역 조회 */
     @Transactional(readOnly = true)
     public List<Penalty> getPenaltiesByUser(User user) {
         return penaltyRepository.findByUser_Id(user.getId());
     }
 
-    /** ✅ 가장 최신 벌점 가져오기 */
+    /** 가장 최신 벌점 가져오기 */
     @Transactional(readOnly = true)
     public Penalty getLatestPenalty(User user) {
         return penaltyRepository.findByUser_Id(user.getId()).stream()
@@ -35,7 +36,34 @@ public class PenaltyService {
                 .orElseThrow(() -> new IllegalArgumentException("벌점 정보가 없습니다."));
     }
 
-    /** ✅ 최신 벌점 + 최근 대여 3건 */
+    /** 사용자 본인 벌점 전체 내역 조회 (entries + totalPoints) */
+    @Transactional(readOnly = true)
+    public MyPenaltyResponseDTO getMyPenalties(User user) {
+        // 해당 유저 벌점 전체 조회
+        List<Penalty> penalties = penaltyRepository.findAllByUserId(user.getId());
+
+        // 유효한 벌점 총합 (예: VALID 상태만 합산)
+        int totalPoints = penalties.stream()
+                .filter(p -> p.getStatus().isValid()) // PenaltyStatus에 isValid() 같은 헬퍼 있으면 사용
+                .mapToInt(Penalty::getPoint)
+                .sum();
+
+        // 미납 여부 (paid=false 있으면 true)
+        boolean hasUnpaid = penalties.stream().anyMatch(p -> !p.isPaid());
+
+        // DTO 변환
+        List<MyPenaltyResponseDTO.EntryDto> entryDtos = penalties.stream()
+                .map(MyPenaltyResponseDTO.EntryDto::from)
+                .toList();
+
+        return MyPenaltyResponseDTO.builder()
+                .totalPoints(totalPoints)
+                .hasUnpaid(hasUnpaid)
+                .entries(entryDtos)
+                .build();
+    }
+
+    /** 최신 벌점 + 최근 대여 3건 */
     @Transactional(readOnly = true)
     public List<PenaltyWithRentalDTO> getPenaltyWithRentals(User user) {
         Penalty latestPenalty = getLatestPenalty(user);
@@ -57,14 +85,14 @@ public class PenaltyService {
                 .toList();
     }
 
-    /** ✅ 벌점 초기화 (== 유저의 모든 벌점을 paid 처리) */
+    /** 벌점 초기화 (== 유저의 모든 벌점을 paid 처리) */
     @Transactional
     public void resetPenalty(User user) {
         List<Penalty> penalties = getPenaltiesByUser(user);
         penalties.forEach(Penalty::reset);
     }
 
-    /** ✅ 벌점 증가 (새 row 생성) */
+    /** 벌점 증가 (새 row 생성) */
     @Transactional
     public void increasePenalty(User user, int score) {
         Penalty penalty = Penalty.builder()
@@ -73,5 +101,7 @@ public class PenaltyService {
                 .paid(false)
                 .build();
         penaltyRepository.save(penalty);
+
+        user.addPenalty(score); // User.penaltyPoints 값도 증가
     }
 }

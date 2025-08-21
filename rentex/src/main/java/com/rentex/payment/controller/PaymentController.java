@@ -3,6 +3,7 @@ package com.rentex.payment.controller;
 
 import com.rentex.payment.domain.Payment;
 import com.rentex.payment.domain.Payment.PaymentMethod;
+import com.rentex.payment.dto.PaymentDetailDTO;
 import com.rentex.payment.dto.PaymentResponseDTO;
 import com.rentex.payment.service.PaymentService;
 import com.rentex.user.domain.User;
@@ -30,6 +31,14 @@ public class PaymentController {
                 .toList();
     }
 
+    // PaymentController.java
+    @GetMapping("/payments/{id}")
+    public PaymentDetailDTO getPaymentById(@PathVariable Long id, Principal principal) {
+        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        Payment payment = paymentService.getByIdForUser(id, user); // 본인 소유 검증 포함
+        return PaymentDetailDTO.from(payment);
+    }
+
     @PostMapping("/pay-penalty")
     public PaymentResponseDTO payPenalty(
             @RequestParam PaymentMethod method,
@@ -39,5 +48,3 @@ public class PaymentController {
         return PaymentResponseDTO.from(paymentService.processPenaltyPayment(user, method));
     }
 }
-
-

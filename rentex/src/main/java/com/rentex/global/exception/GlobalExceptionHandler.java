@@ -1,8 +1,12 @@
 package com.rentex.global.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -13,14 +17,13 @@ public class GlobalExceptionHandler {
                 .status(ex.getErrorCode().getStatus())
                 .body(ErrorResponse.of(ex.getErrorCode()));
     }
-
-    // (선택) 기타 예외도 처리하고 싶다면 아래처럼 추가 가능
-    /*
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR));
+    /** 공통 응답 포맷 */
+    private ResponseEntity<Map<String, Object>> build(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", status.value(),
+                "error", status.getReasonPhrase(),
+                "message", message
+        ));
     }
-    */
 }
