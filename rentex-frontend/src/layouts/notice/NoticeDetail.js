@@ -45,7 +45,7 @@ function getAuth() {
   const t = localStorage.getItem("ACCESS_TOKEN");
   const payload = t ? parseJwt(t) : null;
   const sub = payload?.sub;
-  const rawRoles = payload?.roles || payload?.authorities || payload?.scope || [];
+  const rawRoles = payload?.roles || payload?.authorities || payload?.scope || payload?.auth ||[];
   const roles = Array.isArray(rawRoles)
     ? rawRoles
     : typeof rawRoles === "string"
@@ -79,10 +79,15 @@ export default function NoticeDetail() {
     }
   };
 
+  const auth = useMemo(getAuth, []);
   useEffect(() => {
     fetchDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+    console.log(auth);    
+    const t = localStorage.getItem("ACCESS_TOKEN");
+    console.log(JSON.parse(decodeURIComponent(atob(t.split(".")[1]).split("").map(c=>"%"+("00"+c.charCodeAt(0).toString(16)).slice(-2)).join(""))));
+
 
   const handleAddComment = async () => {
     const content = comment.trim();
@@ -157,7 +162,7 @@ export default function NoticeDetail() {
                     <span>
                       <IconButton
                         component={Link}
-                        to={`/admin/notices/${notice.id}/edit`}
+                        to={`/admin/notice/${notice.id}/edit`}
                         color="primary"
                       >
                         <EditIcon />
