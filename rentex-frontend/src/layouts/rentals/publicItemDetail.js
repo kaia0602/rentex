@@ -65,14 +65,11 @@ function PublicItemsDetail() {
           <Grid item xs={12} md={6}>
             <Card sx={{ p: 2 }}>
               <CardContent>
-                <MDTypography variant="h5" fontWeight="bold" gutterBottom>
-                  {item.name}
-                </MDTypography>
-                <MDTypography variant="body1" color="textSecondary" paragraph>
-                  {item.description || "설명이 없습니다."}
+                <MDTypography variant="body2" color="textSecondary">
+                  업체: {item.partnerName ?? "-"}
                 </MDTypography>
                 <MDTypography variant="body2" color="textSecondary">
-                  카테고리: {item.category?.name} / {item.subCategory?.name}
+                  카테고리: {item.categoryName ?? "-"} / {item.subCategoryName ?? "-"}
                 </MDTypography>
                 <MDTypography variant="body2" sx={{ mt: 1 }}>
                   재고: {item.stockQuantity ?? "-"} 개

@@ -26,6 +26,10 @@ function PenaltyPage() {
     { Header: "렌탈 물품", accessor: "item" },
     { Header: "대여일", accessor: "rentedAt", align: "center" },
     { Header: "만료일", accessor: "endDate", align: "center" },
+    { Header: "사유", accessor: "reason" },
+    { Header: "점수", accessor: "points", align: "center" },
+    { Header: "부여일", accessor: "givenAt", align: "center" },
+    { Header: "상태", accessor: "status", align: "center" },
   ];
 
   useEffect(() => {
@@ -42,6 +46,10 @@ function PenaltyPage() {
       item: d?.itemName || "-",
       rentedAt: normDate(d?.startDate),
       endDate: normDate(d?.endDate),
+      reason: d?.reason || "-",
+      points: d?.points ?? d?.score ?? 0,
+      givenAt: d?.givenAt ? new Date(d.givenAt).toLocaleString("ko-KR") : "-",
+      status: d?.status || "-",
     });
 
     api
@@ -53,26 +61,20 @@ function PenaltyPage() {
         }
 
         const raw = res.data;
+        setTotal(raw.totalPoints ?? 0);
 
-        // ── 정규화: 배열 / 단일객체 / { totalPoints, rentals } 모두 처리
-        let totalPoints = 0;
-        let list = [];
-
-        if (Array.isArray(raw)) {
-          totalPoints = raw[0]?.point ?? raw[0]?.score ?? raw[0]?.totalPoints ?? 0;
-          list = raw;
-        } else if (raw && typeof raw === "object") {
-          if (Array.isArray(raw.rentals)) {
-            totalPoints = raw.totalPoints ?? raw.point ?? raw.score ?? 0;
-            list = raw.rentals;
-          } else {
-            totalPoints = raw.point ?? raw.score ?? raw.totalPoints ?? 0;
-            list = [raw];
-          }
-        }
-
-        setRows(list.map(mapRow));
-        setTotal(Number.isFinite(totalPoints) ? totalPoints : 0);
+        const list = raw.entries ?? []; // 벌점 엔트리 전체
+        setRows(
+          list.map((e) => ({
+            item: e.itemName || "-", // 필요 없으면 빼도 됨
+            rentedAt: "-", // entries에는 startDate 없음
+            endDate: "-", // entries에는 endDate 없음
+            reason: e.reason || "-",
+            points: e.points ?? 0,
+            givenAt: e.givenAt ? new Date(e.givenAt).toLocaleString("ko-KR") : "-",
+            status: e.status || "-",
+          })),
+        );
       })
       .catch(() => {
         setRows([]);

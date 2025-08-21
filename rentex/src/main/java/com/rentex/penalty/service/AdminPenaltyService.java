@@ -22,6 +22,7 @@ public class AdminPenaltyService {
     private final UserPenaltyRepository penaltyRepo;
     private final UserRepository userRepo;
 
+    // 유저만 조회
     @Transactional(readOnly = true)
     public List<AdminPenaltyUserDTO> listOnlyUsers(String q, int page, int size) {
         int limit = Math.max(1, size);
@@ -38,6 +39,26 @@ public class AdminPenaltyService {
                         .build())
                 .toList();
     }
+
+    // 전체 계정 조회
+    @Transactional(readOnly = true)
+    public List<AdminPenaltyUserDTO> listAllAccounts(String q, String role, int page, int size) {
+        int limit = Math.max(1, size);
+        int offset = Math.max(0, page) * limit;
+
+        return penaltyRepo.searchUserSummariesAll(q, role, limit, offset).stream()
+                .map(p -> AdminPenaltyUserDTO.builder()
+                        .userId(p.getUserId())
+                        .name(p.getName())
+                        .email(p.getEmail())
+                        .penaltyPoints(p.getPenaltyPoints())
+                        .activeEntries(p.getActiveEntries())
+                        .lastGivenAt(p.getLastGivenAt() == null ? null : p.getLastGivenAt().toLocalDateTime())
+                        .role(p.getRole())
+                        .build())
+                .toList();
+    }
+
 
     /** 특정 사용자 벌점 엔트리 목록 */
     @Transactional(readOnly = true)
@@ -93,24 +114,24 @@ public class AdminPenaltyService {
         }
     }
 
-//    /** 사용자 벌점 전체 초기화 */
-//    @Transactional
-//    public void reset(Long userId) {
-//        // 존재 확인
-//        userRepo.findById(userId).orElseThrow();
-//
-//        List<Penalty> valids = penaltyRepo.findByUserIdAndStatusOrderByIdDesc(userId, PenaltyStatus.VALID);
-//        if (!valids.isEmpty()) {
-//            LocalDateTime now = LocalDateTime.now();
-//            valids.forEach(e -> { e.setState(PenaltyStatus.CLEARED); e.setClearedAt(now); });
-//            penaltyRepo.saveAll(valids);
-//        }
-//
-//        int updated = userRepo.resetPenaltyPoints(userId);
-//        if (updated == 0) {
-//            userRepo.recalcPenaltyPoints(userId);
-//        }
-//    }
+    /** 사용자 벌점 전체 초기화 */
+    @Transactional
+    public void reset(Long userId) {
+        // 존재 확인
+        userRepo.findById(userId).orElseThrow();
+
+        List<Penalty> valids = penaltyRepo.findByUser_IdAndStatusOrderByIdDesc(userId, PenaltyStatus.VALID);
+        if (!valids.isEmpty()) {
+            LocalDateTime now = LocalDateTime.now();
+            valids.forEach(e -> e.markCleared(now)); // 상태 변경
+            penaltyRepo.saveAll(valids);
+        }
+
+        int updated = userRepo.resetPenaltyPoints(userId);
+        if (updated == 0) {
+            userRepo.recalcPenaltyPoints(userId);
+        }
+    }
 
     /** 상세 화면 상단 요약 */
     @Transactional(readOnly = true)
@@ -124,6 +145,7 @@ public class AdminPenaltyService {
                 .penaltyPoints(p.getPenaltyPoints())
                 .activeEntries(p.getActiveEntries())
                 .lastGivenAt(p.getLastGivenAt() == null ? null : p.getLastGivenAt().toLocalDateTime())
+                .role(p.getRole()) // Projection에 추가해둔 경우
                 .build();
     }
 }

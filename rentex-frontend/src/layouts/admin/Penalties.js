@@ -1,9 +1,10 @@
-// src/layouts/admin/AdminPenalties.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import CircularProgress from "@mui/material/CircularProgress";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -12,13 +13,14 @@ import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import api from "api/client"; // ✅ 수정됨
+import api from "api/client"; // ✅ axios instance
 
 const nf = new Intl.NumberFormat("ko-KR");
 
 export default function AdminPenalties() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
+  const [role, setRole] = useState("ALL"); // ✅ 역할 필터 상태
   const [loading, setLoading] = useState(false);
   const [rowsData, setRowsData] = useState([]);
   const [composing, setComposing] = useState(false);
@@ -28,6 +30,7 @@ export default function AdminPenalties() {
       { Header: "ID", accessor: "id", align: "center" },
       { Header: "사용자", accessor: "user", align: "center" },
       { Header: "이메일", accessor: "email", align: "center" },
+      { Header: "권한", accessor: "role", align: "center" }, // ✅ 역할 추가
       { Header: "벌점", accessor: "penalty", align: "center" },
       { Header: "최근 부여일", accessor: "last", align: "center" },
       { Header: "상세보기", accessor: "actions", align: "center" },
@@ -38,7 +41,9 @@ export default function AdminPenalties() {
   const refresh = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/penalties", { params: { q: q.trim(), page: 0, size: 50 } });
+      const res = await api.get("/admin/penalties", {
+        params: { q: q.trim(), role, page: 0, size: 50 },
+      });
       const list = Array.isArray(res.data) ? res.data : [];
       setRowsData(list);
     } catch (e) {
@@ -55,7 +60,7 @@ export default function AdminPenalties() {
       refresh();
     }, 200);
     return () => clearTimeout(id);
-  }, [q, composing]);
+  }, [q, role, composing]);
 
   useEffect(() => {
     refresh(); /* eslint-disable-next-line */
@@ -67,6 +72,7 @@ export default function AdminPenalties() {
         id: u.userId,
         user: u.name,
         email: u.email,
+        role: u.role || "-", // ✅ 역할 표시
         penalty: u.penaltyPoints,
         last: u.lastGivenAt ? new Date(u.lastGivenAt).toLocaleString("ko-KR") : "-",
         actions: (
@@ -100,13 +106,21 @@ export default function AdminPenalties() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               onCompositionStart={() => setComposing(true)}
-              onCompositionEnd={() => {
-                setComposing(false);
-              }}
+              onCompositionEnd={() => setComposing(false)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") refresh();
               }}
             />
+          </Grid>
+          <Grid item>
+            <Select size="small" value={role} onChange={(e) => setRole(e.target.value)}>
+              <MenuItem value="ALL">전체</MenuItem>
+              <MenuItem value="USER">사용자</MenuItem>
+              <MenuItem value="ADMIN">관리자</MenuItem>
+              <MenuItem value="PARTNER">파트너 업체</MenuItem>
+              {/* role=USER_ONLY는 백엔드에서 존재하므로 필요시 아래 주석 해제 */}
+              {/* <MenuItem value="USER_ONLY">유저만</MenuItem> */}
+            </Select>
           </Grid>
           <Grid item>
             <MDButton variant="outlined" onClick={refresh}>

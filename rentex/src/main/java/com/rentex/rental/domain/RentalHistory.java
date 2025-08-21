@@ -19,20 +19,23 @@ public class RentalHistory extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 이력이 속한 대여 정보 (다대일 관계)
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rental_id", nullable = false)
     private Rental rental;
 
     // 상태 전이 이전 상태
     @Enumerated(EnumType.STRING)
+    @Column(length = 30)
     private RentalStatus fromStatus;
 
     // 상태 전이 이후 상태
     @Enumerated(EnumType.STRING)
+    @Column(length = 30)
     private RentalStatus toStatus;
 
-    // 해당 상태 전이를 수행한 주체 (USER, ADMIN, PARTNER 등)
+    // 수행한 주체 (USER, ADMIN, PARTNER 등)
     @Enumerated(EnumType.STRING)
+    @Column(length = 20)
     private ActionActor actor;
 
     // 전이 관련 설명 (예: '관리자 승인', '업체 수령 요청' 등)
@@ -58,8 +61,8 @@ public class RentalHistory extends BaseTimeEntity {
             RentalStatus from,
             RentalStatus to,
             ActionActor actor,
-            String desc,       // ✅ String 먼저
-            User actorUser     // ✅ User 나중에
+            String desc,       // String 먼저
+            User actorUser     // User 나중에
     ) {
         return RentalHistory.builder()
                 .rental(rental)
@@ -67,7 +70,7 @@ public class RentalHistory extends BaseTimeEntity {
                 .toStatus(to)
                 .actor(actor)
                 .description(desc)
-                .actorUser(actorUser)   // ✅ 닉네임/파트너명 연결
+                .actorUser(actorUser)   // 닉네임/파트너명 연결
                 .build();
     }
 }

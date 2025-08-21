@@ -22,7 +22,7 @@ public class PenaltyController {
     private final PenaltyService penaltyService;
     private final UserService userService;
 
-    /** ✅ 내 벌점 조회 */
+    /** 내 벌점 조회 */
     @GetMapping("/me")
     public ResponseEntity<?> getMyPenalty(Authentication auth) {
         if (isAnonymous(auth)) {
@@ -31,22 +31,8 @@ public class PenaltyController {
         Long userId = Long.parseLong(auth.getName());
         User user = userService.getUserById(userId);
 
-        // 미납 벌점 전체
-        var penalties = penaltyService.getPenaltiesByUser(user);
-        int totalPoints = penalties.stream()
-                .filter(p -> !p.isPaid())
-                .mapToInt(p -> p.getPoint())
-                .sum();
-        boolean hasUnpaid = penalties.stream().anyMatch(p -> !p.isPaid());
-
-        // 최신 렌탈 3건과 함께 반환
-        List<PenaltyWithRentalDTO> rentals = penaltyService.getPenaltyWithRentals(user);
-
-        MyPenaltyResponseDTO dto = MyPenaltyResponseDTO.builder()
-                .totalPoints(totalPoints)
-                .hasUnpaid(hasUnpaid)
-                .recentRentals(rentals)
-                .build();
+        // 서비스에서 DTO 만들어서 반환
+        MyPenaltyResponseDTO dto = penaltyService.getMyPenalties(user);
 
         return ResponseEntity.ok(dto);
     }

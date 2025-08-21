@@ -11,4 +11,5 @@ public class AdminPenaltyUserDTO {
     private Integer penaltyPoints;
     private Integer activeEntries;  // VALID 개수
     private LocalDateTime lastGivenAt;
+    private String role;
 }

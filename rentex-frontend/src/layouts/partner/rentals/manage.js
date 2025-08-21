@@ -25,7 +25,8 @@ function PartnerRentalManage() {
     { value: "ALL", label: "전체" },
     { value: "REQUESTED", label: "요청됨" },
     { value: "APPROVED", label: "승인됨" },
-    { value: "RENTED", label: "대여중" },
+    { value: "SHIPPED", label: "배송 중" },
+    { value: "RECEIVED", label: "수령됨" },
     { value: "RETURN_REQUESTED", label: "반납 요청됨" },
     { value: "RETURNED", label: "반납 완료" },
   ];
@@ -49,7 +50,10 @@ function PartnerRentalManage() {
           case "APPROVED":
             color = "#3498db"; // 파랑
             break;
-          case "RENTED":
+          case "SHIPPED": // ✅ 배송 중
+            color = "#1abc9c"; // 청록
+            break;
+          case "RECEIVED": // ✅ 수령됨 (= 대여중)
             color = "#27ae60"; // 초록
             break;
           case "RETURN_REQUESTED":
@@ -61,7 +65,6 @@ function PartnerRentalManage() {
           default:
             color = "#7f8c8d";
         }
-
         return (
           <span
             style={{

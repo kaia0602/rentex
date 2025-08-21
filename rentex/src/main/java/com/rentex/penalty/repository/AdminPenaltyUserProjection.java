@@ -10,6 +10,7 @@ public interface AdminPenaltyUserProjection {
 
     int getActiveEntries();       // VALID 상태 건수
     Timestamp getLastGivenAt();    // 최근 VALID 부여 시각 (Timestamp -> toLocalDateTime() 호출용)
+    String getRole();
 }
 
 

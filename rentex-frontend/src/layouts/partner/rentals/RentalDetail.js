@@ -35,12 +35,13 @@ function PartnerRentalDetail() {
   const statusColors = {
     REQUESTED: "secondary",
     APPROVED: "info",
-    RENTED: "success",
+    SHIPPED: "success",
+    RECEIVED: "success",
     RETURN_REQUESTED: "warning",
     RETURNED: "primary",
   };
 
-  // ✅ 시간 포맷 함수 (yyyy-MM-dd HH:mm)
+  // ✅ 시간 포맷 함수
   const formatDateTime = (dateTimeStr) => {
     if (!dateTimeStr) return "";
     const date = new Date(dateTimeStr);
@@ -54,7 +55,7 @@ function PartnerRentalDetail() {
 
   const fetchRentalDetail = async () => {
     try {
-      const res = await api.get(`/rentals/partner/${id}`);
+      const res = await api.get(`/rentals/${id}`);
       setRental(res.data);
     } catch (err) {
       console.error("❌ 상세 조회 실패:", err);
@@ -69,19 +70,6 @@ function PartnerRentalDetail() {
       setHistory(res.data);
     } catch (err) {
       console.error("❌ 이력 조회 실패:", err);
-    }
-  };
-
-  const handleAction = async (action) => {
-    try {
-      if (action === "approve") await api.patch(`/rentals/${id}/approve`);
-      if (action === "start") await api.patch(`/rentals/${id}/start`);
-      if (action === "return") await api.patch(`/rentals/${id}/return`);
-      await fetchRentalDetail();
-      await fetchHistory();
-    } catch (err) {
-      console.error("❌ 처리 실패:", err);
-      alert("처리 중 오류가 발생했습니다.");
     }
   };
 
@@ -105,7 +93,7 @@ function PartnerRentalDetail() {
           <Grid item xs={12} md={8}>
             <Card sx={{ p: 3, borderRadius: "16px", boxShadow: 4 }}>
               <Grid container alignItems="center">
-                {/* 왼쪽: 썸네일 */}
+                {/* 썸네일 */}
                 <Grid item xs={12} md={4}>
                   <CardMedia
                     component="img"
@@ -127,10 +115,10 @@ function PartnerRentalDetail() {
                   />
                 </Grid>
 
-                {/* 세로 Divider */}
+                {/* Divider */}
                 <Divider orientation="vertical" flexItem sx={{ mx: 3 }} />
 
-                {/* 오른쪽: 상세 정보 */}
+                {/* 상세 정보 */}
                 <Grid item xs={12} md={7}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
@@ -202,29 +190,99 @@ function PartnerRentalDetail() {
 
               {/* 버튼 영역 */}
               <MDBox display="flex" justifyContent="flex-end" gap={1}>
+                {/* 목록 이동 */}
                 <MDButton
                   variant="outlined"
                   color="dark"
                   onClick={() => navigate("/partner/rentals/manage")}
+                  sx={{ minWidth: 140 }}
                 >
                   목록으로
                 </MDButton>
 
+                {/* 승인/거절 단계 */}
                 {rental.status === "REQUESTED" && (
-                  <MDButton color="primary" onClick={() => handleAction("approve")}>
-                    📄 대여 승인
-                  </MDButton>
+                  <>
+                    <MDButton
+                      variant="contained"
+                      color="success"
+                      sx={{ minWidth: 140 }}
+                      onClick={async () => {
+                        try {
+                          await api.patch(`/rentals/${id}/approve`);
+                          alert("승인 처리 완료");
+                          fetchRentalDetail();
+                          fetchHistory();
+                        } catch (err) {
+                          alert("승인 처리 실패");
+                        }
+                      }}
+                    >
+                      승인 처리
+                    </MDButton>
+
+                    <MDButton
+                      variant="outlined"
+                      color="error"
+                      sx={{ minWidth: 140 }}
+                      onClick={async () => {
+                        const reason = prompt("거절 사유를 입력하세요."); // 🔑 간단 버전
+                        if (!reason) return;
+
+                        try {
+                          await api.patch(`/rentals/${id}/reject`, { reason });
+                          alert("거절 처리 완료");
+                          fetchRentalDetail();
+                          fetchHistory();
+                        } catch (err) {
+                          alert("거절 처리 실패");
+                        }
+                      }}
+                    >
+                      거절 처리
+                    </MDButton>
+                  </>
                 )}
 
+                {/* 배송 단계 */}
                 {rental.status === "APPROVED" && (
-                  <MDButton color="info" onClick={() => handleAction("start")}>
-                    ✅ 장비 수령 처리
+                  <MDButton
+                    variant="contained"
+                    color="info"
+                    sx={{ minWidth: 140 }}
+                    onClick={async () => {
+                      try {
+                        await api.patch(`/rentals/${id}/ship`);
+                        alert("배송 처리 완료");
+                        fetchRentalDetail();
+                        fetchHistory();
+                      } catch (err) {
+                        alert("배송 처리 실패");
+                      }
+                    }}
+                  >
+                    배송 처리
                   </MDButton>
                 )}
 
+                {/* 반납 단계 */}
                 {rental.status === "RETURN_REQUESTED" && (
-                  <MDButton color="warning" onClick={() => handleAction("return")}>
-                    📦 반납 완료 처리
+                  <MDButton
+                    variant="contained"
+                    color="primary"
+                    sx={{ minWidth: 140 }}
+                    onClick={async () => {
+                      try {
+                        await api.patch(`/rentals/${id}/return`);
+                        alert("반납 처리 완료");
+                        fetchRentalDetail();
+                        fetchHistory();
+                      } catch (err) {
+                        alert("반납 처리 실패");
+                      }
+                    }}
+                  >
+                    반납 처리
                   </MDButton>
                 )}
               </MDBox>
@@ -251,7 +309,9 @@ function PartnerRentalDetail() {
                           color={
                             h.toStatus === "APPROVED"
                               ? "info"
-                              : h.toStatus === "RENTED"
+                              : h.toStatus === "SHIPPED"
+                              ? "success"
+                              : h.toStatus === "RECEIVED"
                               ? "success"
                               : h.toStatus === "RETURN_REQUESTED"
                               ? "warning"
@@ -263,17 +323,12 @@ function PartnerRentalDetail() {
                         {idx < history.length - 1 && <TimelineConnector />}
                       </TimelineSeparator>
                       <TimelineContent>
-                        {/* ✅ 한글 상태명 */}
                         <MDTypography variant="body2" fontWeight="medium">
                           {h.toStatusLabel}
                         </MDTypography>
-
-                        {/* 시간 */}
                         <MDTypography variant="caption" color="info" fontWeight="medium">
                           {formatDateTime(h.createdAt)}
                         </MDTypography>
-
-                        {/* 닉네임 + 메시지 */}
                         {h.actorName && (
                           <MDTypography variant="caption" color="text.secondary" display="block">
                             {h.actorName} – {h.message || ""}
