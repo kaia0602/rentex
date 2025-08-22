@@ -39,6 +39,7 @@ import AdminUserDetail from "layouts/admin/UserDetail";
 import PublicItemDetail from "layouts/rentals/publicItemDetail";
 import AdminPenalties from "layouts/admin/Penalties";
 import AdminPenaltyDetail from "layouts/admin/PenaltyDetail";
+import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
@@ -190,6 +191,7 @@ export default function App() {
         <Route path="/admin/penalties" element={<AdminPenalties />} />
         <Route path="/admin/penaltyDetail/:userId" element={<AdminPenaltyDetail />} />
         <Route path="/admin/users/:id" element={<AdminUserDetail />} />
+        <Route path="/admin/rentals" element={<AdminRentalManage />} />
         {/* catch-all */}
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>

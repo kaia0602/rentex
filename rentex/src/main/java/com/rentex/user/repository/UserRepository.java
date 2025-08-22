@@ -65,4 +65,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
                     ") " +
                     "WHERE u.id = :id", nativeQuery = true)
     int recalcPenaltyPoints(@Param("id") Long userId);
+
+    // 일반 회원만 카운트
+    long countByRole(String role);
+
+    long count();
 }

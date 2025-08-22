@@ -62,36 +62,11 @@ function Header({ children }) {
           position: "relative",
           mt: -8,
           mx: 3,
-          py: 2,
+          py: 6,
           px: 2,
         }}
       >
-        <Grid container spacing={3} alignItems="center">
-          <Grid item>
-            <Avatar sx={{ bgcolor: "#2E3B55", width: 80, height: 80 }}>
-              <BusinessIcon fontSize="large" />
-            </Avatar>
-          </Grid>
-          <Grid item>
-            {user && (
-              <MDBox height="100%" mt={0.5} lineHeight={1}>
-                <MDTypography variant="h5" fontWeight="medium">
-                  {user.name}
-                </MDTypography>
-                <MDTypography variant="button" color="text" fontWeight="regular">
-                  {user.businessNo}
-                </MDTypography>
-              </MDBox>
-            )}
-          </Grid>
-          <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
-            <MDBox display="flex" justifyContent="flex-end" alignItems="center">
-              <MDButton variant="outlined" color="info" size="small" href="/mypage/edit">
-                정보 수정
-              </MDButton>
-            </MDBox>
-          </Grid>
-        </Grid>
+        <Grid container spacing={3} alignItems="center"></Grid>
         {children}
       </Card>
     </MDBox>
