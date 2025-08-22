@@ -66,6 +66,7 @@ function AdminDashboard() {
   });
 
   const [notices, setNotices] = useState([]);
+  const [inquiries, setInquiries] = useState([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -87,8 +88,18 @@ function AdminDashboard() {
       }
     };
 
+    const fetchInquiries = async () => {
+      try {
+        const res = await api.get("/qna", { params: { page: 0, size: 3 } });
+        setInquiries(res.data.content || []);
+      } catch (error) {
+        console.error("문의사항 조회 실패:", error);
+      }
+    };
+
     fetchStats();
     fetchNotices();
+    fetchInquiries();
   }, []);
 
   const cardData = [
@@ -121,18 +132,6 @@ function AdminDashboard() {
       color: "#f44336",
       noArrow: true,
     },
-  ];
-
-  const examplePosts = [
-    { title: "서버 점검 안내" },
-    { title: "신규 기능 출시" },
-    { title: "이벤트 진행중" },
-  ];
-
-  const exampleInquiries = [
-    { title: "상품 대여 문의" },
-    { title: "환불 관련 질문" },
-    { title: "배송 지연 관련" },
   ];
 
   const topPartners = [
@@ -253,11 +252,11 @@ function AdminDashboard() {
                   ❓ 문의사항 (미답변 N개)
                 </MDTypography>
 
-                {exampleInquiries.length === 0 && (
+                {inquiries.length === 0 && (
                   <MDTypography sx={{ mb: 1 }}>문의사항이 없습니다.</MDTypography>
                 )}
 
-                {exampleInquiries.map((inq) => (
+                {inquiries.map((inq) => (
                   <CardContent
                     key={inq.id || inq.title}
                     sx={{
@@ -273,14 +272,14 @@ function AdminDashboard() {
                         transform: "translateY(-2px)",
                       },
                     }}
-                    onClick={() => (window.location.href = `/inquiries/${inq.id || ""}`)}
+                    onClick={() => (window.location.href = `/qna/${inq.id || ""}`)}
                   >
                     <MDTypography
                       variant="body2"
                       color="textSecondary"
                       sx={{ fontSize: 12, mb: 0.5 }}
                     >
-                      작성자{inq.id ? `#${inq.id}` : ""}
+                      #{inq.authorNickname}
                     </MDTypography>
                     <MDTypography variant="body1" sx={{ fontWeight: 500 }}>
                       {inq.title}
