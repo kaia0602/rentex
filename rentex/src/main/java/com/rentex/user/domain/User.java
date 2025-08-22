@@ -31,8 +31,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String nickname;
 
-    // 프로필 이미지 (구글/네이버/카카오 등 소셜 로그인용)
-    @Column(length = 300)
+    // 프로필 이미지 (구글/네이버/카카오 등 소셜 로그인용) !!! Google 계정 이미지 암호화 1000자 넘기는 경우 있다고 함 300 -> 2048
+    @Column(length = 2048)
     private String profileImageUrl;
 
     // USER / PARTNER / ADMIN

@@ -1,9 +1,4 @@
-/*
-[각주: 변경된 내용]
-
-- 복잡한 역할(Role) 기반 필터링 로직을 모두 제거했습니다.
-- 기존 코드 구조를 그대로 사용하여, 오직 로그인 상태(isLoggedIn)에 따라서만 인증 관련 메뉴가 동적으로 변경되도록 했습니다.
-*/
+// src/routes.js
 
 // Material Dashboard 2 React layouts
 import Dashboard from "layouts/dashboard";
@@ -16,7 +11,6 @@ import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 import SignOut from "layouts/authentication/sign-out";
-
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 
 // 유저 관련
@@ -164,7 +158,7 @@ const getRoutes = (isLoggedIn) => [
   {
     type: "title",
     title: "유저 관련",
-    key: "role-test-title",
+    key: "user-pages-title",
   },
   {
     type: "collapse",
@@ -193,7 +187,7 @@ const getRoutes = (isLoggedIn) => [
   },
   {
     type: "collapse",
-    name: "대여 요청 (숨김용)",
+    name: "대여 요청 (숨김)",
     key: "rental-request",
     route: "/rentals/request/:id",
     component: <RentalRequest />,
@@ -202,35 +196,22 @@ const getRoutes = (isLoggedIn) => [
   },
   {
     type: "collapse",
-    name: "대여 결제",
+    name: "대여 결제 (숨김)",
     key: "rental-pay",
     route: "/rentals/pay",
     component: <RentalPay />,
     noCollapse: true,
     display: false,
   },
-<<<<<<< HEAD
   {
     type: "collapse",
-    name: "대여 상세",
+    name: "대여 상세 (숨김)",
     key: "rental-detail",
     route: "/mypage/rentals/:id",
     component: <RentalDetail />,
     noCollapse: true,
     display: false,
   },
-=======
-  // { 중복 주석처리
-  //   type: "collapse",
-  //   name: "대여 상세",
-  //   key: "rental-detail",
-  //   route: "/mypage/rentals/:id",
-  //   component: <RentalDetail />,
-  //   noCollapse: true,
-  //   display: false,
-  //   // role: ["USER", "ADMIN"],
-  // },
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
   {
     type: "collapse",
     name: "내 대여 내역",
@@ -249,7 +230,7 @@ const getRoutes = (isLoggedIn) => [
   },
   {
     type: "collapse",
-    name: "벌점 결제 (숨김용)",
+    name: "벌점 결제 (숨김)",
     key: "pay-penalty",
     route: "/mypage/pay-penalty",
     component: <PayPenalty />,
@@ -264,24 +245,22 @@ const getRoutes = (isLoggedIn) => [
     route: "/mypage/payments",
     component: <PaymentHistory />,
   },
-<<<<<<< HEAD
-=======
   {
-    type: "route",
-    name: "결제 상세",
+    type: "collapse",
+    name: "결제 상세 (숨김)",
     key: "payment-detail",
     route: "/mypage/payments/:id",
     component: <PaymentDetail />,
-    display: false, // 사이드바에 표시하지 않음
+    noCollapse: true,
+    display: false,
   },
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
   // =====================
   // 파트너 관련
   // =====================
   {
     type: "title",
     title: "파트너 관련",
-    key: "partner-section-title",
+    key: "partner-pages-title",
   },
   {
     type: "collapse",
@@ -371,7 +350,7 @@ const getRoutes = (isLoggedIn) => [
   {
     type: "title",
     title: "관리자 관련",
-    key: "admin-section-title",
+    key: "admin-pages-title",
   },
   {
     type: "collapse",
@@ -413,13 +392,15 @@ const getRoutes = (isLoggedIn) => [
     icon: <i className="material-icons">business</i>,
     component: <AdminPartners />,
   },
+  // [수정] 중복되던 경로를 고유하게 변경
   {
     type: "collapse",
-    name: "파트너 설정",
-    key: "partner-edit",
-    icon: <Icon fontSize="small">settings</Icon>,
-    route: "/admin/partners",
+    name: "파트너 상세 (숨김)",
+    key: "partner-detail",
+    route: "/admin/partners/:id",
     component: <PartnerDetail />,
+    noCollapse: true,
+    display: false,
   },
   {
     type: "collapse",
@@ -492,11 +473,13 @@ const getRoutes = (isLoggedIn) => [
   // 기타 (OAuth Redirect 등)
   // =====================
   {
-    type: "",
+    type: "route", // 'type'이 "" 빈 문자열이면 문제가 될 수 있어 'route'로 변경
     name: "OAuth Redirect",
     key: "oauth-redirect",
     route: "/oauth-redirect",
     component: <OAuthRedirect />,
+    noCollapse: true,
+    display: false,
   },
 ];
 

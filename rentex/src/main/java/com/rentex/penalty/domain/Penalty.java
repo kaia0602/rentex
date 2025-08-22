@@ -68,12 +68,8 @@ public class Penalty extends BaseTimeEntity {
         this.status = PenaltyStatus.DELETED;
         this.deletedAt = LocalDateTime.now();
     }
-<<<<<<< HEAD
 
-    public void markCleared() {
-=======
     public void markCleared(LocalDateTime clearedAt) {
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
         this.status = PenaltyStatus.CLEARED;
         this.clearedAt = clearedAt;
     }

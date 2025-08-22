@@ -34,14 +34,7 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
      */
     boolean existsByUserAndPaidFalse(User user);
 
-<<<<<<< HEAD
-    /**
-     * 패널티 초기화 (모든 패널티를 0점 + 납부처리)
-     */
-=======
-
     /** 패널티 초기화 (모든 패널티를 0점 + 납부처리) */
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Penalty p SET p.point = 0, p.paid = true, p.status = 'DELETED' WHERE p.user.id = :userId")
     void resetPenalty(@Param("userId") Long userId);

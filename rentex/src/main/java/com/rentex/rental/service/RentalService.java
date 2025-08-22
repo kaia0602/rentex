@@ -7,10 +7,7 @@ import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalHistory;
 import com.rentex.rental.domain.RentalStatus;
 import com.rentex.rental.dto.*;
-import com.rentex.rental.exception.InvalidRentalStateException;
-import com.rentex.rental.exception.ItemNotFoundException;
-import com.rentex.rental.exception.ItemUnavailableException;
-import com.rentex.rental.exception.RentalNotFoundException;
+import com.rentex.rental.exception.*;
 import com.rentex.rental.repository.RentalHistoryRepository;
 import com.rentex.rental.repository.RentalRepository;
 import com.rentex.user.domain.User;
@@ -514,22 +511,4 @@ public class RentalService {
             throw new AccessDeniedException("접근 권한이 없습니다.");
         }
     }
-
-<<<<<<< HEAD
-    // === 마이 페이지 ID 조회 ====
-    @Transactional(readOnly = true)
-    public List<Rental> findByUserId(Long userId) {
-        return rentalRepository.findByUserId(userId);
     }
-
-    // === 내부 유틸 ===
-    private ActionActor getActorType(User actor) {
-        if ("ADMIN".equals(actor.getRole())) return ActionActor.ADMIN;
-        if ("PARTNER".equals(actor.getRole())) return ActionActor.PARTNER;
-        if ("USER".equals(actor.getRole())) return ActionActor.USER;
-        throw new AccessDeniedException("권한이 없습니다.");
-    }
-}
-=======
-}
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973

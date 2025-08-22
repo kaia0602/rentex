@@ -37,21 +37,12 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     /** 대여 가능 여부 확인 시 기간 겹치는 렌탈 조회 (RETURN_REQUESTED 포함으로 통일) */
     @Query("""
-<<<<<<< HEAD
-                SELECT r FROM Rental r
-                WHERE r.item.id = :itemId
-                  AND r.status IN ('REQUESTED', 'APPROVED', 'RENTED')
-                  AND (
-                        (r.startDate <= :endDate AND r.endDate >= :startDate)
-                      )
-            """)
-=======
         SELECT r FROM Rental r
         WHERE r.item.id = :itemId
           AND r.status IN ('REQUESTED', 'APPROVED', 'SHIPPED', 'RECEIVED', 'RETURN_REQUESTED')
           AND (r.startDate <= :endDate AND r.endDate >= :startDate)
     """)
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
+
     List<Rental> findConflictingRentals(
             @Param("itemId") Long itemId,
             @Param("startDate") LocalDate startDate,
@@ -64,15 +55,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     /** 특정 아이템이 주어진 기간에 이미 예약/대여 중인지 여부 */
     @Query("""
-<<<<<<< HEAD
-            SELECT COUNT(r) > 0
-            FROM Rental r
-            WHERE r.item.id = :itemId
-              AND r.status IN ('APPROVED', 'RENTED', 'RETURN_REQUESTED')
-              AND r.startDate <= :endDate
-              AND r.endDate >= :startDate
-            """)
-=======
+
         SELECT COUNT(r) > 0
         FROM Rental r
         WHERE r.item.id = :itemId
@@ -80,7 +63,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
           AND r.startDate <= :endDate
           AND r.endDate >= :startDate
     """)
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
     boolean existsConflictingRental(@Param("itemId") Long itemId,
                                     @Param("startDate") LocalDate startDate,
                                     @Param("endDate") LocalDate endDate);
@@ -92,15 +74,6 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
      * 해당 월과 기간이 겹치는 모든 렌탈(아이템/파트너 같이 로딩)
      */
     @Query("""
-<<<<<<< HEAD
-                select r
-                from Rental r
-                join fetch r.item i
-                join fetch i.partner p
-                where r.startDate <= :monthEnd and r.endDate >= :monthStart
-            """)
-    List<Rental> findAllOverlapping(LocalDate monthStart, LocalDate monthEnd);
-=======
         select r
         from Rental r
         join fetch r.item i
@@ -109,22 +82,11 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     """)
     List<Rental> findAllOverlapping(@Param("monthStart") LocalDate monthStart,
                                     @Param("monthEnd") LocalDate monthEnd);
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
-
     /**
      * 특정 파트너의 해당 월 겹침 렌탈
      */
     @Query("""
-<<<<<<< HEAD
-                select r
-                from Rental r
-                join fetch r.item i
-                join fetch i.partner p
-                where p.id = :partnerId
-                  and r.startDate <= :monthEnd and r.endDate >= :monthStart
-            """)
-    List<Rental> findAllByPartnerOverlapping(Long partnerId, LocalDate monthStart, LocalDate monthEnd);
-=======
+
         select r
         from Rental r
         join fetch r.item i
@@ -135,20 +97,14 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findAllByPartnerOverlapping(@Param("partnerId") Long partnerId,
                                              @Param("monthStart") LocalDate monthStart,
                                              @Param("monthEnd") LocalDate monthEnd);
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
 
     /**
      * 특정 파트너의 요청 상태별 대여 목록 조회
      */
     Page<Rental> findByItemPartnerIdAndStatus(Long partnerId, RentalStatus status, Pageable pageable);
 
-<<<<<<< HEAD
-    /**
-     * 특정파트너의 전체 조회 목록
-     */
-=======
+
     /** 특정 파트너의 전체 조회 목록 */
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
     @Query("SELECT r FROM Rental r " +
             "JOIN r.item i " +
             "WHERE i.partner.id = :partnerId " +
@@ -159,8 +115,3 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
 
 }
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973

@@ -56,10 +56,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> {
-<<<<<<< HEAD
-                    // 기존 유저라면 이름/닉네임만 업데이트 (rentaladd 브랜치 로직 선택)
-=======
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
                     entity.updateNickname(attributes.getName());
                     entity.updateProfileImage(attributes.getPicture()); // 프로필 이미지 업데이트
                     return entity;
@@ -70,18 +66,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         .name(attributes.getName())
                         .nickname(attributes.getName())
                         .role("USER")
-<<<<<<< HEAD
-=======
                         .profileImageUrl(attributes.getPicture()) // 신규 생성 시도 저장
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
                         .build()
                 );
 
         return userRepository.save(user);
     }
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 4b275517b6ab137d658e9425fba72aaf4ac47973
 }

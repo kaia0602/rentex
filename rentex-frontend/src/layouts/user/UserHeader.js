@@ -8,9 +8,11 @@ import MDAvatar from "components/MDAvatar";
 import MDButton from "components/MDButton";
 
 import backgroundImage from "assets/images/bg-profile.jpeg";
+import { useNavigate } from "react-router-dom";
 import api from "api/client";
 
-function UserHeader({ children }) {
+function UserHeader({ children, showEditButton = true, showPenaltyPoints = true }) {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -71,21 +73,30 @@ function UserHeader({ children }) {
               <MDTypography variant="button" color="text" fontWeight="regular">
                 {roleLabel(user?.role)}
               </MDTypography>
-              {user && (
-                <MDTypography variant="caption" color="error" fontWeight="medium">
-                  누적 벌점: {user.penaltyPoints}점
-                </MDTypography>
-              )}
+              {user &&
+                showPenaltyPoints && ( // 👈 showPenaltyPoints && 추가
+                  <MDTypography variant="caption" color="error" fontWeight="medium">
+                    누적 벌점: {user.penaltyPoints}점
+                  </MDTypography>
+                )}
             </MDBox>
           </Grid>
-          <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
-            <MDBox display="flex" justifyContent="flex-end" alignItems="center">
-              <MDButton variant="outlined" color="info" size="small" href="/mypage/edit">
-                회원정보 수정
-              </MDButton>
-            </MDBox>
-          </Grid>
-        </Grid>
+          {showEditButton && (
+            <Grid item xs={12} md={6} lg={4} sx={{ ml: "auto" }}>
+              <MDBox display="flex" justifyContent="flex-end" alignItems="center">
+                <MDButton
+                  variant="outlined"
+                  color="info"
+                  size="small"
+                  onClick={() => navigate("/mypage/edit")}
+                >
+                  회원정보 수정
+                </MDButton>
+              </MDBox>
+            </Grid>
+          )}
+        </Grid>{" "}
+        {/* ✅ Grid container가 모든 item들을 감싼 뒤에 닫힙니다. */}
         {children}
       </Card>
     </MDBox>
@@ -98,6 +109,8 @@ UserHeader.defaultProps = {
 
 UserHeader.propTypes = {
   children: PropTypes.node,
+  showEditButton: PropTypes.bool,
+  showPenaltyPoints: PropTypes.bool,
 };
 
 export default UserHeader;
