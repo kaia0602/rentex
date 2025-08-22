@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/repository/StatisticsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/statistics/repository/StatisticsRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,11 +119,23 @@
       <workItem from="1755129717892" duration="13248000" />
       <workItem from="1755562112072" duration="19961000" />
       <workItem from="1755648400117" duration="14995000" />
-      <workItem from="1755733958393" duration="12355000" />
+      <workItem from="1755733958393" duration="21009000" />
+      <workItem from="1755831571808" duration="4062000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/rentex/src/main/java/com/rentex/notice/service/NoticeService.java</url>
+          <line>78</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

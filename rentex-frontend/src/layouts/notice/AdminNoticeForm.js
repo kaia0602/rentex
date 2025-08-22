@@ -77,7 +77,11 @@ export default function AdminNoticeForm({ mode = "create" }) {
                     fullWidth
                   />
                   <MDBox display="flex" justifyContent="flex-end" gap={1}>
-                    <MDButton variant="outlined" color="secondary" onClick={() => navigate(-1)}>
+                    <MDButton
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => navigate("/notice")}
+                    >
                       취소
                     </MDButton>
                     <MDButton color="info" onClick={onSubmit}>

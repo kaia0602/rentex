@@ -18,9 +18,9 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
 import api from "../../api/client";
-import { getCurrentUser } from "../../utils/auth";
 import NoticeChips from "./NoticeChips";
 
+/** 공통 포맷터 */
 function formatDate(iso) {
   if (!iso) return "-";
   const d = new Date(iso);
@@ -30,13 +30,46 @@ function formatDate(iso) {
   )}:${pad(d.getMinutes())}`;
 }
 
-export default function NoticeList() {
-  const currentUser = getCurrentUser();
-  const isAdmin = currentUser?.role === "ADMIN";
+/** --- JWT helpers --- */
+function parseJwt(token) {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
+        .join(""),
+    );
+    return JSON.parse(jsonPayload);
+  } catch {
+    return null;
+  }
+}
 
+function getAuth() {
+  const t = localStorage.getItem("ACCESS_TOKEN");
+  const payload = t ? parseJwt(t) : null;
+  const sub = payload?.sub;
+  const rawRoles = payload?.roles || payload?.authorities || payload?.scope || payload?.auth || [];
+  const roles = Array.isArray(rawRoles)
+    ? rawRoles
+    : typeof rawRoles === "string"
+    ? rawRoles.split(" ")
+    : [];
+  const isAdmin = roles.includes("ROLE_ADMIN") || roles.includes("ADMIN");
+  const userId = sub ? Number(sub) : null;
+  return { token: t, userId, isAdmin };
+}
+
+/** ===== 공지사항 리스트 컴포넌트 ===== */
+export default function NoticeList() {
   const [sp, setSp] = useSearchParams();
   const navigate = useNavigate();
   const page = Number(sp.get("page") || 1);
+
+  // ✅ 컴포넌트 내부에서 getAuth 호출
+  const { isAdmin } = getAuth();
 
   const [loading, setLoading] = useState(true);
   const [resp, setResp] = useState({ content: [], totalPages: 1, totalElements: 0 });
@@ -47,6 +80,7 @@ export default function NoticeList() {
     api
       .get(`/notices?page=${page - 1}&size=10`)
       .then((res) => mounted && setResp(res.data))
+      .catch(() => mounted && setResp({ content: [], totalPages: 1, totalElements: 0 }))
       .finally(() => mounted && setLoading(false));
     return () => {
       mounted = false;
@@ -99,9 +133,11 @@ export default function NoticeList() {
                     총 {resp.totalElements ?? 0}건
                   </MDTypography>
                 </div>
-                <MDButton color="info" onClick={() => navigate("/admin/notice/new")}>
-                  글쓰기
-                </MDButton>
+                {isAdmin && (
+                  <MDButton color="info" onClick={() => navigate("/admin/notice/new")}>
+                    글쓰기
+                  </MDButton>
+                )}
               </MDBox>
 
               <CardContent>

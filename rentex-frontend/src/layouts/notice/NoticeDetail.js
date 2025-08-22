@@ -45,7 +45,7 @@ function getAuth() {
   const t = localStorage.getItem("ACCESS_TOKEN");
   const payload = t ? parseJwt(t) : null;
   const sub = payload?.sub;
-  const rawRoles = payload?.roles || payload?.authorities || payload?.scope || [];
+  const rawRoles = payload?.roles || payload?.authorities || payload?.scope || payload?.auth || [];
   const roles = Array.isArray(rawRoles)
     ? rawRoles
     : typeof rawRoles === "string"
@@ -56,11 +56,22 @@ function getAuth() {
   return { token: t, userId, isAdmin };
 }
 
-const fmtDateTime = (s) => (s ? new Date(s).toLocaleString("ko-KR", { hour12: false }) : "");
-
 export default function NoticeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const fmtDateTime = (s) => (s ? new Date(s).toLocaleString("ko-KR", { hour12: false }) : "");
+
+  const handleDeleteNotice = async () => {
+    if (!window.confirm("게시글을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+    try {
+      await api.delete(`/admin/notices/${id}`);
+      alert("삭제되었습니다.");
+      navigate("/notice", { replace: true });
+    } catch (e) {
+      console.error("공지 삭제 실패:", e);
+      alert("공지 삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   const [{ loading, error, data }, setState] = useState({
     loading: true,
@@ -79,10 +90,23 @@ export default function NoticeDetail() {
     }
   };
 
+  const auth = useMemo(getAuth, []);
   useEffect(() => {
     fetchDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+  console.log(auth);
+  const t = localStorage.getItem("ACCESS_TOKEN");
+  console.log(
+    JSON.parse(
+      decodeURIComponent(
+        atob(t.split(".")[1])
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(""),
+      ),
+    ),
+  );
 
   const handleAddComment = async () => {
     const content = comment.trim();
@@ -140,7 +164,11 @@ export default function NoticeDetail() {
       <DashboardNavbar />
 
       <MDBox p={3}>
-        <Button startIcon={<ArrowBackIosNewIcon />} onClick={() => navigate(-1)} sx={{ mb: 2 }}>
+        <Button
+          startIcon={<ArrowBackIosNewIcon />}
+          onClick={() => navigate("/notice")}
+          sx={{ mb: 2 }}
+        >
           뒤로
         </Button>
 
@@ -157,10 +185,17 @@ export default function NoticeDetail() {
                     <span>
                       <IconButton
                         component={Link}
-                        to={`/admin/notices/${notice.id}/edit`}
+                        to={`/admin/notice/${notice.id}/edit`}
                         color="primary"
                       >
                         <EditIcon />
+                      </IconButton>
+                    </span>
+                  </Tooltip>
+                  <Tooltip title="삭제">
+                    <span>
+                      <IconButton onClick={handleDeleteNotice} color="error">
+                        <DeleteIcon />
                       </IconButton>
                     </span>
                   </Tooltip>
@@ -202,7 +237,12 @@ export default function NoticeDetail() {
                   />
                 </Grid>
                 <Grid item xs={12} md={2}>
-                  <Button onClick={handleAddComment} fullWidth variant="contained">
+                  <Button
+                    onClick={handleAddComment}
+                    fullWidth
+                    variant="contained"
+                    style={{ color: "#fff" }}
+                  >
                     등록
                   </Button>
                 </Grid>
@@ -216,7 +256,9 @@ export default function NoticeDetail() {
               ) : (
                 <MDBox display="flex" flexDirection="column" gap={2}>
                   {comments.map((c) => {
-                    const canDelete = isAdmin || (userId && userId === c.authorId);
+                    const canDelete =
+                      isAdmin || (userId != null && Number(userId) === Number(c.authorId));
+
                     return (
                       <MDBox key={c.id}>
                         <MDBox display="flex" alignItems="center" justifyContent="space-between">
