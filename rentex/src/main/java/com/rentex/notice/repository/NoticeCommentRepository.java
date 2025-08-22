@@ -13,6 +13,8 @@ import java.util.Set;
 public interface NoticeCommentRepository extends JpaRepository<NoticeComment, Long> {
     List<NoticeComment> findByNoticeIdOrderByIdAsc(Long noticeId);
 
+    List<NoticeComment> findByNoticeIdOrderByCreatedAtDesc(Long noticeId);
+
     Long countByNoticeId(Long noticeId);
 
     interface IdCount {

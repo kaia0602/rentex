@@ -153,7 +153,11 @@ export default function NoticeDetail() {
       <DashboardNavbar />
 
       <MDBox p={3}>
-        <Button startIcon={<ArrowBackIosNewIcon />} onClick={() => navigate(-1)} sx={{ mb: 2 }}>
+        <Button
+          startIcon={<ArrowBackIosNewIcon />}
+          onClick={() => navigate("/notice")}
+          sx={{ mb: 2 }}
+        >
           뒤로
         </Button>
 
@@ -229,7 +233,9 @@ export default function NoticeDetail() {
               ) : (
                 <MDBox display="flex" flexDirection="column" gap={2}>
                   {comments.map((c) => {
-                    const canDelete = isAdmin || (userId && userId === c.authorId);
+                    const canDelete =
+                      isAdmin || (userId != null && Number(userId) === Number(c.authorId));
+
                     return (
                       <MDBox key={c.id}>
                         <MDBox display="flex" alignItems="center" justifyContent="space-between">
@@ -245,7 +251,7 @@ export default function NoticeDetail() {
                           {c.content}
                         </MDTypography>
 
-                        {isAdmin && (
+                        {canDelete && (
                           <MDBox textAlign="right">
                             <Tooltip title="삭제">
                               <IconButton

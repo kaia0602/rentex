@@ -287,6 +287,49 @@ INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (174, 'LG 배터리팩', '차량용 보조배터리 장비 - LG 배터리팩', 3, 'AVAILABLE', 3, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 45442, 'https://e-power.co.kr/web/product/big/202412/7387993879ca1d292b37f8bfbbc1e144.jpg');
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (175, '루메나 차량용', '차량용 보조배터리 장비 - 루메나 차량용', 9, 'UNAVAILABLE', 4, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 5, 35, 12460, 'https://lumena.co.kr/web/product/big/202408/eeb8bff046c80fa095007b5bb270e587.png');
 
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (1, 101, '서비스 정기 점검 안내', '8월 22일 00:00~02:00 정기 점검이 진행됩니다.', 0, '2025-08-21 09:00:00', '2025-08-21 09:00:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (2, 101, '보안 정책 강화 안내', '2단계 인증(OTP) 적용이 순차적으로 진행됩니다.', 0, '2025-08-21 18:00:00', '2025-08-21 18:00:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (3, 101, '신규 기능 오픈', '대여 이력 상세 조회 및 영수증 다운로드 기능이 추가되었습니다.', 0, '2025-08-22 10:30:00', '2025-08-22 10:30:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (4, 101, '파트너 교육 일정', '8월 28일(목) 14시 온라인 파트너 교육을 진행합니다.', 0, '2025-08-22 14:00:00', '2025-08-22 14:00:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (5, 101, '고객센터 운영 시간 변경', '평일 09:00~18:00, 토/일/공휴일 휴무로 변경됩니다.', 0, '2025-08-22 19:30:00', '2025-08-22 19:30:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (6, 101, '8월 정산 일정 안내', '파트너 정산 내역은 9월 5일에 일괄 지급됩니다.', 0, '2025-08-23 09:00:00', '2025-08-23 09:00:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (7, 101, '긴급 패치 공지', '일부 결제 모듈 오류가 발견되어 금일 18:00 패치를 적용합니다.', 0, '2025-08-23 13:20:00', '2025-08-23 13:20:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (8, 101, '모바일 앱 업데이트', 'iOS/Android 최신 버전이 배포되었습니다. 업데이트 후 이용 바랍니다.', 0, '2025-08-24 08:45:00', '2025-08-24 08:45:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (9, 101, '약관 개정 사전 안내', '2025년 9월 1일부터 새로운 서비스 이용 약관이 적용됩니다.', 0, '2025-08-24 16:30:00', '2025-08-24 16:30:00');
+INSERT IGNORE INTO notice (id, author_id, title, content, view_count, created_at, updated_at) VALUES (10, 101, '추석 연휴 배송 안내', '추석 연휴 기간(9월 6일~10일)에는 배송 지연이 발생할 수 있습니다.', 0, '2025-08-25 10:10:00', '2025-08-25 10:10:00');
+
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (1, 1, 100, '공지 확인했습니다. 일정 공유 감사합니다.', '2025-08-21 09:15:00', '2025-08-21 09:15:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (2, 1, 1,   '점검 시간 동안 주문 멈춤 처리하겠습니다.', '2025-08-21 09:25:00', '2025-08-21 09:25:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (3, 2, 2,   'OTP 적용 관련 가이드도 부탁드립니다.', '2025-08-21 18:20:00', '2025-08-21 18:20:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (4, 2, 100, '2단계 인증 적용 완료했습니다.', '2025-08-21 18:35:00', '2025-08-21 18:35:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (5, 3, 3,   '신규 기능 잘 동작합니다. 감사합니다.', '2025-08-22 11:20:00', '2025-08-22 11:20:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (6, 3, 100, '영수증 PDF 저장도 편하네요.', '2025-08-22 11:45:00', '2025-08-22 11:45:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (7, 4, 4,   '교육 신청했습니다. 자료 공유 부탁드립니다.', '2025-08-22 14:30:00', '2025-08-22 14:30:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (8, 4, 100, '녹화본도 제공되면 좋겠습니다.', '2025-08-22 15:00:00', '2025-08-22 15:00:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (9, 5, 5,   '운영 시간 변경 확인했습니다.', '2025-08-22 19:45:00', '2025-08-22 19:45:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (10, 5, 100, '주말 문의는 게시판으로 남기겠습니다.', '2025-08-22 20:00:00', '2025-08-22 20:00:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (11, 6, 1,   '정산 일정 확인했습니다.', '2025-08-23 09:30:00', '2025-08-23 09:30:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (12, 6, 100, '파트너센터에도 공지 공유하겠습니다.', '2025-08-23 09:50:00', '2025-08-23 09:50:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (13, 7, 2,   '패치 시간에는 결제 차단하겠습니다.', '2025-08-23 13:40:00', '2025-08-23 13:40:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (14, 7, 100, '빠른 조치 감사합니다.', '2025-08-23 13:55:00', '2025-08-23 13:55:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (15, 8, 3,   '앱 업데이트 완료했습니다.', '2025-08-24 09:00:00', '2025-08-24 09:00:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (16, 8, 100, '안드로이드에서 문제없이 동작합니다.', '2025-08-24 09:15:00', '2025-08-24 09:15:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (17, 9, 4,   '주요 변경사항 요약 부탁드립니다.', '2025-08-24 16:50:00', '2025-08-24 16:50:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (18, 9, 100, '약관 전문도 확인하겠습니다.', '2025-08-24 17:05:00', '2025-08-24 17:05:00');
+
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (19, 10, 5,  '연휴 배송 지연 참고하겠습니다.', '2025-08-25 10:30:00', '2025-08-25 10:30:00');
+INSERT IGNORE INTO notice_comment (id, notice_id, author_id, comment, created_at, updated_at) VALUES (20, 10, 100, '고객 안내 배너에 반영하겠습니다.', '2025-08-25 10:45:00', '2025-08-25 10:45:00');
+
+
 /* 상세 설명 (긴 텍스트) 채우기 */
 UPDATE item
 SET detail_description = CONCAT(

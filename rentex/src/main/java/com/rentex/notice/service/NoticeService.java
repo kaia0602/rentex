@@ -36,7 +36,7 @@ public class NoticeService {
      * - 댓글 수 일괄 집계 쿼리 사용
      */
     public NoticeListResponse list(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<Notice> slice = noticeRepo.findAll(pageable);
 
         Set<Long> ids = slice.getContent().stream().map(Notice::getId).collect(Collectors.toSet());
@@ -71,7 +71,7 @@ public class NoticeService {
 
         Notice n = noticeRepo.findById(id).orElseThrow(() -> new NoSuchElementException("NOTICE_NOT_FOUND"));
 
-        List<NoticeComment> comments = commentRepo.findByNoticeIdOrderByIdAsc(id);
+        List<NoticeComment> comments = commentRepo.findByNoticeIdOrderByCreatedAtDesc(id);
         List<CommentItem> commentItems = comments.stream()
                 .map(c -> new CommentItem(
                         c.getId(),
