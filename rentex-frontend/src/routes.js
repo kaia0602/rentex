@@ -13,6 +13,11 @@ import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
 import { getCurrentUser } from "utils/auth";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 
+import InquiryList from "layouts/qna/InquiryList";
+import InquiryDetail from "layouts/qna/InquiryDetail";
+import InquiryForm from "layouts/qna/InquiryForm";
+import AdminInquiryDetail from "layouts/qna/AdminInquiryDetail";
+
 // 유저 관련
 import UserDashboard from "layouts/user";
 import MyPageHome from "layouts/user/MyPageHome";
@@ -131,6 +136,65 @@ const routes = [
     route: "/admin/notice/:id/edit",
     component: <AdminNoticeForm mode="edit" />,
   },
+  {
+    type: "collapse",
+    name: "문의사항",
+    key: "qna",
+    icon: <Icon fontSize="small">help_outline</Icon>,
+    route: "/qna",
+    component: <InquiryList />,
+    // role: ["USER", "PARTNER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "문의 상세 (숨김)",
+    key: "qna-detail",
+    route: "/qna/:id",
+    component: <InquiryDetail />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 작성 (숨김)",
+    key: "qna-new",
+    route: "/qna/new",
+    component: <InquiryForm />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 수정 (숨김)",
+    key: "qna-edit",
+    route: "/qna/:id/edit",
+    component: <InquiryForm />,
+    display: false,
+  },
+  // 관리자 문의 목록/상세/작성 (사이드바 숨김)
+  {
+    type: "collapse",
+    name: "문의 목록(관리자)",
+    key: "admin-qna",
+    route: "/admin/inquiries",
+    component: <InquiryList />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 상세(관리자 숨김)",
+    key: "admin-qna-detail",
+    route: "/admin/inquiries/:id",
+    component: <AdminInquiryDetail />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 작성(관리자 숨김)",
+    key: "admin-qna-new",
+    route: "/admin/inquiries/new",
+    component: <InquiryForm />,
+    display: false,
+  },
+
   {
     type: "collapse",
     name: "프로필",
