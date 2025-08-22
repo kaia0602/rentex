@@ -6,12 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/notice/AdminNoticeForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/notice/AdminNoticeForm.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/notice/NoticeDetail.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/notice/NoticeDetail.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/notice/NoticeList.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/notice/NoticeList.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/notice/repository/NoticeCommentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/notice/repository/NoticeCommentRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/notice/service/NoticeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/notice/service/NoticeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/resources/init/rentex.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +120,7 @@
       <workItem from="1755562112072" duration="19961000" />
       <workItem from="1755648400117" duration="14995000" />
       <workItem from="1755733958393" duration="21009000" />
-      <workItem from="1755831571808" duration="2474000" />
+      <workItem from="1755831571808" duration="4062000" />
     </task>
     <servers />
   </component>
