@@ -254,22 +254,14 @@ function PublicItems() {
                   <MDTypography variant="subtitle1" fontWeight="medium" sx={{ mb: 1 }}>
                     {item.name}
                   </MDTypography>
-                  <MDTypography
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{
-                      mb: 1,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                    }}
-                  >
+                  <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                     {item.description || "설명이 없습니다."}
                   </MDTypography>
                   <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                     {item.categoryName} / {item.subCategoryName}
+                  </MDTypography>
+                  <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                    업체: {item.partnerName ?? "-"}
                   </MDTypography>
                   <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                     재고: {item.stockQuantity ?? "-"} 개

@@ -42,6 +42,32 @@ public interface UserPenaltyRepository extends JpaRepository<Penalty, Long> {
                                                                   @Param("limit") int limit,
                                                                   @Param("offset") int offset);
 
+    /** 전체 계정 요약 조회 (USER + ADMIN + PARTNER) */
+    @Query(value = """
+  SELECT 
+    u.id AS userId,
+    u.name AS name,
+    u.email AS email,
+    (SELECT COALESCE(SUM(CASE WHEN p.status='VALID' THEN p.point ELSE 0 END), 0)
+       FROM penalty p WHERE p.user_id = u.id) AS penaltyPoints,
+    (SELECT COUNT(*) FROM penalty p 
+       WHERE p.user_id = u.id AND p.status = 'VALID') AS activeEntries,
+    (SELECT MAX(p.given_at) FROM penalty p 
+       WHERE p.user_id = u.id) AS lastGivenAt,
+    u.role AS role
+  FROM users u
+  WHERE (:q IS NULL OR :q = '' 
+           OR u.name  LIKE CONCAT('%', :q, '%')
+           OR u.email LIKE CONCAT('%', :q, '%'))
+    AND (:role IS NULL OR :role = 'ALL' OR u.role = :role)
+  ORDER BY penaltyPoints DESC, u.id DESC
+  LIMIT :limit OFFSET :offset
+""", nativeQuery = true)
+    List<AdminPenaltyUserProjection> searchUserSummariesAll(@Param("q") String q,
+                                                            @Param("role") String role,
+                                                            @Param("limit") int limit,
+                                                            @Param("offset") int offset);
+
     /** 특정 유저 요약 (상세 화면 상단용) */
     @Query(value = """
         SELECT

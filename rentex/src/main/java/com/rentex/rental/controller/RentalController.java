@@ -36,15 +36,42 @@ public class RentalController {
         return ResponseEntity.ok(dto);
     }
 
-    /** 대여 요청 (USER, ADMIN 가능) */
+    /** 대여 요청 + 결제 (USER, ADMIN 가능) */
     @PostMapping("/request")
-    public ResponseEntity<Void> requestRental(
-            @RequestBody RentalRequestDto requestDto,
+    public ResponseEntity<RentalPayResponseDto> requestAndPay(
+            @RequestBody RentalRequestAndPayDto requestDto,
             Principal principal
     ) {
-        User user = userService.getUserById(Long.parseLong(principal.getName()));
-        rentalService.requestRental(requestDto, user);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
+        RentalPayResponseDto response = rentalService.requestAndPay(requestDto, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /** 요청 취소 (USER, ADMIN 가능) */
+    @PatchMapping("/{rentalId}/cancel")
+    public ResponseEntity<Void> cancelRental(
+            @PathVariable Long rentalId,
+            @RequestBody CancelRequestDto dto,
+            Principal principal
+    ) {
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
+        rentalService.cancelRental(rentalId, user, dto.reason());
+        return ResponseEntity.ok().build();
+    }
+
+    /** 요청 거절 (PARTNER, ADMIN 가능) */
+    @PatchMapping("/{rentalId}/reject")
+    public ResponseEntity<Void> rejectRental(
+            @PathVariable Long rentalId,
+            @RequestBody RejectRequestDto dto,
+            Principal principal
+    ) {
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
+        rentalService.rejectRental(rentalId, user, dto.reason());
+        return ResponseEntity.ok().build();
     }
 
     /** 대여 승인 (PARTNER, ADMIN 가능) */
@@ -53,19 +80,33 @@ public class RentalController {
             @PathVariable Long rentalId,
             Principal principal
     ) {
-        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
         rentalService.approveRental(rentalId, user);
         return ResponseEntity.ok().build();
     }
 
-    /** 장비 수령 처리 (PARTNER, ADMIN 가능) */
-    @PatchMapping("/{rentalId}/start")
-    public ResponseEntity<Void> startRental(
+    /** 장비 배송 처리 (PARTNER, ADMIN 가능) */
+    @PatchMapping("/{rentalId}/ship")
+    public ResponseEntity<Void> shipRental(
             @PathVariable Long rentalId,
             Principal principal
     ) {
-        User user = userService.getUserById(Long.parseLong(principal.getName()));
-        rentalService.startRental(rentalId, user);
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
+        rentalService.shipRental(rentalId, user);
+        return ResponseEntity.ok().build();
+    }
+
+    /** 장비 수령 확인 (USER, ADMIN 가능) */
+    @PatchMapping("/{rentalId}/receive")
+    public ResponseEntity<Void> confirmReceiveRental(
+            @PathVariable Long rentalId,
+            Principal principal
+    ) {
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
+        rentalService.confirmReceiveRental(rentalId, user);
         return ResponseEntity.ok().build();
     }
 
@@ -75,7 +116,8 @@ public class RentalController {
             @PathVariable Long rentalId,
             Principal principal
     ) {
-        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
         rentalService.requestReturn(rentalId, user);
         return ResponseEntity.ok().build();
     }
@@ -86,7 +128,8 @@ public class RentalController {
             @PathVariable Long rentalId,
             Principal principal
     ) {
-        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
         rentalService.returnRental(rentalId, user);
         return ResponseEntity.ok().build();
     }
@@ -98,7 +141,8 @@ public class RentalController {
             @RequestParam(required = false) RentalStatus status,
             Pageable pageable
     ) {
-        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
         Page<RentalResponseDto> result = rentalService.getMyRentals(user, status, pageable);
         return ResponseEntity.ok(result);
     }
@@ -109,14 +153,24 @@ public class RentalController {
             @PathVariable Long id,
             Principal principal
     ) {
-        User user = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User user = userService.getUserById(userId);
         return ResponseEntity.ok(rentalService.getRentalDetail(id, user));
     }
 
-    /** 대여 히스토리 조회 */
+    /** 대여 히스토리 조회 — ✅ ID 기반으로 통일 */
     @GetMapping("/{id}/history")
-    public ResponseEntity<List<RentalHistoryResponseDto>> getRentalHistory(@PathVariable Long id) {
-        List<RentalHistoryResponseDto> history = rentalService.getRentalHistory(id);
+    public ResponseEntity<List<RentalHistoryResponseDto>> getHistory(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Long userId = Long.parseLong(principal.getName());
+        User actor = userService.getUserById(userId);
+
+        List<RentalHistoryResponseDto> history = rentalService.getRentalHistory(id, actor);
         return ResponseEntity.ok(history);
     }
 
@@ -127,7 +181,8 @@ public class RentalController {
             @RequestParam(required = false) RentalStatus status,
             Pageable pageable
     ) {
-        User partner = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User partner = userService.getUserById(userId);
         Page<RentalResponseDto> result = rentalService.getPartnerRentalRequests(partner, status, pageable);
         return ResponseEntity.ok(result);
     }
@@ -138,7 +193,8 @@ public class RentalController {
             @PathVariable Long id,
             Principal principal
     ) {
-        User partner = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User partner = userService.getUserById(userId);
         return ResponseEntity.ok(rentalService.getPartnerRentalDetail(id, partner));
     }
 
@@ -146,10 +202,11 @@ public class RentalController {
     @GetMapping("/partner/manage")
     public ResponseEntity<Page<RentalResponseDto>> getAllPartnerRentals(
             Principal principal,
-            @RequestParam(required = false) RentalStatus status, // 필터 없으면 전체
+            @RequestParam(required = false) RentalStatus status,
             Pageable pageable
     ) {
-        User loginUser = userService.getUserById(Long.parseLong(principal.getName()));
+        Long userId = Long.parseLong(principal.getName());
+        User loginUser = userService.getUserById(userId);
         Page<RentalResponseDto> rentals = rentalService.getAllPartnerRentals(loginUser, status, pageable);
         return ResponseEntity.ok(rentals);
     }

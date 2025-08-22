@@ -1,6 +1,7 @@
 package com.rentex.payment.domain;
 
 import com.rentex.user.domain.User;
+import com.rentex.rental.domain.Rental;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -21,6 +22,11 @@ public class Payment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // 렌탈과 연관 관계
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rental_id")
+    private Rental rental;
+
     // 결제 금액 (예: 벌점당 1000원)
     @Column(nullable = false)
     private int amount;
@@ -34,6 +40,11 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private PaymentStatus status;
+
+    // 결제 유형 (대여/벌점)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PaymentType type;
 
     // 결제 일시
     @Column(nullable = false)

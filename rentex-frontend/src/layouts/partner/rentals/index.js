@@ -34,6 +34,7 @@ function PartnerRentalRequests() {
           variant="outlined"
           color="primary"
           size="small"
+          sx={{ color: "#000", borderColor: "#1976d2" }} // 글자색 검은색, 테두리 파랑
           onClick={() => navigate(`/partner/rentals/${row.original.id}`)}
         >
           상세보기

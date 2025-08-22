@@ -18,6 +18,7 @@ public enum ErrorCode {
     ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "장비를 찾을 수 없습니다."),
     ITEM_OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "장비 재고가 부족합니다."),
     INVALID_RENTAL_STATUS(HttpStatus.BAD_REQUEST, "잘못된 대여 상태입니다."),
+    PENALTY_BLOCKED(HttpStatus.FORBIDDEN, "벌점 3점 이상으로 대여가 제한되었습니다. 패널티 결제를 먼저 진행하세요."),
 
     // 💥 기타
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
