@@ -1,5 +1,6 @@
 package com.rentex.admin.controller;
 
+import com.rentex.admin.dto.AdminDashboardDTO;
 import com.rentex.admin.dto.UserResponseDTO;
 import com.rentex.admin.service.AdminService;
 import org.springframework.http.ResponseEntity;
@@ -35,4 +36,12 @@ public class AdminController {
     public ResponseEntity<UserResponseDTO> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getUserById(id));
     }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<AdminDashboardDTO> getDashboardStats() {
+        AdminDashboardDTO stats = adminService.getDashboardStats();
+        return ResponseEntity.ok(stats);
+    }
+
+
 }

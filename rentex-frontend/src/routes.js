@@ -53,6 +53,7 @@ import PartnerStatisticsDetail from "layouts/admin/PartnerStatisticsDetail";
 import StatementPdfPage from "layouts/admin/StatementPdf";
 import UserDetail from "layouts/admin/UserDetail";
 import PartnerDetail from "layouts/admin/PartnerDetail";
+import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -462,6 +463,15 @@ const routes = [
     route: "/admin/partners",
     icon: <i className="material-icons">business</i>,
     component: <AdminPartners />,
+    // role: ["ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "업체 거래내역 관리",
+    key: "Rental-manage",
+    route: "/admin/rentals",
+    icon: <i className="material-icons">business</i>,
+    component: <AdminRentalManage />,
     // role: ["ADMIN"],
   },
   {

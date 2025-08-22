@@ -1,6 +1,9 @@
 package com.rentex.admin.service;
 
+import com.rentex.admin.dto.AdminDashboardDTO;
 import com.rentex.admin.dto.UserResponseDTO;
+import com.rentex.payment.repository.PaymentRepository;
+import com.rentex.rental.repository.RentalRepository;
 import com.rentex.user.domain.User;
 import com.rentex.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,8 @@ import java.util.List;
 public class AdminService {
 
     private final UserRepository userRepository;
+    private final RentalRepository rentalRepository;
+    private final PaymentRepository paymentRepository;
 
     /** 전체 사용자 조회 */
     @Transactional(readOnly = true)
@@ -35,4 +40,19 @@ public class AdminService {
 
         return new UserResponseDTO(user); // DTO 변환 생성자 활용
     }
+
+    public AdminDashboardDTO getDashboardStats() {
+        long users = userRepository.countByRole("USER"); // 일반 회원만
+        long partners = userRepository.countByRole("PARTNER");
+        long transactions = rentalRepository.count();
+        Long revenue = paymentRepository.sumAdminRevenue();
+
+        return new AdminDashboardDTO(
+                users,
+                partners,
+                transactions,
+                revenue != null ? revenue : 0
+        );
+    }
+
 }
