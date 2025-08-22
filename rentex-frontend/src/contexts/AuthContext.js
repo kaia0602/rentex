@@ -1,24 +1,51 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { getToken, clearToken } from "utils/auth";
+import { getToken, clearToken, setToken } from "utils/auth";
+import api from "api/client";
 
-// Context 생성
 const AuthContext = createContext(null);
 
-// Provider 컴포넌트 생성
 export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
+  const [user, setUser] = useState(null); // [추가] user 상태
 
-  const login = useCallback(() => {
+  useEffect(() => {
+    if (isLoggedIn) {
+      api
+        .get("/users/me")
+        .then((res) => setUser(res.data))
+        .catch(() => {
+          // 정보 불러오기 실패 시 강제 로그아웃
+          clearToken();
+          setIsLoggedIn(false);
+          setUser(null);
+        });
+    } else {
+      setUser(null);
+    }
+  }, [isLoggedIn]);
+
+  const login = useCallback((token) => {
+    setToken(token);
     setIsLoggedIn(true);
   }, []);
 
   const logout = useCallback(() => {
-    clearToken(); // 함수 이름 변경
+    clearToken();
     setIsLoggedIn(false);
+    setUser(null);
   }, []);
 
-  const value = useMemo(() => ({ isLoggedIn, login, logout }), [isLoggedIn, login, logout]);
+  const refreshUser = useCallback(() => {
+    if (isLoggedIn) {
+      api.get("/users/me").then((res) => setUser(res.data));
+    }
+  }, [isLoggedIn]);
+
+  const value = useMemo(
+    () => ({ isLoggedIn, user, login, logout, refreshUser }),
+    [isLoggedIn, user, login, logout, refreshUser],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -27,7 +54,6 @@ AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-// Custom Hook 생성
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

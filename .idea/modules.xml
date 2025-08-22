@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rentex.iml" filepath="$PROJECT_DIR$/.idea/modules/rentex.iml" />
       <module fileurl="file://$PROJECT_DIR$/rentex-frontend/rentex-frontend.iml" filepath="$PROJECT_DIR$/rentex-frontend/rentex-frontend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rentex.main.iml" filepath="$PROJECT_DIR$/.idea/modules/rentex.main.iml" />
     </modules>
   </component>
 </project>

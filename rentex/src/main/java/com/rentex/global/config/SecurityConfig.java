@@ -85,6 +85,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
                         .requestMatchers("/uploads/**", "/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/partner/statistics/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/me/profile-image").authenticated() // 프로필 이미지 수정 권한
                         .requestMatchers("/api/partner/items/**").authenticated()
                         .anyRequest().permitAll() // ⚠️ 배포 시엔 authenticated()로 바꿔도 됨
                 )

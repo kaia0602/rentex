@@ -11,6 +11,7 @@ import com.rentex.user.dto.MyPageDTO;
 import com.rentex.user.dto.ProfileUpdateRequestDTO;
 import com.rentex.user.dto.SignUpRequestDTO;
 import com.rentex.user.repository.UserRepository;
+import com.rentex.common.upload.ProfileImageUploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +21,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -33,24 +36,17 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final RentalRepository rentalRepository;
     private final PenaltyRepository penaltyRepository;
+    private final ProfileImageUploadService profileImageUploadService;
 
-    /**
-     * 이메일로 조회
-     */
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    /**
-     * ID로 조회
-     */
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
-    /**
-     * 회원가입
-     */
+    /** 회원가입   */
     @Transactional
     public Long signUp(SignUpRequestDTO requestDTO) {
         if (userRepository.findByEmail(requestDTO.getEmail()).isPresent()) {
@@ -82,9 +78,7 @@ public class UserService {
         return userRepository.save(newUser).getId();
     }
 
-    /**
-     * 비밀번호 재설정
-     */
+    /** 비밀번호 재설정   */
     @Transactional
     public void resetPassword(String email, String newPassword) {
         User user = userRepository.findByEmail(email)
@@ -216,5 +210,31 @@ public class UserService {
 
         UserDetails details = builder.build();
         return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
+    }
+
+    @Transactional
+    public User updateProfileImage(Long userId, MultipartFile profileImage) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        String imagePath = profileImageUploadService.uploadAndResize(profileImage);
+
+        user.updateProfileImage(imagePath);
+        return user;
+    }
+
+    /** 프로필 이미지 URL로 직접 업데이트 */
+    @Transactional
+    public void updateProfileImageUrl(Long userId, String imageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
+        user.updateProfileImage(imageUrl);
+    }
+
+    /** 프로필 이미지 삭제 */
+    @Transactional
+    public void deleteProfileImage(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
+        user.updateProfileImage(null);
     }
 }

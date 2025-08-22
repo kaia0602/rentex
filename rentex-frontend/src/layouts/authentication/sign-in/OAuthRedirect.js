@@ -20,12 +20,7 @@ function OAuthRedirectPage() {
     const accessToken = searchParams.get("token");
 
     if (accessToken) {
-      // 토큰이 있다면,
-      // 1. 토큰을 브라우저 저장소에 저장합니다.
-      setToken(accessToken);
-      // 2. React 앱 전체에 로그인 상태임을 알립니다.
-      login();
-      // 3. 앱의 메인 화면으로 이동합니다.
+      login(accessToken); // ✅ 토큰(accessToken)을 괄호 안에 꼭 넣어줘야 합니다!
       navigate("/dashboard");
     } else {
       // 토큰이 없다면 에러를 출력하고 로그인 페이지로 돌려보냅니다.

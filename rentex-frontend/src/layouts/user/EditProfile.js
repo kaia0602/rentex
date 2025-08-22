@@ -1,14 +1,12 @@
-// src/layouts/user/EditProfile/index.js (최종 완성 버전)
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "utils/auth";
 import api from "api/client";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
-import DashboardNavbar from "examples/Navbars/DashboardNavbar"; // [추가] Navbar import
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import UserHeader from "./UserHeader";
+import UserHeader from "./UserHeader"; // 경로는 실제 위치에 맞게 확인해주세요
 
 // MUI
 import Grid from "@mui/material/Grid";
@@ -33,7 +31,6 @@ function EditProfile() {
   const closeSnackbar = () => setSnackbar((prev) => ({ ...prev, open: false }));
 
   useEffect(() => {
-    // ... useEffect 로직은 변경 없음 ...
     const fetchProfile = async () => {
       try {
         setLoading(true);
@@ -78,8 +75,6 @@ function EditProfile() {
         title: "성공",
         message: "회원 정보가 성공적으로 수정되었습니다.",
       });
-
-      // [추가] 저장이 성공하면 1초 후 마이페이지 홈으로 이동시킵니다.
       setTimeout(() => navigate("/mypage"), 1000);
     } catch (e) {
       setSnackbar({
@@ -92,17 +87,33 @@ function EditProfile() {
   };
 
   if (loading) {
-    // ... 로딩 return 부분은 변경 없음 ...
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox display="flex" justifyContent="center" alignItems="center" mt={10}>
+          <CircularProgress />
+        </MDBox>
+        <Footer />
+      </DashboardLayout>
+    );
   }
 
   if (err) {
-    // ... 에러 return 부분은 변경 없음 ...
+    return (
+      <DashboardLayout>
+        <DashboardNavbar />
+        <MDBox p={3}>
+          <MDTypography color="error">회원 정보를 불러오는 데 실패했습니다.</MDTypography>
+        </MDBox>
+        <Footer />
+      </DashboardLayout>
+    );
   }
 
   return (
     <DashboardLayout>
-      <DashboardNavbar /> {/* [추가] 상단 네비게이션 바 */}
-      <UserHeader showEditButton={false} showPenaltyPoints={false}>
+      <DashboardNavbar />
+      <UserHeader showEditButton={false} showPenaltyPoints={false} showImageEditButton={true}>
         <MDBox mt={5} mb={3}>
           <Grid container justifyContent="center">
             <Grid item xs={12} md={8} lg={6}>
@@ -111,8 +122,6 @@ function EditProfile() {
                   <MDTypography variant="h5" mb={2}>
                     기본 정보
                   </MDTypography>
-
-                  {/* 이름 입력 필드 */}
                   <MDBox mb={2}>
                     <MDTypography variant="subtitle2" fontWeight="medium">
                       이름
@@ -120,8 +129,6 @@ function EditProfile() {
                     <MDInput name="name" value={form.name} onChange={handleChange} fullWidth />
                   </MDBox>
                   <Divider />
-
-                  {/* 닉네임 입력 필드 */}
                   <MDBox my={2}>
                     <MDTypography variant="subtitle2" fontWeight="medium">
                       닉네임
@@ -134,8 +141,6 @@ function EditProfile() {
                     />
                   </MDBox>
                   <Divider />
-
-                  {/* 연락처 입력 필드 */}
                   <MDBox mt={2} mb={3}>
                     <MDTypography variant="subtitle2" fontWeight="medium">
                       연락처
@@ -148,7 +153,6 @@ function EditProfile() {
                       disabled={form.role !== "PARTNER"}
                     />
                   </MDBox>
-
                   <MDBox mt={2}>
                     <MDButton color="info" onClick={handleSubmit} fullWidth>
                       저장하기
