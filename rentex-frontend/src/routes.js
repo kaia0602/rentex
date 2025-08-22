@@ -13,6 +13,8 @@ import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
 import { getCurrentUser } from "utils/auth";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 
+import Guide from "layouts/guide/Guide";
+
 import InquiryList from "layouts/qna/InquiryList";
 import InquiryDetail from "layouts/qna/InquiryDetail";
 import InquiryForm from "layouts/qna/InquiryForm";
@@ -30,6 +32,7 @@ import PenaltyPage from "layouts/user/PenaltyPage";
 import PayPenalty from "layouts/user/PayPenalty";
 import PaymentHistory from "layouts/user/PaymentHistory";
 import PaymentDetail from "layouts/user/PaymentDetail";
+import UserGuide from "layouts/user/UserGuide";
 
 // 업체(파트너) 관련
 import PartnerDashboard from "layouts/partner";
@@ -56,6 +59,7 @@ import PartnerDetail from "layouts/admin/PartnerDetail";
 import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
 // @mui icons
+import React from "react";
 import Icon from "@mui/material/Icon";
 
 const routes = [
@@ -195,7 +199,15 @@ const routes = [
     component: <InquiryForm />,
     display: false,
   },
-
+  {
+    type: "collapse",
+    name: "이용 가이드",
+    key: "guide",
+    icon: <Icon>menu_book</Icon>,
+    route: "/guide",
+    component: <Guide />,
+    display: true,
+  },
   {
     type: "collapse",
     name: "프로필",
@@ -261,6 +273,13 @@ const routes = [
     noCollapse: true,
     display: false,
     // role: ["USER", "ADMIN"],
+  },
+  {
+    name: "이용 가이드",
+    key: "user-guide",
+    route: "/mypage/guide",
+    component: <UserGuide />,
+    display: false, // 메뉴엔 숨김
   },
   {
     type: "collapse",
