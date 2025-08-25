@@ -33,19 +33,25 @@ function AdminUsers() {
     api
       .get("/admin/users")
       .then((res) => {
-        const mappedRows = res.data.map((user) => ({
-          id: user.id,
-          name: user.name,
-          nickname: user.nickname,
-          email: user.email,
-          createdAt: user.createdAt,
-          penaltyPoints: user.penaltyPoints || 0, // ✅ 필드명 통일
-          actions: (
-            <MDButton color="info" size="small" onClick={() => navigate(`/admin/users/${user.id}`)}>
-              상세
-            </MDButton>
-          ),
-        }));
+        const mappedRows = res.data
+          .filter((user) => user.role === "USER")
+          .map((user) => ({
+            id: user.id,
+            name: user.name,
+            nickname: user.nickname,
+            email: user.email,
+            createdAt: user.createdAt,
+            penaltyPoints: user.penaltyPoints || 0, // ✅ 필드명 통일
+            actions: (
+              <MDButton
+                color="info"
+                size="small"
+                onClick={() => navigate(`/admin/users/${user.id}`)}
+              >
+                상세
+              </MDButton>
+            ),
+          }));
         setRows(mappedRows);
       })
       .catch((err) => {
