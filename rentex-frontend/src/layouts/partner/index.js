@@ -36,6 +36,7 @@ function Overview() {
   const [activeCount, setActiveCount] = useState(0);
   const [returnRequestedCount, setReturnRequestedCount] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalRevenueAllTime, setTotalRevenueAllTime] = useState(0);
   const NOW = new Date();
   const token = getToken();
   const partnerId = token ? getUserIdFromToken(token) : null;
@@ -50,9 +51,11 @@ function Overview() {
         const data = res.data;
         // totalRevenue는 이미 백엔드에서 계산되어 내려옴
         setTotalRevenue(data?.totalRevenue ?? 0);
+        setTotalRevenueAllTime(data?.totalRevenueAllTime ?? 0);
       } catch (error) {
         console.error("총 수익 조회 실패:", error);
         setTotalRevenue(0);
+        setTotalRevenueAllTime(0);
       }
     };
 
@@ -227,10 +230,10 @@ function Overview() {
               >
                 <MDBox>
                   <MDTypography variant="subtitle1" color="text">
-                    이번 달 수익
+                    이번 달 수익: <b>{totalRevenue.toLocaleString()}원</b>
                   </MDTypography>
                   <MDTypography variant="h5" fontWeight="bold" color="success" sx={{ mt: 1 }}>
-                    총 수익: <b>{totalRevenue.toLocaleString()}원</b>
+                    총 수익: <b>{totalRevenueAllTime.toLocaleString()}원</b>
                   </MDTypography>
                 </MDBox>
                 {/* 월별 그래프 추가 */}

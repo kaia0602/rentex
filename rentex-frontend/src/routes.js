@@ -12,6 +12,13 @@ import NoticeDetail from "layouts/notice/NoticeDetail";
 import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 
+import Guide from "layouts/guide/Guide";
+
+import InquiryList from "layouts/qna/InquiryList";
+import InquiryDetail from "layouts/qna/InquiryDetail";
+import InquiryForm from "layouts/qna/InquiryForm";
+import AdminInquiryDetail from "layouts/qna/AdminInquiryDetail";
+
 // 유저 관련
 import UserDashboard from "layouts/user";
 import MyPageHome from "layouts/user/MyPageHome";
@@ -24,6 +31,7 @@ import PenaltyPage from "layouts/user/PenaltyPage";
 import PayPenalty from "layouts/user/PayPenalty";
 import PaymentHistory from "layouts/user/PaymentHistory";
 import PaymentDetail from "layouts/user/PaymentDetail";
+import UserGuide from "layouts/user/UserGuide";
 
 // 업체(파트너) 관련
 import PartnerDashboard from "layouts/partner";
@@ -47,8 +55,10 @@ import PartnerStatisticsDetail from "layouts/admin/PartnerStatisticsDetail";
 import StatementPdfPage from "layouts/admin/StatementPdf";
 import UserDetail from "layouts/admin/UserDetail";
 import PartnerDetail from "layouts/admin/PartnerDetail";
+import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
 // @mui icons
+import React from "react";
 import Icon from "@mui/material/Icon";
 
 const routes = [
@@ -132,6 +142,73 @@ const routes = [
   },
   {
     type: "collapse",
+    name: "문의사항",
+    key: "qna",
+    icon: <Icon fontSize="small">help_outline</Icon>,
+    route: "/qna",
+    component: <InquiryList />,
+    // role: ["USER", "PARTNER", "ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "문의 상세 (숨김)",
+    key: "qna-detail",
+    route: "/qna/:id",
+    component: <InquiryDetail />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 작성 (숨김)",
+    key: "qna-new",
+    route: "/qna/new",
+    component: <InquiryForm />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 수정 (숨김)",
+    key: "qna-edit",
+    route: "/qna/:id/edit",
+    component: <InquiryForm />,
+    display: false,
+  },
+  // 관리자 문의 목록/상세/작성 (사이드바 숨김)
+  {
+    type: "collapse",
+    name: "문의 목록(관리자)",
+    key: "admin-qna",
+    route: "/admin/inquiries",
+    component: <InquiryList />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 상세(관리자 숨김)",
+    key: "admin-qna-detail",
+    route: "/admin/inquiries/:id",
+    component: <AdminInquiryDetail />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "문의 작성(관리자 숨김)",
+    key: "admin-qna-new",
+    route: "/admin/inquiries/new",
+    component: <InquiryForm />,
+    display: false,
+  },
+  {
+    type: "collapse",
+    name: "이용 가이드",
+    key: "guide",
+    icon: <Icon>menu_book</Icon>,
+    route: "/guide",
+    component: <Guide />,
+    display: true,
+  },
+  {
+    type: "collapse",
     name: "프로필",
     key: "profile",
     icon: <Icon fontSize="small">person</Icon>,
@@ -195,6 +272,13 @@ const routes = [
     noCollapse: true,
     display: false,
     // role: ["USER", "ADMIN"],
+  },
+  {
+    name: "이용 가이드",
+    key: "user-guide",
+    route: "/mypage/guide",
+    component: <UserGuide />,
+    display: false, // 메뉴엔 숨김
   },
   {
     type: "collapse",
@@ -397,6 +481,15 @@ const routes = [
     route: "/admin/partners",
     icon: <i className="material-icons">business</i>,
     component: <AdminPartners />,
+    // role: ["ADMIN"],
+  },
+  {
+    type: "collapse",
+    name: "업체 거래내역 관리",
+    key: "Rental-manage",
+    route: "/admin/rentals",
+    icon: <i className="material-icons">business</i>,
+    component: <AdminRentalManage />,
     // role: ["ADMIN"],
   },
   {

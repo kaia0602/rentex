@@ -27,6 +27,34 @@ public class StatisticsService {
     public PartnerMonthlyStatementDTO partnerMonthlyByUserId(Long userId, int year, int month) {
         Long partnerId = repo.resolvePartnerIdByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 userId에 연결된 파트너가 없습니다: " + userId));
-        return repo.partnerMonthlyByPartnerId(partnerId, YearMonth.of(year, month));
+        // 월별 수익 조회
+        var ym = YearMonth.of(year, month);
+        var from = ym.atDay(1);
+        var to   = ym.atEndOfMonth();
+
+        // Repository 호출
+        List<PartnerMonthlyItemDetailDTO> details = repo.partnerMonthlyItemDetails(partnerId, from, to);
+
+        long totalRentals = repo.countPartnerRentals(partnerId, from, to);
+        long totalQuantity = details.stream().mapToLong(PartnerMonthlyItemDetailDTO::getQuantity).sum();
+        long totalDays     = details.stream().mapToLong(PartnerMonthlyItemDetailDTO::getDays).sum();
+        long totalRevenue  = details.stream().mapToLong(PartnerMonthlyItemDetailDTO::getAmount).sum();
+
+        // 전체 수익
+        long totalRevenueAllTime = repo.partnerTotalRevenueAllTime(partnerId);
+
+        return PartnerMonthlyStatementDTO.builder()
+                .year(ym.getYear())
+                .month(ym.getMonthValue())
+                .totalRentals(totalRentals)
+                .totalQuantity(totalQuantity)
+                .totalDays(totalDays)
+                .totalRevenue(totalRevenue)
+                .totalRevenueAllTime(totalRevenueAllTime)
+                .details(details)
+                .build();
+
+
     }
+
 }

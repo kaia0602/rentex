@@ -12,7 +12,7 @@ public class PartnerMonthlyStatementDTO {
     private Long totalQuantity;
     private Long totalDays;
     private Long totalRevenue;
-
+    private long totalRevenueAllTime;
 
     private List<PartnerMonthlyItemDetailDTO> details;
 }

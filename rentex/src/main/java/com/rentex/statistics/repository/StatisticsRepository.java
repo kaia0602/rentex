@@ -136,7 +136,7 @@ public class StatisticsRepository {
     }
 
 
-    private List<PartnerMonthlyItemDetailDTO> partnerMonthlyItemDetails(Long partnerId, LocalDate from, LocalDate to) {
+    public List<PartnerMonthlyItemDetailDTO> partnerMonthlyItemDetails(Long partnerId, LocalDate from, LocalDate to) {
         String sql = """
             SELECT
               i.id   AS itemId,
@@ -175,7 +175,7 @@ public class StatisticsRepository {
     }
 
 
-    private long countPartnerRentals(Long partnerId, LocalDate from, LocalDate to) {
+    public long countPartnerRentals(Long partnerId, LocalDate from, LocalDate to) {
         String sql = """
             SELECT COUNT(DISTINCT r.id) AS cnt
             FROM item i
@@ -192,4 +192,22 @@ public class StatisticsRepository {
         Long cnt = jdbc.queryForObject(sql, params, Long.class);
         return cnt == null ? 0L : cnt;
     }
+
+    /** 파트너 전체 수익 (all-time) */
+    public long partnerTotalRevenueAllTime(Long partnerId) {
+        String sql = """
+        SELECT COALESCE(SUM(i.daily_price * r.quantity *
+            GREATEST(0, DATEDIFF(DATE(r.end_date), DATE(r.start_date)) + 1)
+        ), 0) AS total
+        FROM item i
+        JOIN rental r ON r.item_id = i.id
+        WHERE i.partner_id = :partnerId
+          AND r.status IN """ + STATUS_FILTER + """
+    """;
+
+        var params = new MapSqlParameterSource().addValue("partnerId", partnerId);
+        Long total = jdbc.queryForObject(sql, params, Long.class);
+        return total == null ? 0L : total;
+    }
+
 }
