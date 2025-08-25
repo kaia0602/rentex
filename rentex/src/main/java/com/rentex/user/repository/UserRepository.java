@@ -70,4 +70,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByRole(String role);
 
     long count();
+
+    /** 월별 신규 회원 수 조회 (1~12월, 없으면 0으로 채움) */
+    @Query(value = """
+        SELECT DATE_FORMAT(u.created_at, '%Y-%m') AS ym,
+               COUNT(*) AS newUsers
+        FROM users u
+        WHERE u.role = 'USER' AND u.created_at BETWEEN :from AND :to
+        GROUP BY DATE_FORMAT(u.created_at, '%Y-%m')
+        ORDER BY ym
+        """, nativeQuery = true)
+    List<Object[]> findMonthlyNewUsers(@Param("from") String from, @Param("to") String to);
+
 }

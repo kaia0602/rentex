@@ -1,6 +1,7 @@
 // src/main/java/com/rentex/statistics/repository/StatisticsJdbcRepository.java
 package com.rentex.statistics.repository;
 
+import com.rentex.admin.dto.MonthlyRevenueDTO;
 import com.rentex.statistics.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -193,7 +194,7 @@ public class StatisticsRepository {
         return cnt == null ? 0L : cnt;
     }
 
-    /** 파트너 전체 수익 (all-time) */
+    /** 파트너 전체 수익 (all-time) (1명) */
     public long partnerTotalRevenueAllTime(Long partnerId) {
         String sql = """
         SELECT COALESCE(SUM(i.daily_price * r.quantity *
@@ -209,5 +210,77 @@ public class StatisticsRepository {
         Long total = jdbc.queryForObject(sql, params, Long.class);
         return total == null ? 0L : total;
     }
+
+    public List<MonthlyRevenueDTO> adminMonthlyRevenue(LocalDate from, LocalDate to) {
+        String sql = """
+        WITH RECURSIVE month_range AS (
+            SELECT DATE(:from) AS month_start
+            UNION ALL
+            SELECT DATE_ADD(month_start, INTERVAL 1 MONTH)
+            FROM month_range
+            WHERE month_start < DATE(:to)
+        )
+        SELECT DATE_FORMAT(mr.month_start, '%Y-%m') AS ym,
+               COALESCE(SUM(
+                   i.daily_price * r.quantity *
+                   GREATEST(0,
+                       LEAST(LAST_DAY(mr.month_start), DATE(r.end_date)) -
+                       GREATEST(mr.month_start, DATE(r.start_date)) + 1
+                   )
+               ), 0) * 0.3 AS revenue
+        FROM month_range mr
+        LEFT JOIN rental r 
+               ON r.status IN """ + STATUS_FILTER + """
+              AND LEAST(DATE(r.end_date), DATE(:to)) >= GREATEST(DATE(r.start_date), mr.month_start)
+        LEFT JOIN item i ON r.item_id = i.id
+        GROUP BY mr.month_start
+        ORDER BY mr.month_start;
+    """;
+
+        var params = new MapSqlParameterSource()
+                .addValue("from", from)
+                .addValue("to", to);
+
+        return jdbc.query(sql, params, (rs, rowNum) ->
+                new MonthlyRevenueDTO(
+                        rs.getString("ym"),
+                        rs.getLong("revenue")
+                )
+        );
+    }
+
+    // 전~체 업체 수익 조회
+    public List<AdminPartnerSummaryDTO> adminPartnerRevenues(LocalDate from, LocalDate to) {
+        String sql = """
+        SELECT
+          u.id   AS partnerId,
+          u.name AS partnerName,
+          COALESCE(SUM(i.daily_price * r.quantity *
+             GREATEST(0, DATEDIFF(LEAST(DATE(r.end_date), DATE(:to)), 
+                                  GREATEST(DATE(r.start_date), DATE(:from))) + 1)
+          ), 0) AS totalRevenue
+        FROM users u
+        LEFT JOIN item i   ON i.partner_id = u.id
+        LEFT JOIN rental r ON r.item_id = i.id
+        WHERE u.role = 'PARTNER'
+          AND r.id IS NOT NULL
+          AND LEAST(DATE(r.end_date), DATE(:to)) >= GREATEST(DATE(r.start_date), DATE(:from))
+          AND r.status IN """ + STATUS_FILTER + """
+        GROUP BY u.id, u.name
+        ORDER BY totalRevenue DESC
+    """;
+
+        var params = new MapSqlParameterSource()
+                .addValue("from", from)
+                .addValue("to", to);
+
+        return jdbc.query(sql, params, (rs, i) -> AdminPartnerSummaryDTO.builder()
+                .partnerId(rs.getLong("partnerId"))
+                .partnerName(rs.getString("partnerName"))
+                .totalRevenue(rs.getLong("totalRevenue"))
+                .build());
+    }
+
+
 
 }

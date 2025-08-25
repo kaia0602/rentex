@@ -1,11 +1,13 @@
 // src/main/java/com/rentex/statistics/controller/AdminStatisticsController.java
 package com.rentex.statistics.controller;
 
+import com.rentex.admin.dto.MonthlyRevenueDTO;
 import com.rentex.statistics.dto.AdminPartnerItemDetailDTO;
 import com.rentex.statistics.dto.AdminPartnerSummaryDTO;
 import com.rentex.statistics.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -72,4 +74,28 @@ public class AdminStatisticsController {
 
         return service.adminPartnerItems(partnerId, from, to);
     }
+
+    /** 관리자 - 월별 총수익 */
+    @GetMapping("/monthly-revenue")
+    public List<MonthlyRevenueDTO> getMonthlyRevenue(
+            @RequestParam int fromYear,
+            @RequestParam int fromMonth,
+            @RequestParam int toYear,
+            @RequestParam int toMonth
+    ) {
+        LocalDate from = LocalDate.of(fromYear, fromMonth, 1);
+        LocalDate to = LocalDate.of(toYear, toMonth, YearMonth.of(toYear, toMonth).lengthOfMonth());
+        return service.adminMonthlyRevenue(from, to);
+    }
+
+    @GetMapping("/partner-revenues")
+    public List<AdminPartnerSummaryDTO> getPartnerRevenues(
+            @RequestParam String from,
+            @RequestParam String to
+    ) {
+        LocalDate fromDate = LocalDate.parse(from);
+        LocalDate toDate   = LocalDate.parse(to);
+        return service.getPartnerRevenues(fromDate, toDate);
+    }
+
 }
