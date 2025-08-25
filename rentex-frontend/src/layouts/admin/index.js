@@ -14,6 +14,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 import MDBox from "components/MDBox";
@@ -23,7 +26,6 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
@@ -31,23 +33,6 @@ import Footer from "examples/Footer";
 import Header from "layouts/admin/components/Header";
 import { CardContent, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-
-// 예시 데이터
-const revenueData = [
-  { month: "1월", revenue: 500000 },
-  { month: "2월", revenue: 750000 },
-  { month: "3월", revenue: 600000 },
-  { month: "4월", revenue: 900000 },
-  { month: "5월", revenue: 1200000 },
-];
-
-const usersData = [
-  { month: "1월", newUsers: 50, totalUsers: 1000 },
-  { month: "2월", newUsers: 70, totalUsers: 1070 },
-  { month: "3월", newUsers: 60, totalUsers: 1130 },
-  { month: "4월", newUsers: 80, totalUsers: 1210 },
-  { month: "5월", newUsers: 90, totalUsers: 1300 },
-];
 
 const adminMenus = [
   { title: "대여 조회", icon: "assignment", path: "/admin/rentals" },
@@ -67,7 +52,12 @@ function AdminDashboard() {
 
   const [notices, setNotices] = useState([]);
   const [inquiries, setInquiries] = useState([]);
-
+  const [revenueData, setRevenueData] = useState([]);
+  const [userData, setUserData] = useState([]);
+  const [partners, setPartners] = useState([]);
+  const [topCategories, setTopCategories] = useState([]);
+  const unansweredCount = inquiries.filter((inq) => !inq.answerContent).length;
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AA336A", "#8884d8"];
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -97,10 +87,101 @@ function AdminDashboard() {
       }
     };
 
+    const fetchRevenue = async () => {
+      try {
+        const res = await api.get("admin/statistics/monthly-revenue", {
+          params: { fromYear: 2025, fromMonth: 1, toYear: 2025, toMonth: 12 },
+        });
+
+        console.log("백엔드 응답 데이터:", res.data);
+
+        // 응답 예: [{ month: "2025-07", revenue: 100000 }, { month: "2025-08", revenue: 200000 }]
+        const apiData = res.data;
+
+        // 1~12월 기본 배열
+        const months = Array.from({ length: 12 }, (_, i) => ({
+          month: `${i + 1}월`,
+          revenue: 0,
+        }));
+
+        // 응답 매핑
+        apiData.forEach((d) => {
+          const [year, month] = d.month.split("-");
+          const monthIndex = parseInt(month, 10) - 1; // 0부터 시작
+          months[monthIndex].revenue = d.revenue;
+        });
+        // res.data: [{ month: "2024-01", revenue: 100000 }, ...]
+        setRevenueData(months);
+      } catch (err) {
+        console.error("월별 수익 조회 실패", err);
+      }
+    };
+
+    const fetchMonthlyUsers = async () => {
+      try {
+        const res = await api.get("/admin/users/monthly-users", { params: { year: 2025 } });
+        const apiData = res.data; // [{ month: "2025-01", newUsers: 10 }, ... ]
+
+        console.log("백엔드 응답 데이터:", res.data);
+
+        // 1~12월 기본 배열
+        const months = Array.from({ length: 12 }, (_, i) => ({
+          month: `${i + 1}월`,
+          newUsers: 0,
+        }));
+
+        apiData.forEach((d) => {
+          const monthIndex = parseInt(d.month.replace("월", ""), 10) - 1; // "8월" → 8 → index 7
+          months[monthIndex].newUsers = d.newUsers;
+        });
+
+        // 전체 회원 수 계산 (누적 합)
+        let cumulative = 0;
+        months.forEach((m) => {
+          cumulative += m.newUsers;
+          m.totalUsers = cumulative;
+        });
+
+        setUserData(months);
+      } catch (err) {
+        console.error("월별 신규 회원 조회 실패", err);
+      }
+    };
+
+    const fetchPartnerRevenues = async () => {
+      try {
+        const res = await api.get("/admin/statistics/partner-revenues", {
+          params: {
+            from: "2025-01-01",
+            to: "2025-12-31",
+          },
+        });
+        // DTO: { partnerId, partnerName, totalRevenue }
+        setPartners(res.data);
+      } catch (err) {
+        console.error("파트너별 수익 조회 실패", err);
+      }
+    };
+    const fetchTopCategories = async () => {
+      try {
+        const res = await api.get("/categories/subcategories/revenue");
+        console.log("topCategories:", res.data);
+        setTopCategories(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
     fetchStats();
     fetchNotices();
     fetchInquiries();
+    fetchRevenue();
+    fetchMonthlyUsers();
+    fetchPartnerRevenues();
+    fetchTopCategories();
   }, []);
+
+  const top3 = [...partners].sort((a, b) => b.totalRevenue - a.totalRevenue).slice(0, 3);
 
   const cardData = [
     {
@@ -132,19 +213,6 @@ function AdminDashboard() {
       color: "#f44336",
       noArrow: true,
     },
-  ];
-
-  const topPartners = [
-    { name: "업체1", percent: 40 },
-    { name: "업체2", percent: 25 },
-    { name: "업체3", percent: 15 },
-  ];
-
-  const topCategories = [
-    { name: "카메라", percent: 35 },
-    { name: "드론", percent: 25 },
-    { name: "조명", percent: 20 },
-    { name: "기타", percent: 20 },
   ];
 
   return (
@@ -204,7 +272,7 @@ function AdminDashboard() {
                 <MDTypography variant="subtitle1" mb={2}>
                   📌 공지사항
                 </MDTypography>
-                {notices.length === 0 && <MDTypography>공지사항이 없습니다.</MDTypography>}
+                {notices.length === 0 && <MDTypography>현재 공지사항이 없습니다!</MDTypography>}
                 {notices.map((post) => (
                   <Box
                     key={post.id}
@@ -249,11 +317,11 @@ function AdminDashboard() {
             <Grid item xs={12} md={6}>
               <Card sx={{ p: 3, minHeight: 300 }}>
                 <MDTypography variant="subtitle1" mb={2}>
-                  ❓ 문의사항 (미답변 N개)
+                  ❓ 문의사항 (미답변 {unansweredCount}개)
                 </MDTypography>
 
                 {inquiries.length === 0 && (
-                  <MDTypography sx={{ mb: 1 }}>문의사항이 없습니다.</MDTypography>
+                  <MDTypography sx={{ mb: 1 }}>현재 문의사항이 없습니다!</MDTypography>
                 )}
 
                 {inquiries.map((inq) => (
@@ -272,18 +340,27 @@ function AdminDashboard() {
                         transform: "translateY(-2px)",
                       },
                     }}
-                    onClick={() => (window.location.href = `/qna/${inq.id || ""}`)}
+                    onClick={() => (window.location.href = `/admin/inquiries/${inq.id || ""}`)}
                   >
                     <MDTypography
                       variant="body2"
                       color="textSecondary"
                       sx={{ fontSize: 12, mb: 0.5 }}
                     >
-                      #{inq.authorNickname}
+                      작성자 : {inq.authorNickname}
                     </MDTypography>
-                    <MDTypography variant="body1" sx={{ fontWeight: 500 }}>
-                      {inq.title}
-                    </MDTypography>
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      <MDTypography variant="body1" sx={{ fontWeight: 500 }}>
+                        {inq.title}
+                      </MDTypography>
+                      <MDTypography
+                        variant="caption"
+                        color={inq.answerContent ? "success.main" : "error.main"}
+                        fontWeight="bold"
+                      >
+                        {inq.answerContent ? "답변완료" : "미답변"}
+                      </MDTypography>
+                    </Box>
                   </CardContent>
                 ))}
 
@@ -305,10 +382,10 @@ function AdminDashboard() {
                   <LineChart data={revenueData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={(value) => `${value.toLocaleString()}원`} />
                     <Legend />
-                    <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+                    <Line dataKey="revenue" name="관리자 수익" stroke="#8884d8" />
                   </LineChart>
                 </ResponsiveContainer>
               </Card>
@@ -319,14 +396,14 @@ function AdminDashboard() {
                   👥 회원 수 추이 그래프
                 </MDTypography>
                 <ResponsiveContainer width="100%" height="80%">
-                  <LineChart data={usersData}>
+                  <LineChart data={userData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
-                    <YAxis />
+                    <YAxis domain={[0, (dataMax) => dataMax + 10]} />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="totalUsers" stroke="#82ca9d" />
-                    <Line type="monotone" dataKey="newUsers" stroke="#8884d8" />
+                    <Line type="linear" dataKey="newUsers" stroke="#8884d8" name="신규 회원" />
+                    <Line type="linear" dataKey="totalUsers" stroke="#82ca9d" name="전체 회원" />
                   </LineChart>
                 </ResponsiveContainer>
               </Card>
@@ -336,27 +413,169 @@ function AdminDashboard() {
           {/* 분석 영역 - Top 업체, 카테고리 */}
           <Grid container spacing={3} mb={4}>
             <Grid item xs={12} md={6}>
-              <Card sx={{ p: 3 }}>
+              <Card sx={{ p: 3, height: 350 }}>
                 <MDTypography variant="subtitle1" mb={2}>
-                  🏆 업체별 수익 TOP
+                  🏬 업체별 수익 분석
                 </MDTypography>
-                {topPartners.map((p, idx) => (
-                  <MDTypography key={idx} sx={{ mb: 1 }}>
-                    {p.name} ━━━ {p.percent}%
-                  </MDTypography>
-                ))}
+
+                <Grid container spacing={2}>
+                  {/* 왼쪽 - 파이차트 */}
+                  <Grid item xs={6}>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart>
+                        <Pie
+                          data={partners}
+                          dataKey="totalRevenue"
+                          nameKey="partnerName"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          innerRadius={30}
+                          labelLine={false}
+                          label={({
+                            cx,
+                            cy,
+                            midAngle,
+                            innerRadius,
+                            outerRadius,
+                            percent,
+                            index,
+                          }) => {
+                            const radius = innerRadius + (outerRadius - innerRadius) / 2;
+                            const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                            const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                            return (
+                              <text
+                                x={x}
+                                y={y}
+                                fill="#000"
+                                textAnchor="middle"
+                                dominantBaseline="central"
+                                fontSize={10}
+                              >
+                                {`${partners[index].partnerName} ${(percent * 100).toFixed(0)}%`}
+                              </text>
+                            );
+                          }}
+                        >
+                          {partners.map((_, index) => (
+                            <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => `${value.toLocaleString()}원`} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Grid>
+
+                  {/* 오른쪽 - Top3 리스트 */}
+                  <Grid item xs={6}>
+                    <MDTypography variant="subtitle2" mb={1}>
+                      🏆 Top 3
+                    </MDTypography>
+                    {top3.map((p, idx) => (
+                      <MDTypography
+                        key={idx}
+                        sx={{
+                          mb: 1,
+                          fontSize: "1.25rem",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                        title={`${p.partnerName} ━━━ ${p.totalRevenue.toLocaleString()}원`}
+                      >
+                        {idx + 1}. {p.partnerName} ━━━ {p.totalRevenue.toLocaleString()}원
+                      </MDTypography>
+                    ))}
+                  </Grid>
+                </Grid>
               </Card>
             </Grid>
+
             <Grid item xs={12} md={6}>
-              <Card sx={{ p: 3 }}>
+              <Card sx={{ p: 3, height: 350, display: "flex", flexDirection: "column" }}>
                 <MDTypography variant="subtitle1" mb={2}>
                   📊 인기 상품 카테고리
                 </MDTypography>
-                {topCategories.map((c, idx) => (
-                  <MDTypography key={idx} sx={{ mb: 1 }}>
-                    {c.name} ━━━ {c.percent}%
-                  </MDTypography>
-                ))}
+
+                <Grid container spacing={2}>
+                  {/* 왼쪽 - PieChart */}
+                  <Grid item xs={6}>
+                    <ResponsiveContainer width="100%" height={250}>
+                      <PieChart>
+                        <Pie
+                          data={topCategories
+                            .sort((a, b) => b.rentalCount - a.rentalCount)
+                            .slice(0, 5)}
+                          dataKey="rentalCount"
+                          nameKey="subCategoryName"
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          innerRadius={30}
+                          labelLine={false}
+                          label={({
+                            cx,
+                            cy,
+                            midAngle,
+                            innerRadius,
+                            outerRadius,
+                            percent,
+                            index,
+                          }) => {
+                            const radius = innerRadius + (outerRadius - innerRadius) / 2;
+                            const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                            const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                            return (
+                              <text
+                                x={x}
+                                y={y}
+                                fill="#000"
+                                textAnchor="middle"
+                                dominantBaseline="central"
+                                fontSize={10}
+                              >
+                                {`${topCategories[index].subCategoryName} ${(percent * 100).toFixed(
+                                  0,
+                                )}%`}
+                              </text>
+                            );
+                          }}
+                        >
+                          {topCategories.map((_, index) => (
+                            <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(value) => `${value}건`} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Grid>
+
+                  {/* 오른쪽 - Top3 리스트 */}
+                  <Grid item xs={6}>
+                    <MDTypography variant="subtitle2" mb={1}>
+                      🏆 Top 3
+                    </MDTypography>
+                    {topCategories
+                      .sort((a, b) => b.rentalCount - a.rentalCount)
+                      .slice(0, 3)
+                      .map((c, idx) => (
+                        <MDTypography
+                          key={idx}
+                          sx={{
+                            mb: 1,
+                            fontSize: "1.25rem",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                          title={`${c.subCategoryName} ━━━ ${c.rentalCount}건`}
+                        >
+                          {idx + 1}. {c.subCategoryName} ━━━ {c.rentalCount}건
+                        </MDTypography>
+                      ))}
+                  </Grid>
+                </Grid>
               </Card>
             </Grid>
           </Grid>

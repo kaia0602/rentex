@@ -1,5 +1,6 @@
 package com.rentex.user.service;
 
+import com.rentex.admin.dto.MonthlyUserDTO;
 import com.rentex.admin.dto.UserResponseDTO;
 import com.rentex.item.repository.ItemRepository;
 import com.rentex.partner.dto.PartnerDashboardDTO;
@@ -23,10 +24,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -199,5 +197,28 @@ public class UserService {
         return new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
     }
 
+    public List<MonthlyUserDTO> getMonthlyNewUsers(int year) {
+        String from = year + "-01-01";
+        String to = year + "-12-31";
+
+        List<Object[]> rawData = userRepository.findMonthlyNewUsers(from, to);
+
+        // 1~12월 기본 배열
+        List<MonthlyUserDTO> months = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
+            String monthLabel = i + "월";
+            long count = 0;
+            for (Object[] row : rawData) {
+                int month = Integer.parseInt(((String) row[0]).split("-")[1]);
+                if (month == i) {
+                    count = ((Number) row[1]).longValue();
+                    break;
+                }
+            }
+            months.add(new MonthlyUserDTO(monthLabel, count));
+        }
+
+        return months;
+    }
 
 }

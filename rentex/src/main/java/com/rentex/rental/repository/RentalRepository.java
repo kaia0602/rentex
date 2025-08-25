@@ -1,5 +1,6 @@
 package com.rentex.rental.repository;
 
+import com.rentex.category.dto.SubCategoryRevenueDTO;
 import com.rentex.item.domain.Item;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
@@ -118,5 +119,13 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     Long countActiveByPartnerId(@Param("partnerId") Long partnerId);
 
     long count();
+
+    @Query("SELECT new com.rentex.category.dto.SubCategoryRevenueDTO(" +
+            "i.subCategory.name, SUM(i.dailyPrice * r.quantity), COUNT(r)) " +
+            "FROM Rental r " +
+            "JOIN r.item i " +
+            "GROUP BY i.subCategory.name " +
+            "ORDER BY SUM(i.dailyPrice * r.quantity) DESC")
+    List<SubCategoryRevenueDTO> findTopSubCategoryRevenue();
 }
 

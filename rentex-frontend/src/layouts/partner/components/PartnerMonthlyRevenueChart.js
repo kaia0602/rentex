@@ -55,7 +55,7 @@ export default function PartnerMonthlyRevenueChart({ year }) {
           contentStyle={{ fontSize: "12px" }}
         />
 
-        <Line type="monotone" dataKey="revenue" stroke="#82ca9d" strokeWidth={2} />
+        <Line dataKey="revenue" stroke="#82ca9d" strokeWidth={2} />
       </LineChart>
     </ResponsiveContainer>
   );

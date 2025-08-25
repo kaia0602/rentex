@@ -1,6 +1,7 @@
 // src/main/java/com/rentex/statistics/service/StatisticsService.java
 package com.rentex.statistics.service;
 
+import com.rentex.admin.dto.MonthlyRevenueDTO;
 import com.rentex.statistics.dto.*;
 import com.rentex.statistics.repository.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,14 @@ public class StatisticsService {
                 .build();
 
 
+    }
+
+    public List<MonthlyRevenueDTO> adminMonthlyRevenue(LocalDate from, LocalDate to) {
+        return repo.adminMonthlyRevenue(from, to);
+    }
+
+    public List<AdminPartnerSummaryDTO> getPartnerRevenues(LocalDate from, LocalDate to) {
+        return repo.adminPartnerRevenues(from, to);
     }
 
 }
