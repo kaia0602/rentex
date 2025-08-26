@@ -1,4 +1,3 @@
-// src/api/client.js
 import axios from "axios";
 import { getToken } from "utils/auth";
 

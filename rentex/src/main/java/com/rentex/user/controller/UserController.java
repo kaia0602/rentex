@@ -79,12 +79,7 @@ public class UserController {
         User user = userService.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
 
-        String phone = "";
-        // Check if the retrieved user object is an instance of the Partner class
-        if (user instanceof Partner partner) {
-            // Get contactPhone after casting to Partner
-            phone = partner.getContactPhone() != null ? partner.getContactPhone() : "";
-        }
+        String phone = user.getContactPhone() != null ? user.getContactPhone() : "";
 
         ProfileDTO profile = new ProfileDTO(user.getName(), user.getNickname(), phone);
 

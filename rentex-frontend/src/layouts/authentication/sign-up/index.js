@@ -31,6 +31,16 @@ function SignUp() {
   });
   const [error, setError] = useState("");
 
+  const handlePhoneChange = (e) => {
+    const formattedPhoneNumber = e.target.value
+      .replace(/\D/g, "") // 숫자 이외의 문자를 모두 제거합니다.
+      .replace(/^(\d{0,3})(\d{0,4})(\d{0,4}).*/, "$1-$2-$3") // XXX-XXXX-XXXX 형식으로 포맷팅합니다.
+      .replace(/-{1,2}$/g, ""); // 마지막에 붙는 하이픈(-)을 제거합니다.
+
+    // 포맷팅된 값으로 formData 상태를 업데이트합니다.
+    setFormData((prev) => ({ ...prev, contactPhone: formattedPhoneNumber }));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -48,7 +58,7 @@ function SignUp() {
         password: formData.password,
         name: formData.name,
         nickname: formData.nickname,
-        contactPhone: formData.contactPhone,
+        contactPhone: formData.contactPhone.replace(/-/g, ""), // 하이픈 제거
         userType: isPartner ? "PARTNER" : "USER",
       };
 
@@ -168,7 +178,7 @@ function SignUp() {
                 name="contactPhone"
                 label={isPartner ? "회사 전화번호" : "전화번호"}
                 value={formData.contactPhone}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
                 fullWidth
                 required
               />

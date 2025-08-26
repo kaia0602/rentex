@@ -25,13 +25,17 @@ export function AuthProvider({ children }) {
     }
   }, [isLoggedIn]);
 
-  const login = useCallback((token) => {
-    setToken(token);
-    setIsLoggedIn(true);
+  const login = useCallback((accessToken) => {
+    if (accessToken) {
+      setToken(accessToken);
+      api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+      setIsLoggedIn(true);
+    }
   }, []);
 
   const logout = useCallback(() => {
     clearToken();
+    delete api.defaults.headers.common["Authorization"];
     setIsLoggedIn(false);
     setUser(null);
   }, []);

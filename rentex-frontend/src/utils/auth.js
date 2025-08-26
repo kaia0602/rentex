@@ -1,9 +1,7 @@
-const KEY = "ACCESS_TOKEN";
+const KEY = "accessToken";
 
-export const setToken = (t) => localStorage.setItem(KEY, t);
-
+export const setToken = (token) => localStorage.setItem(KEY, token);
 export const getToken = () => localStorage.getItem(KEY);
-
 export const clearToken = () => localStorage.removeItem(KEY);
 
 export function getUserIdFromToken(token) {

@@ -82,17 +82,16 @@ function Basic() {
       });
 
       const authHeader = res.headers["authorization"];
-      const token = authHeader?.startsWith("Bearer ")
+
+      // ✅ 'token' 대신 'accessToken'이라는 명확한 변수 이름을 사용합니다.
+      const accessToken = authHeader?.startsWith("Bearer ")
         ? authHeader.substring(7)
         : res.data?.accessToken || res.data?.token || null;
 
-      if (token) {
-        setToken(token);
-        // 3. 여기서는 login() 함수를 호출하여 상태 변경만 요청합니다.
-        // 페이지 이동(nav)은 useEffect가 알아서 처리해 줄 것입니다.
-        login();
+      if (accessToken) {
+        login(accessToken);
       } else {
-        throw new Error("유효한 토큰이 없습니다.");
+        throw new Error("서버 응답에서 토큰을 찾을 수 없습니다.");
       }
     } catch (err) {
       console.error(err);
@@ -109,7 +108,6 @@ function Basic() {
     }
   };
 
-  // ... (나머지 비밀번호 재설정 관련 코드는 모두 그대로 유지) ...
   const onResetFormChange = (e) => {
     const { name, value } = e.target;
     setResetForm((prev) => ({ ...prev, [name]: value }));

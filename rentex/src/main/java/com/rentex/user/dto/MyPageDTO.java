@@ -1,5 +1,6 @@
 package com.rentex.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty; // ✨ import 추가
 import com.rentex.penalty.domain.Penalty;
 import com.rentex.rental.domain.Rental;
 import com.rentex.user.domain.User;
@@ -14,6 +15,14 @@ import java.util.stream.Collectors;
 @Getter
 public class MyPageDTO {
     private String email, name, nickname, role;
+
+    @JsonProperty("contact_phone")
+    private String contactPhone;
+    @JsonProperty("contact_email")
+    private String contactEmail;
+    @JsonProperty("business_no")
+    private String businessNo;
+
     private int penaltyPoints;
     private String profileImageUrl;
     private List<RentalInfo> rentalHistory;
@@ -25,7 +34,10 @@ public class MyPageDTO {
                 .name(user.getName())
                 .nickname(user.getNickname())
                 .role(user.getRole())
-                .penaltyPoints(user.getPenaltyPoints()) // ✅ User 엔티티에서 바로 가져옴
+                .contactPhone(user.getContactPhone())
+                .contactEmail(user.getContactEmail())
+                .businessNo(user.getBusinessNo())
+                .penaltyPoints(user.getPenaltyPoints())
                 .profileImageUrl(user.getProfileImageUrl())
                 .rentalHistory(rentals.stream().map(RentalInfo::from).collect(Collectors.toList()))
                 .penaltyHistory(penalties.stream().map(PenaltyInfo::from).collect(Collectors.toList()))

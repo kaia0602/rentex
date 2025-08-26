@@ -106,6 +106,7 @@ public class JwtTokenProvider {
             return false;
         } catch (JwtException | IllegalArgumentException e) {
             log.error("Invalid JWT token: {}", e.getMessage());
+            log.error("JWT Validation Exception Full Trace:", e);
             return false;
         }
     }
