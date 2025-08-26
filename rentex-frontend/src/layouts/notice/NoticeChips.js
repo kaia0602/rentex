@@ -8,7 +8,8 @@ export default function NoticeChips({ createdAt, pinned }) {
   const isNew = (() => {
     if (!createdAt) return false;
     const d = new Date(createdAt);
-    return (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24) <= 7; // 7일 이내
+    // 하루(1일 = 24시간) 기준으로 변경
+    return (Date.now() - d.getTime()) / (1000 * 60 * 60 * 24) <= 1;
   })();
 
   return (

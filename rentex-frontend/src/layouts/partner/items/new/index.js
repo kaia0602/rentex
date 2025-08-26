@@ -12,6 +12,8 @@ import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 
@@ -85,6 +87,9 @@ function NewItemForm() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="장비 상세정보" bg="linear-gradient(60deg, #1b6bffff, #3b90ffff)" />
+
       <MDBox mt={4}>
         <Card>
           <MDBox p={3}>

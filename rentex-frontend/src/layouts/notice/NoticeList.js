@@ -17,6 +17,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import api from "../../api/client";
 import NoticeChips from "./NoticeChips";
 
@@ -122,6 +124,9 @@ export default function NoticeList() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="공지사항" bg="linear-gradient(60deg, #66bb6a, #388e3c)" />
+
       <MDBox py={3}>
         <Grid container spacing={3}>
           <Grid item xs={12}>

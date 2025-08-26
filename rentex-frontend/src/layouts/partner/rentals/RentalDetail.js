@@ -24,6 +24,8 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import api from "api/client";
 
 function PartnerRentalDetail() {
@@ -83,6 +85,10 @@ function PartnerRentalDetail() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* 파랑 */}
+      <PageHeader title="대여 상세내역" bg="linear-gradient(60deg, #1e88e5, #42a5f5)" />
+
       <MDBox py={3}>
         <MDTypography variant="h5" mb={3} fontWeight="bold">
           대여 상세 – #{id}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "api/client"; // ✅ axios 대신 api 인스턴스 사용
+import api from "api/client";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -9,6 +9,9 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 import MDButton from "components/MDButton";
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
+import { Card, Divider } from "@mui/material";
 
 function AdminUsers() {
   const [rows, setRows] = useState([]);
@@ -41,12 +44,18 @@ function AdminUsers() {
             nickname: user.nickname,
             email: user.email,
             createdAt: user.createdAt,
-            penaltyPoints: user.penaltyPoints || 0, // ✅ 필드명 통일
+            penaltyPoints: user.penaltyPoints || 0,
             actions: (
               <MDButton
+                variant="outlined"
                 color="info"
                 size="small"
                 onClick={() => navigate(`/admin/users/${user.id}`)}
+                sx={{
+                  borderColor: "#0288d1",
+                  color: "#0288d1",
+                  "&:hover": { backgroundColor: "rgba(2,136,209,0.08)" },
+                }}
               >
                 상세
               </MDButton>
@@ -62,18 +71,30 @@ function AdminUsers() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* ✅ 상단 헤더 */}
+      <PageHeader title="사용자 관리" bg="linear-gradient(60deg, #42a5f5, #1e88e5)" />
+
       <MDBox py={3}>
-        <MDTypography variant="h5" mb={2}>
-          사용자 목록
-        </MDTypography>
-        <DataTable
-          table={{ columns, rows }}
-          isSorted={false}
-          entriesPerPage
-          showTotalEntries
-          noEndBorder
-        />
+        <Card>
+          <MDBox px={3} py={2}>
+            <MDTypography variant="h6" fontWeight="bold">
+              사용자 목록
+            </MDTypography>
+          </MDBox>
+          <Divider />
+          <MDBox p={2}>
+            <DataTable
+              table={{ columns, rows }}
+              isSorted={false}
+              entriesPerPage
+              showTotalEntries
+              noEndBorder
+            />
+          </MDBox>
+        </Card>
       </MDBox>
+
       <Footer />
     </DashboardLayout>
   );

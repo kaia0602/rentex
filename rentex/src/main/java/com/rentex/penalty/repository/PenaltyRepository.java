@@ -24,6 +24,7 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
     /** 미납 패널티 존재 여부 */
     boolean existsByUserAndPaidFalse(User user);
 
+    void deleteByUser(User user);
 
     /** 패널티 초기화 (모든 패널티를 0점 + 납부처리) */
     @Modifying(clearAutomatically = true)

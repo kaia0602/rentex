@@ -18,6 +18,8 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import api from "api/client";
 import { getCurrentUser } from "utils/auth";
 
@@ -145,6 +147,10 @@ export default function InquiryForm() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* 파랑 */}
+      <PageHeader title="문의사항" bg="linear-gradient(60deg, #42a5f5, #1e88e5)" />
+
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>

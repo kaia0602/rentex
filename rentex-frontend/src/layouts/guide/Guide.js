@@ -17,11 +17,16 @@ import Footer from "examples/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
+import PageHeader from "layouts/dashboard/header/PageHeader";
 
 export default function Guide() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* 초록 */}
+      <PageHeader title="이용 가이드" bg="linear-gradient(60deg, #66bb6a, #388e3c)" />
+
       <MDBox py={4} px={3}>
         {/* 헤더 */}
         <Card sx={{ p: 3, mb: 3 }}>

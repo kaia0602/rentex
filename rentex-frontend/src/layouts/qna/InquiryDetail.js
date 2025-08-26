@@ -17,6 +17,8 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import api from "api/client";
 import { getCurrentUser } from "utils/auth";
 
@@ -125,6 +127,9 @@ export default function InquiryDetail() {
     return (
       <DashboardLayout>
         <DashboardNavbar />
+
+        <PageHeader title="문의사항" bg="linear-gradient(60deg, #42a5f5, #1e88e5)" />
+
         <MDBox maxWidth={600} mx="auto" py={6}>
           {error && (
             <Alert severity={isPwError ? "error" : "info"} sx={{ mb: 2 }}>

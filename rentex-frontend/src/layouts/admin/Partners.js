@@ -8,6 +8,8 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 // ✅ api 클라이언트
 import api from "api/client";
 
@@ -54,6 +56,9 @@ function AdminPartners() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="파트너 목록" bg="linear-gradient(60deg, #ff9800, #ef6c00)" />
+
       <MDBox py={3}>
         <MDTypography variant="h5" mb={2}>
           업체 목록

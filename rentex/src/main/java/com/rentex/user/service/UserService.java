@@ -221,4 +221,13 @@ public class UserService {
         return months;
     }
 
+    @Transactional
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalStateException("존재하지 않는 사용자입니다.");
+        }
+        userRepository.deleteById(userId);
+    }
+
+
 }

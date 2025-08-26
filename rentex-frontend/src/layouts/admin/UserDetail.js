@@ -8,9 +8,10 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import Card from "@mui/material/Card";
 import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
 import DataTable from "examples/Tables/DataTable";
+import PageHeader from "layouts/dashboard/header/PageHeader";
 
-// ✅ api 클라이언트
 import api from "api/client";
 
 function UserDetail() {
@@ -19,29 +20,30 @@ function UserDetail() {
   const [rents, setRents] = useState([]);
 
   useEffect(() => {
-    // 유저 기본 정보
     api
       .get(`/admin/users/${id}`)
       .then((res) => setUser(res.data))
-      .catch((err) => console.error("유저 불러오기 실패:", err));
-
-    // 대여 내역
+      .catch(console.error);
     api
       .get(`/admin/users/${id}/rents`)
       .then((res) => setRents(res.data))
-      .catch((err) => console.error("대여 내역 불러오기 실패:", err));
+      .catch(console.error);
   }, [id]);
 
-  const handleBan = () => {
-    api
-      .post(`/admin/users/${id}/ban`)
-      .then(() => alert("사용자가 밴 처리되었습니다."))
-      .catch((err) => console.error("밴 처리 실패:", err));
+  const handleWithdraw = async () => {
+    if (!window.confirm("정말 이 사용자를 탈퇴(삭제) 처리하시겠습니까?")) return;
+    try {
+      await api.delete(`/admin/users/${id}`);
+      alert("사용자가 탈퇴 처리되었습니다.");
+      window.location.href = "/admin/users"; // ✅ 탈퇴 후 목록 페이지로 이동
+    } catch (err) {
+      console.error("탈퇴 처리 실패:", err);
+      alert("탈퇴 처리에 실패했습니다.");
+    }
   };
 
   if (!user) return <DashboardLayout>Loading...</DashboardLayout>;
 
-  // 대여 테이블 컬럼
   const rentColumns = [
     { Header: "대여 ID", accessor: "id", align: "center" },
     { Header: "장비명", accessor: "itemName", align: "center" },
@@ -53,84 +55,66 @@ function UserDetail() {
   const rentRows = rents.map((r) => ({
     id: r.id,
     itemName: r.itemName,
-    rentedAt: new Date(r.rentedAt).toLocaleDateString(),
-    returnedAt: r.returnedAt ? new Date(r.returnedAt).toLocaleDateString() : "-",
+    rentedAt: new Date(r.rentedAt).toLocaleDateString("ko-KR"),
+    returnedAt: r.returnedAt ? new Date(r.returnedAt).toLocaleDateString("ko-KR") : "-",
     status: r.status,
   }));
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <PageHeader title="사용자 상세" bg="linear-gradient(60deg, #42a5f5, #1e88e5)" />
+
       <MDBox py={3}>
-        {/* 프로필 */}
-        <MDBox display="flex" justifyContent="center" mt={4}>
-          <Avatar
-            sx={{
-              width: 120,
-              height: 120,
-              bgcolor: "#c7cdd3ff",
-            }}
-          />
-        </MDBox>
-
         {/* 기본 정보 카드 */}
-        <Card sx={{ p: 4, mt: 3, maxWidth: 500, mx: "auto", position: "relative" }}>
-          <MDTypography variant="h6" gutterBottom sx={{ mb: 3, fontWeight: "medium" }}>
-            기본 정보
-          </MDTypography>
+        <Card sx={{ p: 4, maxWidth: 700, mx: "auto" }}>
+          <MDBox display="flex" alignItems="center" mb={3}>
+            <Avatar sx={{ width: 80, height: 80, bgcolor: "#90caf9", mr: 2 }} />
+            <MDBox>
+              <MDTypography variant="h6">
+                {user.name} ({user.nickname})
+              </MDTypography>
+              <MDTypography variant="body2" color="text">
+                {user.email}
+              </MDTypography>
+            </MDBox>
+            <MDBox flexGrow={1} />
+            <MDButton color="error" size="small" onClick={handleWithdraw}>
+              탈퇴
+            </MDButton>
+          </MDBox>
 
-          <MDBox display="grid" gridTemplateColumns="140px 1fr" rowGap={2} columnGap={2}>
-            <MDTypography sx={{ fontWeight: "bold" }}>이름</MDTypography>
-            <MDTypography>{user.name}</MDTypography>
+          <Divider sx={{ mb: 2 }} />
 
-            <MDTypography sx={{ fontWeight: "bold" }}>닉네임</MDTypography>
-            <MDTypography>{user.nickname}</MDTypography>
-
-            <MDTypography sx={{ fontWeight: "bold" }}>이메일</MDTypography>
-            <MDTypography>{user.email}</MDTypography>
-
+          <MDBox display="grid" gridTemplateColumns="120px 1fr" rowGap={1.5} columnGap={2}>
             <MDTypography sx={{ fontWeight: "bold" }}>가입일</MDTypography>
-            <MDTypography>{new Date(user.createdAt).toLocaleDateString()}</MDTypography>
+            <MDTypography>{new Date(user.createdAt).toLocaleDateString("ko-KR")}</MDTypography>
 
             <MDTypography sx={{ fontWeight: "bold" }}>벌점</MDTypography>
             <MDTypography>{user.penaltyPoints}점</MDTypography>
           </MDBox>
-
-          {/* 밴 버튼 */}
-          <MDBox display="flex" justifyContent="flex-end" mt={3}>
-            <MDButton
-              color="error"
-              size="small"
-              sx={{
-                borderRadius: 20,
-                px: 3,
-                py: 1,
-                fontSize: 12,
-                textTransform: "none",
-                transition: "all 0.2s",
-                "&:hover": { transform: "scale(1.05)" },
-              }}
-              onClick={handleBan}
-            >
-              밴
-            </MDButton>
-          </MDBox>
         </Card>
 
         {/* 대여 내역 */}
-        <MDBox mt={5}>
-          <MDTypography variant="h6" gutterBottom>
-            대여 내역
-          </MDTypography>
-          <DataTable
-            table={{ columns: rentColumns, rows: rentRows }}
-            isSorted={false}
-            entriesPerPage={true}
-            showTotalEntries={true}
-            noEndBorder
-          />
-        </MDBox>
+        <Card sx={{ mt: 4 }}>
+          <MDBox px={3} py={2}>
+            <MDTypography variant="h6" fontWeight="bold">
+              대여 내역
+            </MDTypography>
+          </MDBox>
+          <Divider />
+          <MDBox p={2}>
+            <DataTable
+              table={{ columns: rentColumns, rows: rentRows }}
+              isSorted={false}
+              entriesPerPage
+              showTotalEntries
+              noEndBorder
+            />
+          </MDBox>
+        </Card>
       </MDBox>
+
       <Footer />
     </DashboardLayout>
   );

@@ -14,6 +14,8 @@ import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import { useCategories } from "components/Hooks/useCategories";
 
 function PartnerItemDetail() {
@@ -119,6 +121,9 @@ function PartnerItemDetail() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="장비 상세정보" bg="linear-gradient(60deg, #1b6bffff, #3b90ffff)" />
+
       <MDBox py={3}>
         <MDTypography variant="h5" mb={3}>
           장비 상세 / 수정 – ID: {id}

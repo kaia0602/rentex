@@ -19,6 +19,9 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import { getImageUrl } from "utils/imageUrl";
 
+// ✅ 새로 만든 꾸밈용 헤더 import
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import api from "api/client";
 
 function RentalPay() {
@@ -97,6 +100,13 @@ function RentalPay() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* ✅ 여기 꾸밈용 헤더 삽입 */}
+      <PageHeader
+        title="장비 대여"
+        bg="linear-gradient(60deg,#42a5f5,#1e88e5)" // 필요에 따라 색상/이미지 변경
+      />
+
       <MDBox pt={6} pb={3}>
         <Grid container spacing={3}>
           {/* 장비 정보 */}
@@ -112,7 +122,7 @@ function RentalPay() {
               />
               <MDTypography variant="h5">{item.name}</MDTypography>
               <MDTypography variant="body2" color="textSecondary">
-                {item.category?.name} / {item.subCategory?.name}
+                {item.categoryName ?? "-"} / {item.subCategoryName ?? "-"}
               </MDTypography>
               <MDTypography variant="body2">
                 일일 대여료: {unitPrice.toLocaleString()}원

@@ -12,12 +12,17 @@ import {
   PieChart,
   Pie,
   Cell,
+  LabelList,
 } from "recharts";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import { CalendarMonth } from "@mui/icons-material";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -25,6 +30,8 @@ import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+
+import PageHeader from "layouts/dashboard/header/PageHeader";
 
 import api from "api/client";
 import { getToken, getUserIdFromToken } from "utils/auth";
@@ -45,15 +52,20 @@ export default function PartnerStatisticsIndex() {
 
   const chartData = useMemo(() => {
     const details = data?.details || [];
-    return details.map((d) => ({
-      name: String(d.itemName ?? ""),
-      amount: Number(d.amount ?? Number(d.unitPrice || 0) * Number(d.days || 0)),
-      quantity: Number(d.quantity || 0),
-      days: Number(d.days || 0),
-      unitPrice: Number(d.unitPrice || 0),
-    }));
+    return details.map((d) => {
+      const unitPrice = Number(d.unitPrice || 0);
+      const days = Number(d.days || 0);
+      const quantity = Number(d.quantity || 0);
+      const amount = Number(d.amount ?? unitPrice * days * quantity);
+      return {
+        name: String(d.itemName ?? ""),
+        amount,
+        quantity,
+        days,
+        unitPrice,
+      };
+    });
   }, [data]);
-  // 컬럼
 
   const topBarData = useMemo(() => {
     const sorted = [...chartData].sort((a, b) => b.amount - a.amount);
@@ -75,16 +87,15 @@ export default function PartnerStatisticsIndex() {
 
   const columns = useMemo(
     () => [
-      { Header: "아이템", accessor: "itemName", align: "center" },
+      { Header: "아이템", accessor: "itemName", align: "left" },
       { Header: "수량", accessor: "quantity", align: "center" },
       { Header: "일수", accessor: "days", align: "center" },
-      { Header: "단가(₩)", accessor: "unitPrice", align: "center" },
-      { Header: "금액(₩)", accessor: "amount", align: "center" },
+      { Header: "단가(₩)", accessor: "unitPrice", align: "right" },
+      { Header: "금액(₩)", accessor: "amount", align: "right" },
     ],
     [],
   );
 
-  // 행
   const rows = useMemo(
     () =>
       (data?.details || []).map((d) => ({
@@ -99,14 +110,12 @@ export default function PartnerStatisticsIndex() {
     [data],
   );
 
-  // 마운트: 토큰 로드 → userId 추출
   useEffect(() => {
     const t = getToken();
     const uid = t ? getUserIdFromToken(t) : null;
     if (uid) setUserId(uid);
   }, []);
 
-  // userId 준비 + 연/월 변경 시 호출
   useEffect(() => {
     if (Number.isInteger(userId) && userId > 0) fetchData(userId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,7 +125,6 @@ export default function PartnerStatisticsIndex() {
     if (!Number.isInteger(uid) || uid <= 0) return;
     setLoading(true);
     try {
-      // 백엔드: GET /api/partner/statistics/{userId}?year=&month=
       const res = await api.get(`/partner/statistics/${uid}`, { params: { year, month } });
       const payload = res.data ?? {};
       const details = Array.isArray(payload.details)
@@ -127,7 +135,7 @@ export default function PartnerStatisticsIndex() {
       const summary = payload.summary ?? null;
 
       const totalRentals = Number(
-        payload?.totalRentals ?? details.reduce((a, d) => a + Number(d.rentalcounts || 0), 0),
+        payload?.totalRentals ?? details.reduce((a, d) => a + Number(d.rentalCount ?? 0), 0),
       );
       const totalQuantity = Number(
         summary?.totalQuantity ?? details.reduce((a, d) => a + Number(d.quantity || 0), 0),
@@ -168,9 +176,6 @@ export default function PartnerStatisticsIndex() {
       "0",
     )}-${String(today.getDate()).padStart(2, "0")}`;
 
-    const barSvg = barWrapRef.current?.querySelector("svg")?.outerHTML ?? "";
-    const pieSvg = pieWrapRef.current?.querySelector("svg")?.outerHTML ?? "";
-
     const rowsHtml = (data.details || [])
       .map(
         (d) => `
@@ -197,10 +202,7 @@ th, td { border: 1px solid #bbb; padding: 6px 8px; text-align: center; }
 th { background: #f4f6f8; }
 tfoot td { font-weight: 700; background: #fafafa; }
 .right { text-align: right; }
-// .charts { display:block; margin: 10px 0 14px; }
-// .chart { margin-bottom: 12px; }
-// .chart svg { max-width: 100%; height: auto; }
-// .page-break { page-break-after: always; } 그래프 출력 보류
+/* 그래프 출력 보류 */
 </style></head><body>
 <h1>${title}</h1>
 <div class="meta">
@@ -236,156 +238,211 @@ tfoot td { font-weight: 700; background: #fafafa; }
     w.close();
   };
 
+  const kpis = [
+    { label: "대여건수", value: data?.totalRentals ?? 0 },
+    { label: "총 수량", value: data?.totalQuantity ?? 0 },
+    { label: "총 일수", value: data?.totalDays ?? 0 },
+    { label: "총 수익(원)", value: (data?.totalRevenue ?? 0).toLocaleString() },
+  ];
+
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="정산 내역" bg="linear-gradient(60deg, #3e72d3ff, #559fffff)" />
+
       <MDBox py={3}>
-        <Grid container spacing={2} alignItems="center" mb={1}>
-          <Grid item>
-            <MDTypography variant="h5">내 월별 통계</MDTypography>
+        {/* ===== 필터바 카드 ===== */}
+        <Card sx={{ mb: 2, borderRadius: 3 }}>
+          <CardHeader
+            avatar={<CalendarMonth />}
+            title="내 월별 통계"
+            subheader={`${year}년 ${month}월`}
+            sx={{ "& .MuiCardHeader-title": { fontWeight: 700 } }}
+            action={
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Select value={year} onChange={(e) => setYear(Number(e.target.value))} size="small">
+                  {YEARS.map((y) => (
+                    <MenuItem key={y} value={y}>
+                      {y}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Select
+                  value={month}
+                  onChange={(e) => setMonth(Number(e.target.value))}
+                  size="small"
+                >
+                  {MONTHS.map((m) => (
+                    <MenuItem key={m} value={m}>
+                      {m}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  sx={{
+                    color: "black !important", // 글자 검정 고정
+                    border: "1px solid #29b6f6 !important", // 하늘색 테두리
+                    backgroundColor: "white !important", // 배경 흰색
+                    "&:hover": {
+                      color: "black !important",
+                      border: "1px solid #29b6f6 !important",
+                      backgroundColor: "white !important",
+                    },
+                  }}
+                  onClick={() => userId && fetchData(userId)}
+                >
+                  조회
+                </Button>
+
+                <Button
+                  variant="contained"
+                  color="inherit"
+                  sx={{
+                    color: "white !important", // 글자 흰색 고정
+                    backgroundColor: "#29b6f6 !important", // 배경 하늘색
+                    "&:hover": {
+                      color: "white !important",
+                      backgroundColor: "#29b6f6 !important",
+                    },
+                  }}
+                  onClick={printStatement}
+                >
+                  PDF로 출력
+                </Button>
+              </Stack>
+            }
+          />
+        </Card>
+
+        {/* ===== KPI 4개 카드 ===== */}
+        <Grid container spacing={2} sx={{ mb: 2 }}>
+          {kpis.map((k) => (
+            <Grid item xs={12} sm={6} md={3} key={k.label}>
+              <Card sx={{ borderRadius: 3 }}>
+                <MDBox p={2}>
+                  <MDTypography variant="button" color="text">
+                    {k.label}
+                  </MDTypography>
+                  <MDTypography variant="h4" fontWeight="bold">
+                    {k.value}
+                  </MDTypography>
+                </MDBox>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* ===== 그래프 섹션 ===== */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            <Card sx={{ borderRadius: 3, mb: 2 }}>
+              <MDBox p={2} pb={0}>
+                <MDTypography variant="h6">아이템별 매출 TOP {topBarData.length}</MDTypography>
+              </MDBox>
+              <MDBox p={2}>
+                {loading ? (
+                  <MDBox display="flex" justifyContent="center" py={4}>
+                    <CircularProgress />
+                  </MDBox>
+                ) : (
+                  <div ref={barWrapRef} style={{ width: "100%", minHeight: 360 }}>
+                    <ResponsiveContainer width="100%" height={360}>
+                      <BarChart
+                        data={topBarData}
+                        margin={{ top: 80, right: 16, left: 8, bottom: 48 }}
+                      >
+                        <CartesianGrid strokeDasharray="4 4" vertical={false} />
+                        <XAxis
+                          dataKey="name"
+                          interval={0}
+                          tick={{ fontSize: 12 }}
+                          angle={-15}
+                          textAnchor="end"
+                          height={42}
+                        />
+                        <YAxis tickFormatter={(v) => nf.format(v)} width={56} />
+                        <Tooltip formatter={(v) => nf.format(Number(v))} />
+                        <Bar dataKey="amount" name="매출(원)" radius={[6, 6, 0, 0]}>
+                          {topBarData.map((_, i) => (
+                            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                          ))}
+                          <LabelList
+                            dataKey="amount"
+                            position="top"
+                            formatter={(v) => nf.format(Number(v))}
+                          />
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </MDBox>
+            </Card>
           </Grid>
-          <Grid item>
-            <Select value={year} onChange={(e) => setYear(Number(e.target.value))} size="small">
-              {YEARS.map((y) => (
-                <MenuItem key={y} value={y}>
-                  {y}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-          <Grid item>
-            <Select value={month} onChange={(e) => setMonth(Number(e.target.value))} size="small">
-              {MONTHS.map((m) => (
-                <MenuItem key={m} value={m}>
-                  {m}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-          <Grid item>
-            <MDTypography
-              component="button"
-              variant="button"
-              onClick={() => Number.isInteger(userId) && userId > 0 && fetchData(userId)}
-              sx={{ px: 2, py: 0.75, border: "1px solid #ccc", borderRadius: 1 }}
-            >
-              조회
-            </MDTypography>
-            <MDTypography
-              component="button"
-              variant="button"
-              onClick={printStatement}
-              sx={{ px: 2, py: 0.75, border: "1px solid #ccc", borderRadius: 1, ml: 1 }}
-            >
-              PDF로 출력
-            </MDTypography>
+
+          <Grid item xs={12} md={4}>
+            <Card sx={{ borderRadius: 3, mb: 2 }}>
+              <MDBox p={2} pb={0}>
+                <MDTypography variant="h6">수량 비중</MDTypography>
+              </MDBox>
+              <MDBox p={2}>
+                {loading ? (
+                  <MDBox display="flex" justifyContent="center" py={4}>
+                    <CircularProgress />
+                  </MDBox>
+                ) : (
+                  <div ref={pieWrapRef} style={{ width: "100%", minHeight: 360 }}>
+                    <ResponsiveContainer width="100%" height={360}>
+                      <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+                        <Pie
+                          dataKey="quantity"
+                          nameKey="name"
+                          data={chartData.filter((d) => d.quantity > 0)}
+                          innerRadius={60}
+                          outerRadius={110}
+                          paddingAngle={2}
+                        >
+                          {chartData.map((_, i) => (
+                            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip formatter={(v) => nf.format(Number(v))} />
+                        <Legend
+                          verticalAlign="bottom"
+                          align="center"
+                          layout="horizontal"
+                          wrapperStyle={{ paddingTop: 8 }}
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </MDBox>
+            </Card>
           </Grid>
         </Grid>
 
-        <Card>
+        {/* ===== 상세 테이블 ===== */}
+        <Card sx={{ borderRadius: 3 }}>
+          <MDBox p={2} pb={0}>
+            <MDTypography variant="h6">상세 내역</MDTypography>
+          </MDBox>
           <MDBox p={2}>
-            {loading ? (
-              <MDBox display="flex" justifyContent="center" py={4}>
-                <CircularProgress />
+            <DataTable
+              table={{ columns, rows }}
+              isSorted={false}
+              entriesPerPage={false}
+              showTotalEntries={false}
+              canSearch={false}
+              sx={{ "& td, & th": { py: 1 } }}
+            />
+            {!loading && (!data || (data.details || []).length === 0) && (
+              <MDBox textAlign="center" py={3}>
+                <MDTypography color="text">이번 달 집계 데이터가 없습니다.</MDTypography>
               </MDBox>
-            ) : (
-              <>
-                <MDTypography variant="button">
-                  총 대여건수: <b>{data?.totalRentals ?? 0}</b> / 총 수량:{" "}
-                  <b>{data?.totalQuantity ?? 0}</b> / 총 대여일수: <b>{data?.totalDays ?? 0}</b> /
-                  총 수익: <b>{(data?.totalRevenue ?? 0).toLocaleString()}원</b>
-                </MDTypography>
-                {/* ===== 그래프 섹션 ===== */}
-                <MDBox mt={2}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} md={8}>
-                      <Card>
-                        <MDBox p={2}>
-                          <MDTypography variant="button" mb={1} display="block">
-                            아이템별 매출 TOP {topBarData.length} (원)
-                          </MDTypography>
-                          <div
-                            ref={barWrapRef}
-                            style={{ width: "100%", height: 320, overflow: "visible" }}
-                          >
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart
-                                data={topBarData}
-                                margin={{ top: 8, right: 24, left: 24, bottom: 64 }}
-                              >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                  dataKey="name"
-                                  interval={0}
-                                  tick={{ fontSize: 11 }}
-                                  angle={-20}
-                                  textAnchor="end"
-                                  height={56}
-                                />
-                                <YAxis tickFormatter={(v) => nf.format(v)} width={56} />
-                                <Tooltip formatter={(v) => nf.format(Number(v))} />
-                                <Legend />
-                                <Bar dataKey="amount" name="매출(원)">
-                                  {topBarData.map((_, i) => (
-                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                                  ))}
-                                </Bar>
-                              </BarChart>
-                            </ResponsiveContainer>
-                          </div>
-                        </MDBox>
-                      </Card>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Card>
-                        {" "}
-                        <MDBox p={2}>
-                          <MDTypography variant="button" mb={1} display="block">
-                            수량 비중
-                          </MDTypography>
-                          <div
-                            ref={pieWrapRef}
-                            style={{ width: "100%", height: 320, overflow: "visible" }}
-                          >
-                            <ResponsiveContainer width="100%" height="100%">
-                              <PieChart margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
-                                <Pie
-                                  dataKey="quantity"
-                                  nameKey="name"
-                                  data={chartData}
-                                  innerRadius={60}
-                                  outerRadius={110}
-                                  labelLine
-                                  paddingAngle={3}
-                                  label={({ name, percent }) =>
-                                    `${name} ${(percent * 100).toFixed(0)}%`
-                                  }
-                                >
-                                  {chartData.map((_, i) => (
-                                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                                  ))}
-                                </Pie>
-                                <Tooltip formatter={(v) => nf.format(Number(v))} />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                        </MDBox>
-                      </Card>
-                    </Grid>
-                  </Grid>
-                </MDBox>
-                {/* ===== /그래프 섹션 ===== */}
-
-                <MDBox mt={2}>
-                  <DataTable
-                    table={{ columns, rows }}
-                    isSorted={false}
-                    entriesPerPage={false}
-                    showTotalEntries={false}
-                    canSearch={false}
-                  />
-                </MDBox>
-              </>
             )}
           </MDBox>
         </Card>
