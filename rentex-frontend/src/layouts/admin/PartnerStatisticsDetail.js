@@ -1,6 +1,6 @@
 // src/layouts/admin/AdminPartnerStatisticsDetail.jsx
 /* eslint-disable react/prop-types */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -14,6 +14,9 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
 import api from "api/client"; // ✅ 수정됨
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import { border, borderRadius, color } from "@mui/system";
 
 const nf = new Intl.NumberFormat("ko-KR");
 
@@ -24,6 +27,7 @@ function useQuery() {
 }
 
 export default function AdminPartnerStatisticsDetail() {
+  const pdRef = useRef(null);
   const q = useQuery();
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -116,6 +120,64 @@ export default function AdminPartnerStatisticsDetail() {
     }
   };
 
+  const handleExportPdf = async () => {
+    if (!pdRef.current) return;
+    const node = pdRef.current;
+
+    const canvas = await html2canvas(node, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff",
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.windowHeight,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
+    const usableWidth = pageWidth - margin * 2;
+
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = usableWidth;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+    let remainingHeight = imgHeight;
+    let position = margin;
+    let pageIndex = 0;
+
+    const title = `${Number.isFinite(year) ? year : "-"}년 ${Number.isFinite(month) ? month : "-"}`;
+    pdf.setFontSize(12);
+    pdf.text(title, margin, margin - 2 < 6 ? 6 : margin - 2);
+
+    while (remainingHeight > 0) {
+      const top = pageIndex === 0 ? margin + 6 : margin;
+      const sliceHeight = pageIndex === 0 ? pageHeight - margin - top : pageHeight;
+
+      pdf.addImage(imgData, "PNG", margin, top, imgWidth, imgHeight, undefined, "FAST");
+
+      remainingHeight -= sliceHeight;
+      if (remainingHeight > 0) {
+        pdf.addPage();
+        pageIndex += 1;
+      } else {
+        break;
+      }
+    }
+    const pageCount = pdf.getNumberOfPages();
+    pdf.setFontSize(10);
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.text(`${i} / ${pageCount}`, pageWidth - margin - 14, pageHeight - 6);
+    }
+
+    const safeName = (partnerName || `파트너_${partnerId}`).replace(/[\\/:*?"<>|]/g, "_");
+    const fileName = `Rentex_${safeName}_${year ?? "YYYY"}_${month ?? "MM"}.pdf`;
+    pdf.save(fileName);
+  };
+
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,9 +204,26 @@ export default function AdminPartnerStatisticsDetail() {
               목록으로
             </MDTypography>
           </Grid>
+          <Grid item>
+            <MDTypography
+              component="button"
+              variant="button"
+              onClick={handleExportPdf}
+              sx={{
+                px: 2,
+                py: 0.75,
+                border: "1px solid #1976d2",
+                color: "#1976d2",
+                borderRadius: 1,
+                ml: 1,
+              }}
+            >
+              PDF로 내보내기
+            </MDTypography>
+          </Grid>
         </Grid>
 
-        <Card>
+        <Card ref={pdRef}>
           <MDBox p={2}>
             {loading ? (
               <MDBox display="flex" justifyContent="center" py={4}>

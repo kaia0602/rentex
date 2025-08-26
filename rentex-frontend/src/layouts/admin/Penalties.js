@@ -123,7 +123,7 @@ export default function AdminPenalties() {
             </Select>
           </Grid>
           <Grid item>
-            <MDButton variant="outlined" onClick={refresh}>
+            <MDButton variant="outlined" onClick={refresh} style={{ color: "black" }}>
               검색
             </MDButton>
           </Grid>

@@ -10,7 +10,6 @@ import SignUp from "layouts/authentication/sign-up";
 import NoticeList from "layouts/notice/NoticeList";
 import NoticeDetail from "layouts/notice/NoticeDetail";
 import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
-import { getCurrentUser } from "utils/auth";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 
 import Guide from "layouts/guide/Guide";
