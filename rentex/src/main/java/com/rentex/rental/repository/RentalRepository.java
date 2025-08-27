@@ -33,6 +33,8 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     Page<Rental> findAll(Pageable pageable);  // 전체 상태 조건 없이
 
+    void deleteByUser(User user);
+
     @Query("SELECT r FROM Rental r WHERE r.user.id = :userId")
     List<Rental> findByUserId(@Param("userId") Long userId);
 

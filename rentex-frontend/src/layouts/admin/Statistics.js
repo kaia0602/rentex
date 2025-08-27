@@ -2,20 +2,17 @@
 /* eslint-disable react/prop-types */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import CircularProgress from "@mui/material/CircularProgress";
+import { Card, Select, MenuItem, CircularProgress, Divider, TextField, Stack } from "@mui/material";
+
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
+import MDButton from "components/MDButton";
 import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import PageHeader from "layouts/dashboard/header/PageHeader";
 import api from "api/client";
-import { TextField } from "@mui/material";
-import MDButton from "components/MDButton";
 
 const NOW = new Date();
 const YEARS = [NOW.getFullYear() - 1, NOW.getFullYear(), NOW.getFullYear() + 1];
@@ -52,18 +49,17 @@ export default function AdminStatistics() {
         totalDays: r.totalDays ?? 0,
         totalRevenue: nf.format(Number(r.totalRevenue ?? 0)),
         action: (
-          <MDTypography
-            component="button"
-            variant="button"
-            onClick={() => {
+          <MDButton
+            variant="outlined"
+            size="small"
+            onClick={() =>
               navigate(`/admin/statistics/${r.partnerId}?year=${year}&month=${month}`, {
                 state: { partnerId: r.partnerId, partnerName: r.partnerName, year, month },
-              });
-            }}
-            sx={{ px: 2, py: 0.75, border: "1px solid #ccc", borderRadius: 1 }}
+              })
+            }
           >
             상세
-          </MDTypography>
+          </MDButton>
         ),
       })),
     [list, navigate, year, month],
@@ -73,7 +69,16 @@ export default function AdminStatistics() {
     setLoading(true);
     try {
       const res = await api.get("/admin/statistics", { params: { year, month } });
-      setList(Array.isArray(res.data) ? res.data : []);
+      let data = Array.isArray(res.data) ? res.data : [];
+
+      // ✅ 프론트 단에서 업체명 필터링
+      if (q.trim()) {
+        data = data.filter((item) =>
+          (item.partnerName ?? "").toLowerCase().includes(q.trim().toLowerCase()),
+        );
+      }
+
+      setList(data);
     } catch (e) {
       console.error(e);
       const msg = e?.response
@@ -83,9 +88,8 @@ export default function AdminStatistics() {
     } finally {
       setLoading(false);
     }
-  }, [year, month]);
+  }, [year, month, q]);
 
-  // ✅ 최초 및 year/month 변경 시 자동 조회
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -93,65 +97,61 @@ export default function AdminStatistics() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* ✅ 상단 헤더 */}
+      <PageHeader title="월별 정산 리포트" bg="linear-gradient(60deg, #26c6da, #0097a7)" />
+
       <MDBox py={3}>
-        <Grid container spacing={2} alignItems="center" mb={1}>
-          <Grid item>
-            <MDTypography variant="h5">관리자 월별 정산</MDTypography>
-          </Grid>
-
-          <Grid item>
-            <Select value={year} onChange={(e) => setYear(Number(e.target.value))} size="small">
-              {YEARS.map((y) => (
-                <MenuItem key={y} value={y}>
-                  {y}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-
-          <Grid item>
-            <Select value={month} onChange={(e) => setMonth(Number(e.target.value))} size="small">
-              {MONTHS.map((m) => (
-                <MenuItem key={m} value={m}>
-                  {m}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid>
-
-          {/* <Grid item>
-            <MDTypography
-              component="button"
-              variant="button"
-              onClick={fetchData}
-              sx={{ px: 2, py: 0.75, border: "1px solid #ccc", borderRadius: 1 }}
-            >
-              조회
-            </MDTypography>
-          </Grid> */}
-          {/* <Grid item>
-            <TextField
-              size="small"
-              placeholder="업체명 검색"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onCompositionStart={() => setComposing(true)}
-              onCompositionEnd={() => {
-                setComposing(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") refresh();
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <MDButton variant="outlined" onClick={""}>
-              검색
-            </MDButton>
-          </Grid>*/}
-        </Grid>
-
         <Card>
+          {/* 🔹 카드 헤더 (툴바) */}
+          <MDBox
+            px={3}
+            py={2}
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{
+              background: "linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.00) 100%)",
+            }}
+          >
+            <MDTypography variant="h6" fontWeight="bold">
+              관리자 월별 정산
+            </MDTypography>
+
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <Select value={year} onChange={(e) => setYear(Number(e.target.value))} size="small">
+                {YEARS.map((y) => (
+                  <MenuItem key={y} value={y}>
+                    {y}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Select value={month} onChange={(e) => setMonth(Number(e.target.value))} size="small">
+                {MONTHS.map((m) => (
+                  <MenuItem key={m} value={m}>
+                    {m}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <TextField
+                size="small"
+                placeholder="업체명 검색"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onCompositionStart={() => setComposing(true)}
+                onCompositionEnd={() => setComposing(false)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") fetchData();
+                }}
+              />
+            </Stack>
+          </MDBox>
+
+          <Divider />
+
+          {/* 🔹 본문 (테이블) */}
           <MDBox p={2}>
             {loading ? (
               <MDBox display="flex" justifyContent="center" py={4}>
@@ -169,6 +169,7 @@ export default function AdminStatistics() {
           </MDBox>
         </Card>
       </MDBox>
+
       <Footer />
     </DashboardLayout>
   );

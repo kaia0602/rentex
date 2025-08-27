@@ -16,6 +16,8 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import api from "api/client";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 export default function AdminInquiryDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -39,6 +41,9 @@ export default function AdminInquiryDetail() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="문의사항" bg="linear-gradient(60deg, #42a5f5, #1e88e5)" />
+
       <MDBox pt={3} pb={3}>
         <Grid container spacing={3}>
           <Grid item xs={12}>

@@ -15,6 +15,7 @@ import Footer from "examples/Footer";
 import DataTable from "examples/Tables/DataTable";
 
 import api from "api/client";
+import Header from "./components/Header";
 
 function AdminRentalManage() {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ function AdminRentalManage() {
   const columns = [
     { Header: "장비명", accessor: "item" },
     { Header: "대여자", accessor: "user" },
+    { Header: "파트너", accessor: "partnerName" },
     { Header: "대여기간", accessor: "period" },
     {
       Header: "상태",
@@ -115,6 +117,7 @@ function AdminRentalManage() {
         id: r.id,
         item: r.itemName,
         user: r.userNickname,
+        partnerName: r.partnerName,
         period: `${r.startDate} ~ ${r.endDate}`,
         status: r.status, // ✅ enum 값 그대로
         statusLabel: r.statusLabel,

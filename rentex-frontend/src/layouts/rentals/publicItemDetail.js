@@ -12,6 +12,9 @@ import Footer from "examples/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
+// ✅ 새로 만든 꾸밈용 헤더 import
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 function PublicItemsDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -46,6 +49,13 @@ function PublicItemsDetail() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* ✅ 여기 꾸밈용 헤더 삽입 */}
+      <PageHeader
+        title="장비 대여"
+        bg="linear-gradient(60deg,#42a5f5,#1e88e5)" // 필요에 따라 색상/이미지 변경
+      />
+
       <MDBox py={3}>
         <Grid container spacing={3}>
           {/* 이미지 */}

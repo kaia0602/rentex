@@ -1,11 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import TextField from "@mui/material/TextField";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  Grid,
+  Card,
+  TextField,
+  Select,
+  MenuItem,
+  CircularProgress,
+  Divider,
+  Chip,
+  Stack,
+} from "@mui/material";
+import PropTypes from "prop-types";
+
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
@@ -13,14 +20,34 @@ import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import api from "api/client"; // ✅ axios instance
 
-const nf = new Intl.NumberFormat("ko-KR");
+// 🔹 벌점 칼럼 전용 Cell 컴포넌트
+const PenaltyCell = ({ row }) => {
+  return (
+    <Chip
+      label={`${row.original.penalty}점`}
+      size="small"
+      color={row.original.penalty > 0 ? "error" : "default"}
+      sx={{ fontWeight: "bold" }}
+    />
+  );
+};
+
+PenaltyCell.propTypes = {
+  row: PropTypes.shape({
+    original: PropTypes.shape({
+      penalty: PropTypes.number.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default function AdminPenalties() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
-  const [role, setRole] = useState("ALL"); // ✅ 역할 필터 상태
+  const [role, setRole] = useState("ALL");
   const [loading, setLoading] = useState(false);
   const [rowsData, setRowsData] = useState([]);
   const [composing, setComposing] = useState(false);
@@ -30,8 +57,13 @@ export default function AdminPenalties() {
       { Header: "ID", accessor: "id", align: "center" },
       { Header: "사용자", accessor: "user", align: "center" },
       { Header: "이메일", accessor: "email", align: "center" },
-      { Header: "권한", accessor: "role", align: "center" }, // ✅ 역할 추가
-      { Header: "벌점", accessor: "penalty", align: "center" },
+      { Header: "권한", accessor: "role", align: "center" },
+      {
+        Header: "벌점",
+        accessor: "penalty",
+        align: "center",
+        Cell: PenaltyCell, // ✅ 별도 컴포넌트 사용
+      },
       { Header: "최근 부여일", accessor: "last", align: "center" },
       { Header: "상세보기", accessor: "actions", align: "center" },
     ],
@@ -44,8 +76,7 @@ export default function AdminPenalties() {
       const res = await api.get("/admin/penalties", {
         params: { q: q.trim(), role, page: 0, size: 50 },
       });
-      const list = Array.isArray(res.data) ? res.data : [];
-      setRowsData(list);
+      setRowsData(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       console.error(e);
       alert("벌점 목록을 불러오지 못했습니다.");
@@ -72,20 +103,18 @@ export default function AdminPenalties() {
         id: u.userId,
         user: u.name,
         email: u.email,
-        role: u.role || "-", // ✅ 역할 표시
+        role: u.role || "-",
         penalty: u.penaltyPoints,
         last: u.lastGivenAt ? new Date(u.lastGivenAt).toLocaleString("ko-KR") : "-",
         actions: (
-          <MDBox display="flex" gap={1} justifyContent="center">
-            <MDButton
-              color="dark"
-              size="small"
-              variant="outlined"
-              onClick={() => navigate(`/admin/penaltyDetail/${u.userId}`)}
-            >
-              상세
-            </MDButton>
-          </MDBox>
+          <MDButton
+            color="dark"
+            size="small"
+            variant="outlined"
+            onClick={() => navigate(`/admin/penaltyDetail/${u.userId}`)}
+          >
+            상세
+          </MDButton>
         ),
       })),
     [rowsData, navigate],
@@ -94,42 +123,42 @@ export default function AdminPenalties() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox py={3}>
-        <Grid container spacing={2} alignItems="center" mb={2}>
-          <Grid item>
-            <MDTypography variant="h5">벌점 관리</MDTypography>
-          </Grid>
-          <Grid item>
-            <TextField
-              size="small"
-              placeholder="이름/이메일 검색"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onCompositionStart={() => setComposing(true)}
-              onCompositionEnd={() => setComposing(false)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") refresh();
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <Select size="small" value={role} onChange={(e) => setRole(e.target.value)}>
-              <MenuItem value="ALL">전체</MenuItem>
-              <MenuItem value="USER">사용자</MenuItem>
-              <MenuItem value="ADMIN">관리자</MenuItem>
-              <MenuItem value="PARTNER">파트너 업체</MenuItem>
-              {/* role=USER_ONLY는 백엔드에서 존재하므로 필요시 아래 주석 해제 */}
-              {/* <MenuItem value="USER_ONLY">유저만</MenuItem> */}
-            </Select>
-          </Grid>
-          <Grid item>
-            <MDButton variant="outlined" onClick={refresh} style={{ color: "black" }}>
-              검색
-            </MDButton>
-          </Grid>
-        </Grid>
+      <PageHeader title="패널티 관리" bg="linear-gradient(60deg, #ef5350, #c62828)" />
 
+      <MDBox py={3}>
         <Card>
+          {/* 🔹 툴바 영역 */}
+          <MDBox px={3} py={2} display="flex" justifyContent="space-between" alignItems="center">
+            <MDTypography variant="h6" fontWeight="bold">
+              벌점 관리 목록
+            </MDTypography>
+            <Stack direction="row" spacing={1.5} alignItems="center">
+              <TextField
+                size="small"
+                placeholder="이름/이메일 검색"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                onCompositionStart={() => setComposing(true)}
+                onCompositionEnd={() => setComposing(false)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") refresh();
+                }}
+              />
+              <Select size="small" value={role} onChange={(e) => setRole(e.target.value)}>
+                <MenuItem value="ALL">전체</MenuItem>
+                <MenuItem value="USER">사용자</MenuItem>
+                <MenuItem value="ADMIN">관리자</MenuItem>
+                <MenuItem value="PARTNER">파트너 업체</MenuItem>
+              </Select>
+              <MDButton variant="outlined" color="dark" onClick={refresh}>
+                검색
+              </MDButton>
+            </Stack>
+          </MDBox>
+
+          <Divider />
+
+          {/* 🔹 테이블 영역 */}
           <MDBox p={2}>
             {loading ? (
               <MDBox display="flex" justifyContent="center" py={4}>

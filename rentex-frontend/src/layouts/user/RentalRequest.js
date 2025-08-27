@@ -19,6 +19,9 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import { getImageUrl } from "utils/imageUrl";
 
+// ✅ 새로 만든 꾸밈용 헤더 import
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 // ✅ DatePicker 관련 import
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -86,6 +89,13 @@ function RentalRequest() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* ✅ 여기 꾸밈용 헤더 삽입 */}
+      <PageHeader
+        title="장비 대여"
+        bg="linear-gradient(60deg,#42a5f5,#1e88e5)" // 필요에 따라 색상/이미지 변경
+      />
+
       <MDBox pt={6} pb={3}>
         <Grid container spacing={3}>
           {/* 왼쪽: 장비 카드 */}

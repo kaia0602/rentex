@@ -21,6 +21,9 @@ import Footer from "examples/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
+// ✅ 새로 만든 꾸밈용 헤더 import
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 function PublicItems() {
   const navigate = useNavigate();
   const { categories, subCategories, fetchSubCategories } = useCategories();
@@ -104,6 +107,13 @@ function PublicItems() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      {/* ✅ 여기 꾸밈용 헤더 삽입 */}
+      <PageHeader
+        title="장비 대여"
+        bg="linear-gradient(60deg,#42a5f5,#1e88e5)" // 필요에 따라 색상/이미지 변경
+      />
+
       <MDBox py={3}>
         <MDTypography variant="h5" mb={3}>
           대여 가능한 장비 목록

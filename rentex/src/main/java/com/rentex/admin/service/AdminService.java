@@ -3,6 +3,8 @@ package com.rentex.admin.service;
 import com.rentex.admin.dto.AdminDashboardDTO;
 import com.rentex.admin.dto.UserResponseDTO;
 import com.rentex.payment.repository.PaymentRepository;
+import com.rentex.rental.domain.Rental;
+import com.rentex.rental.dto.RentalResponseDto;
 import com.rentex.rental.repository.RentalRepository;
 import com.rentex.user.domain.User;
 import com.rentex.user.repository.UserRepository;
@@ -53,6 +55,12 @@ public class AdminService {
                 transactions,
                 revenue != null ? revenue : 0
         );
+    }
+
+    public List<RentalResponseDto> getUserRents(Long userId) {
+        return rentalRepository.findByUserId(userId).stream()
+                .map(RentalResponseDto::from) // ✅ DTO 변환은 from() 활용
+                .toList();
     }
 
 }

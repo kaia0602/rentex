@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import api from "api/client"; // ✅ axios 대신 api 인스턴스 사용
+import api from "api/client";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -14,6 +14,8 @@ import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 
+import PageHeader from "layouts/dashboard/header/PageHeader";
+
 import { useCategories } from "components/Hooks/useCategories";
 
 function PartnerItemDetail() {
@@ -25,6 +27,7 @@ function PartnerItemDetail() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [thumbnailFile, setThumbnailFile] = useState(null);
 
+  const [detailImageFiles, setDetailImageFiles] = useState([]); // 상세 이미지 파일
   const [form, setForm] = useState({
     name: "",
     categoryId: "",
@@ -32,6 +35,8 @@ function PartnerItemDetail() {
     dailyPrice: 0,
     stockQuantity: 0,
     description: "",
+    detailDescription: "", // ✅ 상세 설명
+    detailImages: [], // ✅ 기존 상세 이미지 URL들 or 새 파일
     status: "AVAILABLE",
     partnerId: null,
   });
@@ -65,6 +70,8 @@ function PartnerItemDetail() {
           dailyPrice: data.dailyPrice || 0,
           stockQuantity: data.stockQuantity || 0,
           description: data.description || "",
+          detailDescription: data.detailDescription || "",
+          detailImages: data.detailImages || [],
           status: data.status || "AVAILABLE",
           partnerId: data.partnerId || null,
         });
@@ -84,7 +91,7 @@ function PartnerItemDetail() {
     }));
   };
 
-  // 파일 변경
+  // 썸네일 파일 변경
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -93,12 +100,29 @@ function PartnerItemDetail() {
     }
   };
 
+  // 상세 이미지 파일 변경
+  const handleDetailImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    setDetailImageFiles(files);
+    // 미리보기 위해 form.detailImages에 추가
+    setForm((prev) => ({ ...prev, detailImages: files }));
+  };
+
   // FormData 빌드
   const buildFormData = () => {
     const formToSend = { ...form };
+    delete formToSend.detailImages; // 파일은 별도로 append
+
     const formData = new FormData();
     formData.append("item", new Blob([JSON.stringify(formToSend)], { type: "application/json" }));
+
     if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
+    if (detailImageFiles.length > 0) {
+      detailImageFiles.forEach((file) => {
+        formData.append("detailImages", file);
+      });
+    }
+
     return formData;
   };
 
@@ -119,6 +143,9 @@ function PartnerItemDetail() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="장비 상세정보" bg="linear-gradient(60deg, #1b6bffff, #3b90ffff)" />
+
       <MDBox py={3}>
         <MDTypography variant="h5" mb={3}>
           장비 상세 / 수정 – ID: {id}
@@ -167,7 +194,12 @@ function PartnerItemDetail() {
                     name="categoryId"
                     value={form.categoryId}
                     onChange={handleChange}
-                    style={{ width: "100%", padding: 8, borderRadius: 4, borderColor: "#ccc" }}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 4,
+                      borderColor: "#ccc",
+                    }}
                     required
                   >
                     <option value="">카테고리 선택</option>
@@ -185,7 +217,12 @@ function PartnerItemDetail() {
                     value={form.subCategoryId}
                     onChange={handleChange}
                     disabled={!form.categoryId || subCategories.length === 0}
-                    style={{ width: "100%", padding: 8, borderRadius: 4, borderColor: "#ccc" }}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 4,
+                      borderColor: "#ccc",
+                    }}
                     required
                   >
                     <option value="">소분류 선택</option>
@@ -233,12 +270,70 @@ function PartnerItemDetail() {
                   />
                 </Grid>
 
+                {/* ✅ 상세 설명 */}
+                <Grid item xs={12}>
+                  <MDInput
+                    label="상세 설명"
+                    name="detailDescription"
+                    value={form.detailDescription}
+                    onChange={handleChange}
+                    multiline
+                    rows={5}
+                    fullWidth
+                  />
+                </Grid>
+
+                {/* ✅ 상세 이미지 업로드 */}
+                <Grid item xs={12}>
+                  <MDTypography variant="body1" mb={1}>
+                    상세 이미지 등록
+                  </MDTypography>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleDetailImagesChange}
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      marginTop: "10px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {form.detailImages &&
+                      form.detailImages.length > 0 &&
+                      form.detailImages.map((img, idx) => {
+                        const src = typeof img === "string" ? img : URL.createObjectURL(img);
+                        return (
+                          <img
+                            key={idx}
+                            src={src}
+                            alt={`상세이미지-${idx}`}
+                            style={{
+                              width: 120,
+                              height: 120,
+                              objectFit: "cover",
+                              borderRadius: 8,
+                            }}
+                          />
+                        );
+                      })}
+                  </div>
+                </Grid>
+
                 <Grid item xs={12} md={6}>
                   <select
                     name="status"
                     value={form.status}
                     onChange={handleChange}
-                    style={{ width: "100%", padding: 8, borderRadius: 4, borderColor: "#ccc" }}
+                    style={{
+                      width: "100%",
+                      padding: 8,
+                      borderRadius: 4,
+                      borderColor: "#ccc",
+                    }}
                     required
                   >
                     <option value="AVAILABLE">사용 가능</option>

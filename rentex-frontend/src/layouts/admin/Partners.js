@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -7,6 +7,8 @@ import Footer from "examples/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
+
+import PageHeader from "layouts/dashboard/header/PageHeader";
 
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -78,6 +80,9 @@ function AdminPartners() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
+      <PageHeader title="파트너 목록" bg="linear-gradient(60deg, #ff9800, #ef6c00)" />
+
       <MDBox py={3}>
         <MDBox display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <MDTypography variant="h5">업체 목록</MDTypography>
