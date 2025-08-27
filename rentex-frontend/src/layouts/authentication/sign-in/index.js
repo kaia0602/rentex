@@ -17,7 +17,7 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-import naverIcon from "assets/images/logos/naverIcon";
+import naverIcon from "assets/images/logos/naverIcon.png";
 
 // API & Auth utils
 import api from "api/client";
