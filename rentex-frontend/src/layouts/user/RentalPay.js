@@ -19,7 +19,7 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "layouts/authentication/components/Footer";
 import { getImageUrl } from "utils/imageUrl";
 
-// ✅ 새로 만든 꾸밈용 헤더 import
+// 꾸밈용 헤더 import
 import PageHeader from "layouts/dashboard/header/PageHeader";
 
 import api from "api/client";
@@ -28,7 +28,7 @@ function RentalPay() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // 👉 RentalRequest에서 넘어온 데이터
+  // RentalRequest에서 넘어온 데이터
   const { item, startDate, endDate, quantity } = location.state || {};
 
   const [agree, setAgree] = useState(false);
@@ -78,7 +78,6 @@ function RentalPay() {
       setToastMsg(backendMsg || "결제에 실패했습니다. 다시 시도해주세요.");
       setToastOpen(true);
 
-      // 벌점 차단일 경우는 뒤로 이동 ❌
       if (!backendMsg?.includes("벌점")) {
         setTimeout(() => navigate(-1), 2000);
       }
@@ -101,30 +100,36 @@ function RentalPay() {
     <DashboardLayout>
       <DashboardNavbar />
 
-      {/* ✅ 여기 꾸밈용 헤더 삽입 */}
-      <PageHeader
-        title="장비 대여"
-        bg="linear-gradient(60deg,#42a5f5,#1e88e5)" // 필요에 따라 색상/이미지 변경
-      />
+      {/* 꾸밈용 헤더 */}
+      <PageHeader title="장비 대여" bg="linear-gradient(60deg,#42a5f5,#1e88e5)" />
 
       <MDBox pt={6} pb={3}>
         <Grid container spacing={3}>
           {/* 장비 정보 */}
           <Grid item xs={12} md={5}>
-            <Card sx={{ p: 2 }}>
-              <MDTypography variant="h6" mb={2}>
+            <Card sx={{ p: 3 }}>
+              <MDTypography variant="h5" fontWeight="bold" mb={2}>
                 📦 장비 정보
               </MDTypography>
-              <img
-                src={getImageUrl(item.thumbnailUrl)}
-                alt={item.name}
-                style={{ width: "100%", borderRadius: "8px", marginBottom: "10px" }}
-              />
-              <MDTypography variant="h5">{item.name}</MDTypography>
-              <MDTypography variant="body2" color="textSecondary">
+              <MDBox display="flex" justifyContent="center" mb={2}>
+                <img
+                  src={getImageUrl(item.thumbnailUrl)}
+                  alt={item.name}
+                  style={{
+                    width: "100%",
+                    borderRadius: "8px",
+                    maxHeight: 250,
+                    objectFit: "contain",
+                  }}
+                />
+              </MDBox>
+              <MDTypography variant="h6" fontWeight="bold">
+                {item.name}
+              </MDTypography>
+              <MDTypography variant="body2" color="textSecondary" mb={1}>
                 {item.categoryName ?? "-"} / {item.subCategoryName ?? "-"}
               </MDTypography>
-              <MDTypography variant="body2">
+              <MDTypography variant="body1" fontWeight="bold">
                 일일 대여료: {unitPrice.toLocaleString()}원
               </MDTypography>
             </Card>
@@ -133,26 +138,37 @@ function RentalPay() {
           {/* 결제 정보 */}
           <Grid item xs={12} md={7}>
             <Card sx={{ p: 3 }}>
-              <MDTypography variant="h6" mb={2}>
+              <MDTypography variant="h5" fontWeight="bold" mb={2}>
                 💳 결제 정보
               </MDTypography>
-              <MDTypography variant="body1">
-                대여 기간: {startDate} ~ {endDate}
-              </MDTypography>
-              <MDTypography variant="body1">대여 일수: {days}일</MDTypography>
-              <MDTypography variant="body1">수량: {quantity}개</MDTypography>
+
+              <MDBox mb={1}>
+                <MDTypography variant="body1">
+                  대여 기간: {startDate} ~ {endDate}
+                </MDTypography>
+                <MDTypography variant="body1">대여 일수: {days}일</MDTypography>
+                <MDTypography variant="body1">수량: {quantity}개</MDTypography>
+              </MDBox>
+
               <Divider sx={{ my: 2 }} />
-              <MDTypography variant="h5" fontWeight="bold">
+
+              <MDTypography variant="h5" fontWeight="bold" mb={2}>
                 총 결제 금액: {amount.toLocaleString()}원
               </MDTypography>
 
               <FormControlLabel
                 control={<Checkbox checked={agree} onChange={(e) => setAgree(e.target.checked)} />}
                 label="결제 진행에 동의합니다."
+                sx={{ mb: 2 }}
               />
 
-              <MDBox mt={2} display="flex" gap={1}>
-                <MDButton color="info" onClick={handlePay} disabled={!agree || paying}>
+              <MDBox display="flex" gap={2} flexWrap="wrap">
+                <MDButton
+                  color="info"
+                  onClick={handlePay}
+                  disabled={!agree || paying}
+                  sx={{ minWidth: 120 }}
+                >
                   {paying ? (
                     <>
                       <CircularProgress size={18} sx={{ color: "white", mr: 1 }} />
@@ -167,6 +183,7 @@ function RentalPay() {
                   color="dark"
                   onClick={() => navigate(-1)}
                   disabled={paying}
+                  sx={{ minWidth: 120 }}
                 >
                   돌아가기
                 </MDButton>
@@ -175,6 +192,7 @@ function RentalPay() {
           </Grid>
         </Grid>
       </MDBox>
+
       <Footer />
 
       <Snackbar
