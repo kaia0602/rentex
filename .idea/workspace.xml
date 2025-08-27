@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/partner/statistics/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/user/repository/UserRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +123,7 @@
       <workItem from="1755733958393" duration="21009000" />
       <workItem from="1755831571808" duration="7490000" />
       <workItem from="1756090781896" duration="5340000" />
-      <workItem from="1756252716596" duration="5298000" />
+      <workItem from="1756252716596" duration="7296000" />
     </task>
     <servers />
   </component>

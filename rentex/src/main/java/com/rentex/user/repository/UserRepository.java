@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
             "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
             "u.businessNo, u.contactEmail, u.contactPhone) " +
-            "FROM User u")
+            "FROM User u where u.role = 'USER' ")
     List<UserResponseDTO> findAllUsersForAdmin();
 
     /** 일반 유저만 조회 */

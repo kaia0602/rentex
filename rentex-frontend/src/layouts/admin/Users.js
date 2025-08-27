@@ -114,23 +114,6 @@ function AdminUsers() {
       <PageHeader title="사용자 관리" bg="linear-gradient(60deg, #42a5f5, #1e88e5)" />
 
       <MDBox py={3}>
-        <Card>
-          <MDBox px={3} py={2}>
-            <MDTypography variant="h6" fontWeight="bold">
-              사용자 목록
-            </MDTypography>
-          </MDBox>
-          <Divider />
-          <MDBox p={2}>
-            <DataTable
-              table={{ columns, rows }}
-              isSorted={false}
-              entriesPerPage
-              showTotalEntries
-              noEndBorder
-            />
-          </MDBox>
-        </Card>
         <MDBox display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <MDTypography variant="h5">사용자 목록</MDTypography>
           <TextField
