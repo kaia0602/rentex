@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "layouts/authentication/components/Footer";
+import PageHeader from "layouts/dashboard/header/PageHeader";
 
 // Components
 import MDBox from "components/MDBox";

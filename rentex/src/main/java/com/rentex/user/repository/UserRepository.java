@@ -21,18 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.email = :email AND u.withdrawnAt IS NULL")
     Optional<User> findActiveByEmail(@Param("email") String email);
 
-<<<<<<< HEAD
     /** (포함) 이메일로 userId 조회 — 원본 유지(native) */
     @Query(value = "SELECT u.id FROM users u WHERE u.email = :email LIMIT 1", nativeQuery = true)
     Long findUserIdByEmail(@Param("email") String email);
-=======
-    /** 전체 유저 리스트 (관리자 전용) */
-    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
-            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
-            "u.businessNo, u.contactEmail, u.contactPhone) " +
-            "FROM User u where u.role = 'USER' ")
-    List<UserResponseDTO> findAllUsersForAdmin();
->>>>>>> feature/penalty-payment
 
     /** (제외) 이메일로 userId 조회 — 탈퇴자 제외(native) */
     @Query(value = "SELECT u.id FROM users u WHERE u.email = :email AND u.withdrawn_at IS NULL LIMIT 1", nativeQuery = true)
@@ -46,7 +37,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 👤 [일반 유저 전용] (역할: USER) 화면/API에서 사용
     // =========================================================
 
-    /** (포함) 일반 유저 목록 — 탈퇴자 포함 (원본 유지) */
+    /** (포함) 일반 유저 목록 — 탈퇴자 포함 */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
             "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
             "u.businessNo, u.contactEmail, u.contactPhone) " +
@@ -65,7 +56,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 🤝 [파트너 전용] (역할: PARTNER) 파트너 화면/API에서 사용
     // =========================================================
 
-    /** (포함) 역할 기준 목록 — 탈퇴자 포함 (원본 유지) */
+    /** (포함) 역할 기준 목록 — 탈퇴자 포함 */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
             "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
             "u.businessNo, u.contactEmail, u.contactPhone) " +
@@ -79,32 +70,67 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "FROM User u WHERE u.role = :role AND u.withdrawnAt IS NULL")
     List<UserResponseDTO> findAllActiveByRole(@Param("role") String role);
 
+    /** (포함) 파트너 목록 — 탈퇴자 포함 (편의 메서드) */
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
+            "FROM User u WHERE u.role = 'PARTNER'")
+    List<UserResponseDTO> findAllPartners();
+
+    /** (제외) 파트너 목록 — 탈퇴자 제외 (편의 메서드) */
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
+            "FROM User u WHERE u.role = 'PARTNER' AND u.withdrawnAt IS NULL")
+    List<UserResponseDTO> findAllActivePartners();
+
 
     // =========================================================
     // 🛠️ [관리자 전용] 어드민 대시보드/관리 화면에서 사용
     // =========================================================
 
-    /** (포함) 전체 유저 목록 — 탈퇴자 포함 (원본 유지) */
+    // ✅ 호환 유지용 메서드 (관리자 전용: USER만, 탈퇴자 포함)
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
+            "FROM User u WHERE u.role = 'USER'")
+    List<UserResponseDTO> findAllUsersForAdmin();
+
+    /** (포함) 전체 유저 목록 — 탈퇴자 포함 (전체 역할) */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
             "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
             "u.businessNo, u.contactEmail, u.contactPhone) " +
             "FROM User u")
-    List<UserResponseDTO> findAllUsersForAdmin();
+    List<UserResponseDTO> findAllUsersForAdminAllRoles();
 
-    /** (제외) 전체 유저 목록 — 탈퇴자 제외 */
+    /** (제외) 전체 유저 목록 — 탈퇴자 제외 (전체 역할) */
     @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
             "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
             "u.businessNo, u.contactEmail, u.contactPhone) " +
             "FROM User u WHERE u.withdrawnAt IS NULL")
-    List<UserResponseDTO> findAllUsersForAdminActive();
+    List<UserResponseDTO> findAllUsersForAdminActiveAllRoles();
 
-    /** (포함) 역할별 카운트 — 탈퇴자 포함 (원본 유지) */
+    /** (포함) USER만 — 탈퇴자 포함 */
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
+            "FROM User u WHERE u.role = 'USER'")
+    List<UserResponseDTO> findAllUsersForAdminOnlyUser();
+
+    /** (제외) USER만 — 탈퇴자 제외 */
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
+            "FROM User u WHERE u.role = 'USER' AND u.withdrawnAt IS NULL")
+    List<UserResponseDTO> findAllUsersForAdminOnlyUserActive();
+
+    /** (포함) 역할별 카운트 — 탈퇴자 포함 */
     long countByRole(String role);
 
     /** (제외) 역할별 카운트 — 탈퇴자 제외 */
     long countByRoleAndWithdrawnAtIsNull(String role);
 
-    /** (포함) 전체 카운트 — 탈퇴자 포함 (원본 유지) */
+    /** (포함) 전체 카운트 — 탈퇴자 포함 */
     long count();
 
     /** (제외) 전체 카운트 — 탈퇴자 제외 */
