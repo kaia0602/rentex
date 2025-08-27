@@ -26,11 +26,6 @@ public class AdminController {
     private final AdminService adminService;
     private final UserService userService;
 
-    // ✅ FK 정리용 레포지토리 주입
-    private final UserRepository userRepository;
-    private final RentalRepository rentalRepository;
-    private final PenaltyRepository penaltyRepository;
-
     /** 전체 사용자 조회 */
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getUsers() {
@@ -62,21 +57,12 @@ public class AdminController {
         return userService.getMonthlyNewUsers(year);
     }
 
-    /** ✅ 관리자 - 회원 강제 탈퇴 (물리 삭제) */
+    /** ✅ 관리자 - 회원 탈퇴 처리 */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> withdrawUser(@PathVariable Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("존재하지 않는 사용자입니다."));
-
-        // FK 참조 데이터 먼저 삭제
-        rentalRepository.deleteByUser(user);
-        penaltyRepository.deleteByUser(user);
-
-        // 마지막으로 유저 삭제
-        userRepository.delete(user);
-
-        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+    public ResponseEntity<Void> withdrawUser(@PathVariable Long id) {
+        adminService.withdrawUser(id); // 소프트 삭제로 변경
+        return ResponseEntity.noContent().build(); // 204
     }
 
     /** ✅ 특정 사용자 대여내역 조회 */

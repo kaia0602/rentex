@@ -81,7 +81,7 @@ INSERT IGNORE INTO sub_category (category_id, name) VALUES
  (4,'노트북'),(4,'모니터'),(4,'청소기'),(4,'빔프로젝터'),(4,'에어컨/냉장고'),(4,'프린터'),(4,'의자/책상'),
  (5,'공구세트'),(5,'디지털계측기'),(5,'보호장비'),(5,'차량용 보조배터리'),(5,'기타');
 
-/* --- 2) 사용자 + 파트너(사업자 정보는 users에 저장) ------ */
+/* --- 2) 사용자 + 파트너(사업자 정보는 users에 저장), 탈퇴회원 자동 복구 ------ */
 /* bcrypt 샘플 패스워드 그대로 유지 */
 INSERT IGNORE INTO `users`
   (id, email, password, name, nickname, role,
@@ -108,7 +108,17 @@ VALUES
  (18,'partner18@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','오피스렌트','파트너18','PARTNER','829-82-39334','오피스렌트@rentex.com','010-2219-1199',NOW(),NOW()),
  (19,'partner19@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','디지털툴스','파트너19','PARTNER','217-17-79952','디지털툴스@rentex.com','010-7136-4148',NOW(),NOW()),
  (100,'user1@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','홍길동','길동이','USER',NULL,NULL,NULL,NOW(),NOW()),
- (101,'admin@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','관리자','운영자','ADMIN',NULL,NULL,NULL,NOW(),NOW());
+ (101,'admin@rentex.com','$2a$10$IucJ7fKcDxN10LgTvxxj7uO5P.elMzzbQAxbw3zid0fEskt1ANri2','관리자','운영자','ADMIN',NULL,NULL,NULL,NOW(),NOW())
+ON DUPLICATE KEY UPDATE
+                     name = VALUES(name),
+                     nickname = VALUES(nickname),
+                     password = VALUES(password),
+                     role = VALUES(role),
+                     business_no = VALUES(business_no),
+                     contact_email = VALUES(contact_email),
+                     contact_phone = VALUES(contact_phone),
+                     withdrawn_at = NULL,
+                     updated_at = NOW();
 
 -- 3. 장비
 INSERT IGNORE INTO item (id, name, description, stock_quantity, status, partner_id, created_at, updated_at, category_id, sub_category_id, daily_price, thumbnail_url) VALUES (1, 'Canon EOS R6', '카메라 장비 - Canon EOS R6', 9, 'AVAILABLE', 1, '2025-08-12 00:42:39', '2025-08-12 00:42:39', 1, 1, 7373, 'https://upload.wikimedia.org/wikipedia/commons/4/47/Canon_EOS_R6_15.jpg');
