@@ -14,6 +14,7 @@ import MDTypography from "components/MDTypography";
 
 // ✅ 새로 만든 꾸밈용 헤더 import
 import PageHeader from "layouts/dashboard/header/PageHeader";
+import { Box } from "@mui/system";
 
 function PublicItemsDetail() {
   const { id } = useParams();
@@ -57,61 +58,121 @@ function PublicItemsDetail() {
       />
 
       <MDBox py={3}>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} alignItems="stretch">
           {/* 이미지 */}
           <Grid item xs={12} md={6}>
-            <Card>
-              <CardMedia
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                p: 2,
+              }}
+            >
+              {" "}
+              <MDBox
                 component="img"
-                height="400"
-                image={getImageUrl(item.thumbnailUrl)}
+                src={getImageUrl(item.thumbnailUrl)}
                 alt={item.name}
-                style={{ objectFit: "cover" }}
+                sx={{
+                  maxHeight: 600,
+                  maxWidth: "100%",
+                  objectFit: "contain",
+                  display: "block", // ✅ flexbox 중앙정렬 보정
+                }}
               />
             </Card>
           </Grid>
 
           {/* 상세 정보 */}
           <Grid item xs={12} md={6}>
-            <Card sx={{ p: 2 }}>
-              <CardContent>
-                <MDTypography variant="body2" color="textSecondary">
-                  업체: {item.partnerName ?? "-"}
+            <Card
+              sx={{
+                p: 3,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1 }}>
+                <MDTypography variant="h1" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
+                  {item.name ?? "-"}
                 </MDTypography>
-                <MDTypography variant="body2" color="textSecondary">
-                  카테고리: {item.categoryName ?? "-"} / {item.subCategoryName ?? "-"}
-                </MDTypography>
-                <MDTypography variant="body2" sx={{ mt: 1 }}>
-                  재고: {item.stockQuantity ?? "-"} 개
-                </MDTypography>
-                <MDTypography variant="body2">
-                  일일 대여료: {item.dailyPrice ? `${item.dailyPrice.toLocaleString()}원` : "-"}
+                <MDTypography variant="h6" sx={{ mb: 2, color: "text.secondary" }}>
+                  {item.partnerName}
                 </MDTypography>
 
-                {/* 버튼 영역 */}
-                <MDBox mt={3} display="flex" gap={1}>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#1976d2",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#115293",
-                      },
-                    }}
-                    onClick={() => navigate(`/rentals/request/${item.id}`)}
-                  >
-                    대여 신청
-                  </Button>
-                  <Button
-                    variant="contained"
-                    sx={{ backgroundColor: "#e0e0e0", color: "#000" }}
-                    onClick={goBackToList}
-                  >
-                    목록으로
-                  </Button>
-                </MDBox>
+                {/* 가격 */}
+                <MDTypography variant="h2" color="text.primary" fontWeight="bold" sx={{ mb: 3 }}>
+                  {item.dailyPrice?.toLocaleString()}원 / 일
+                </MDTypography>
+
+                {/* 재고 */}
+                <MDTypography
+                  variant="h3"
+                  fontWeight="bold"
+                  color={item.stockQuantity > 3 ? "text.primary" : "#d32f2f"}
+                  sx={{ mb: 3 }}
+                >
+                  재고: {item.stockQuantity ?? "-"} 개
+                </MDTypography>
               </CardContent>
+              <Box
+                sx={{
+                  mt: 4,
+                  p: 2,
+                  border: "1px solid #e0e0e0",
+                  borderRadius: 2,
+                  bgcolor: "#fafafa",
+                }}
+              >
+                <MDTypography variant="h6" gutterBottom>
+                  대여 및 배송 안내
+                </MDTypography>
+                <MDTypography variant="body2" color="text.secondary">
+                  • 오후 2시 이전 주문 시 당일 발송됩니다. <br />
+                  • 평균 배송일은 1~2일 소요됩니다. <br />
+                  • 반납 시 구성품 누락 시 추가 비용이 발생할 수 있습니다.
+                  <br />• 연체 시 1일당 대여료가 추가 청구됩니다.
+                </MDTypography>
+              </Box>
+
+              <MDBox mt={3} display="flex" justifyContent="center" gap={2} width="100%">
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    maxWidth: "350px",
+                    backgroundColor: "#1976d2",
+                    color: "#fff",
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    py: 2.5,
+                    "&:hover": { backgroundColor: "#115293" },
+                  }}
+                  onClick={() => navigate(`/rentals/request/${item.id}`)}
+                >
+                  대여 신청
+                </Button>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    maxWidth: "350px",
+                    backgroundColor: "#e0e0e0",
+                    color: "#000",
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    py: 2.5,
+                    "&:hover": { backgroundColor: "#bdbdbd" },
+                  }}
+                  onClick={goBackToList}
+                >
+                  목록으로
+                </Button>
+              </MDBox>
             </Card>
           </Grid>
         </Grid>

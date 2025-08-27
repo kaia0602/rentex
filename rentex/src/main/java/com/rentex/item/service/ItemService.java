@@ -95,8 +95,11 @@ public class ItemService {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + id));
 
-        User partner = userRepository.findById(dto.getPartnerId()) // ✅ Partner → User
-                .orElseThrow(() -> new IllegalArgumentException("파트너 ID가 유효하지 않습니다."));
+        if (dto.getPartnerId() != null) {
+            User partner = userRepository.findById(dto.getPartnerId())
+                    .orElseThrow(() -> new IllegalArgumentException("파트너 ID가 유효하지 않습니다."));
+            item.setPartner(partner);
+        }
 
         if (dto.getCategoryId() != null) {
             Category category = categoryRepository.findById(dto.getCategoryId())
@@ -110,30 +113,31 @@ public class ItemService {
             item.setSubCategory(subCategory);
         }
 
-        item.setName(dto.getName());
-        item.setDescription(dto.getDescription());
-        item.setStockQuantity(dto.getStockQuantity());
-        item.setDailyPrice(dto.getDailyPrice());
-        item.setStatus(ItemStatus.valueOf(dto.getStatus()));
-        item.setPartner(partner); // ✅ User 로 매핑
-        item.setDetailDescription(dto.getDetailDescription());
+        if (dto.getName() != null) item.setName(dto.getName());
+        if (dto.getDescription() != null) item.setDescription(dto.getDescription());
+        if (dto.getStockQuantity() != null) item.setStockQuantity(dto.getStockQuantity());
+        if (dto.getDailyPrice() != null) item.setDailyPrice(dto.getDailyPrice());
+        if (dto.getStatus() != null) {
+            try {
+                item.setStatus(ItemStatus.valueOf(dto.getStatus()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("유효하지 않은 상태값입니다: " + dto.getStatus());
+            }
+        }
+        if (dto.getDetailDescription() != null) item.setDetailDescription(dto.getDetailDescription());
 
-        // 상세 이미지 업로드
         if (detailImages != null && !detailImages.isEmpty()) {
             List<String> detailImageUrls = detailImages.stream()
                     .filter(file -> !file.isEmpty())
                     .map(fileUploadService::upload)
-                    .collect(Collectors.toList());
+                    .toList();
             item.setDetailImages(detailImageUrls);
         }
 
-        // 썸네일 업로드
         if (thumbnail != null && !thumbnail.isEmpty()) {
             String thumbnailUrl = fileUploadService.upload(thumbnail);
             item.setThumbnailUrl(thumbnailUrl);
         }
-
-        itemRepository.save(item);
     }
 
     // 단건 조회

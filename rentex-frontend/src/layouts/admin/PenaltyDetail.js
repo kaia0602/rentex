@@ -9,7 +9,7 @@ import MDButton from "components/MDButton";
 import DataTable from "examples/Tables/DataTable";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 import PageHeader from "layouts/dashboard/header/PageHeader";
 import api from "api/client";
 

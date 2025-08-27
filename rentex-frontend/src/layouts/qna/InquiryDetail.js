@@ -15,7 +15,7 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 
 import PageHeader from "layouts/dashboard/header/PageHeader";
 

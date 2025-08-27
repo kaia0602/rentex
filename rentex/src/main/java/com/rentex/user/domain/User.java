@@ -116,4 +116,10 @@ public class User extends BaseTimeEntity {
     public void withdraw() {
         this.withdrawnAt = LocalDateTime.now();
     }
+
+    // ==== 복구 처리 ====
+    public void recover() {
+        this.withdrawnAt = null;
+    }
+
 }

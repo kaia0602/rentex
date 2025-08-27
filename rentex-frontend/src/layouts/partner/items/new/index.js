@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "api/client"; // ✅ axios → api 인스턴스
+import api from "api/client";
 
 import { useCategories } from "components/Hooks/useCategories";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
@@ -23,6 +23,7 @@ function NewItemForm() {
   const [itemData, setItemData] = useState({
     name: "",
     description: "",
+    detailDescription: "", // ✅ 상세 설명
     stockQuantity: 0,
     dailyPrice: 0,
     status: "AVAILABLE",
@@ -31,6 +32,7 @@ function NewItemForm() {
   });
 
   const [thumbnail, setThumbnail] = useState(null);
+  const [detailImages, setDetailImages] = useState([]); // ✅ 상세 이미지 파일들
 
   const { categories, subCategories, fetchSubCategories } = useCategories();
 
@@ -58,6 +60,13 @@ function NewItemForm() {
     }
   };
 
+  const handleDetailImagesChange = (e) => {
+    if (e.target.files?.length > 0) {
+      const files = Array.from(e.target.files);
+      setDetailImages(files);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -68,8 +77,14 @@ function NewItemForm() {
 
     const formData = new FormData();
     formData.append("dto", new Blob([JSON.stringify(itemData)], { type: "application/json" }));
+
     if (thumbnail) {
       formData.append("thumbnail", thumbnail);
+    }
+    if (detailImages.length > 0) {
+      detailImages.forEach((file) => {
+        formData.append("detailImages", file);
+      });
     }
 
     try {
@@ -77,7 +92,7 @@ function NewItemForm() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("등록 성공!");
-      navigate("/partner/items"); // ✅ 등록 후 파트너 장비 목록으로 이동
+      navigate("/partner/items");
     } catch (error) {
       console.error("등록 실패:", error.response?.data || error.message);
       alert("등록 실패!");
@@ -88,7 +103,7 @@ function NewItemForm() {
     <DashboardLayout>
       <DashboardNavbar />
 
-      <PageHeader title="장비 상세정보" bg="linear-gradient(60deg, #1b6bffff, #3b90ffff)" />
+      <PageHeader title="장비 등록" bg="linear-gradient(60deg, #1b6bffff, #3b90ffff)" />
 
       <MDBox mt={4}>
         <Card>
@@ -117,6 +132,7 @@ function NewItemForm() {
                     required
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <select
                     name="categoryId"
@@ -161,6 +177,7 @@ function NewItemForm() {
                     ))}
                   </select>
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <MDInput
                     label="총 수량"
@@ -183,6 +200,7 @@ function NewItemForm() {
                     required
                   />
                 </Grid>
+
                 <Grid item xs={12} md={6}>
                   <select
                     name="status"
@@ -200,18 +218,69 @@ function NewItemForm() {
                     <option value="UNAVAILABLE">사용 불가</option>
                   </select>
                 </Grid>
+
                 <Grid item xs={12}>
                   <MDInput
                     label="설명"
                     name="description"
                     fullWidth
                     multiline
-                    rows={4}
+                    rows={3}
                     value={itemData.description}
                     onChange={handleChange}
                   />
                 </Grid>
+
+                {/* ✅ 상세 설명 */}
+                <Grid item xs={12}>
+                  <MDInput
+                    label="상세 설명"
+                    name="detailDescription"
+                    fullWidth
+                    multiline
+                    rows={5}
+                    value={itemData.detailDescription}
+                    onChange={handleChange}
+                  />
+                </Grid>
+
+                {/* ✅ 상세 이미지 업로드 */}
+                <Grid item xs={12}>
+                  <MDTypography variant="body1" mb={1}>
+                    상세 이미지 등록
+                  </MDTypography>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleDetailImagesChange}
+                  />
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                      marginTop: "10px",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {detailImages.length > 0 &&
+                      detailImages.map((file, idx) => (
+                        <img
+                          key={idx}
+                          src={URL.createObjectURL(file)}
+                          alt={`상세이미지-${idx}`}
+                          style={{
+                            width: 120,
+                            height: 120,
+                            objectFit: "cover",
+                            borderRadius: 8,
+                          }}
+                        />
+                      ))}
+                  </div>
+                </Grid>
               </Grid>
+
               <MDBox mt={3}>
                 <MDButton type="submit" color="info">
                   등록 요청

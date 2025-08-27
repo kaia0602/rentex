@@ -6,9 +6,10 @@ import api from "api/client";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
 import UserHeader from "./UserHeader";
+import Footer from "layouts/authentication/components/Footer";
 
+// MUI
 import Grid from "@mui/material/Grid";
 import CircularProgress from "@mui/material/CircularProgress";
 import Card from "@mui/material/Card";

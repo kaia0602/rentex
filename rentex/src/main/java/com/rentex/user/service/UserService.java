@@ -52,16 +52,31 @@ public class UserService {
     /** 회원가입 */
     @Transactional
     public Long signUp(SignUpRequestDTO requestDTO) {
-        if (userRepository.findByEmail(requestDTO.getEmail()).isPresent()) {
+        Optional<User> existingOpt = userRepository.findByEmail(requestDTO.getEmail());
+
+        if (existingOpt.isPresent()) {
+            User existing = existingOpt.get();
+
+            // 탈퇴회원이면 복구
+            if (existing.getWithdrawnAt() != null) {
+                existing.recover(); // withdrawnAt → null로 복구
+                existing.updateName(requestDTO.getName());
+                existing.updateNickname(requestDTO.getNickname());
+                existing.updatePassword(passwordEncoder.encode(requestDTO.getPassword()));
+                existing.updateBusinessNo(requestDTO.getBusinessNo());
+                existing.updateContactEmail(requestDTO.getContactEmail());
+                existing.updateContactPhone(requestDTO.getContactPhone());
+
+                return existing.getId(); // 영속 상태라 save() 불필요
+            }
+
+            // 이미 활성화된 계정
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
+        // 신규 가입
         String encodedPassword = passwordEncoder.encode(requestDTO.getPassword());
 
-        // userType이 null이면 USER로 기본 세팅
-//        String role = (requestDTO.getUserType() == null) ? "USER" : requestDTO.getUserType().toUpperCase();
-
-        // userType 기반 role 결정 (서버에서만)
         String role = "USER";
         if ("PARTNER".equalsIgnoreCase(requestDTO.getUserType())) {
             role = "PARTNER";
@@ -72,7 +87,7 @@ public class UserService {
                 .password(encodedPassword)
                 .name(requestDTO.getName())
                 .nickname(requestDTO.getNickname())
-                .role(role) // USER / PARTNER / ADMIN
+                .role(role)
                 .businessNo(requestDTO.getBusinessNo())
                 .contactEmail(requestDTO.getContactEmail())
                 .contactPhone(requestDTO.getContactPhone())
@@ -80,6 +95,7 @@ public class UserService {
 
         return userRepository.save(newUser).getId();
     }
+
 
     /** 비밀번호 재설정 */
     @Transactional

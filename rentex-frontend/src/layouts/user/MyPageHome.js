@@ -16,7 +16,7 @@ import DataTable from "examples/Tables/DataTable";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 import UserHeader from "./UserHeader";
 
 /* ----------------------------- 유틸/컴포넌트 ----------------------------- */

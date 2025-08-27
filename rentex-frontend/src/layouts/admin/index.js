@@ -28,7 +28,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 
 import Header from "layouts/admin/components/Header";
 import { CardContent, Typography } from "@mui/material";

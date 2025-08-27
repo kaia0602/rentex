@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
@@ -266,9 +266,6 @@ function PublicItems() {
                   </MDTypography>
                   <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                     {item.description || "설명이 없습니다."}
-                  </MDTypography>
-                  <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                    {item.categoryName} / {item.subCategoryName}
                   </MDTypography>
                   <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                     업체: {item.partnerName ?? "-"}
