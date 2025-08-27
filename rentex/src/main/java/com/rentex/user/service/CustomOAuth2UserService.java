@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -54,22 +55,26 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private User saveOrUpdate(OAuthAttributes attributes) {
-        User user = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> {
-                    entity.updateNickname(attributes.getName());
-                    entity.updateProfileImage(attributes.getPicture()); // 프로필 이미지 업데이트
-                    return entity;
-                })
-                .orElse(User.builder() // 신규 유저 생성 시에도 rentaladd 브랜치 로직 선택
-                        .email(attributes.getEmail())
-                        .password("SOCIAL_LOGIN_PASSWORD")
-                        .name(attributes.getName())
-                        .nickname(attributes.getName())
-                        .role("USER")
-                        .profileImageUrl(attributes.getPicture()) // 신규 생성 시도 저장
-                        .build()
-                );
+        Optional<User> optionalUser = userRepository.findByEmail(attributes.getEmail());
 
-        return userRepository.save(user);
+        if (optionalUser.isPresent()) {
+            User existingUser = optionalUser.get();
+            existingUser.updateNickname(attributes.getName());
+
+            if (existingUser.getProfileImageUrl() == null || existingUser.getProfileImageUrl().isEmpty()) {
+                existingUser.updateProfileImage(attributes.getPicture());
+            }
+            return userRepository.save(existingUser);
+        } else {
+            User newUser = User.builder()
+                    .email(attributes.getEmail())
+                    .password("SOCIAL_LOGIN_PASSWORD")
+                    .name(attributes.getName())
+                    .nickname(attributes.getName())
+                    .role("USER")
+                    .profileImageUrl(attributes.getPicture())
+                    .build();
+            return userRepository.save(newUser);
+        }
     }
 }

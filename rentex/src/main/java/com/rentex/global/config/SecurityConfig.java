@@ -80,6 +80,14 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
 
+                // 소셜 로그인 로그아웃 수정용
+                .logout(logout -> logout
+                        .logoutUrl("/api/auth/logout") // 로그아웃을 처리할 URL을 명확히 지정합니다.
+                        .invalidateHttpSession(true) // 세션 무효화
+                        .deleteCookies("JSESSIONID", "refresh_token") // 쿠키 삭제
+                        .clearAuthentication(true) // Authentication 객체 정리
+                )
+
                 // --- URL 접근 권한 설정 ---
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
