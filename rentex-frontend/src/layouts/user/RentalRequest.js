@@ -11,6 +11,7 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -19,25 +20,27 @@ import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import { getImageUrl } from "utils/imageUrl";
 
-// ✅ 새로 만든 꾸밈용 헤더 import
+// 새로 만든 꾸밈용 헤더 import
 import PageHeader from "layouts/dashboard/header/PageHeader";
 
-// ✅ DatePicker 관련 import
+// DatePicker 관련 import
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { StaticDatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 
 function RentalRequest() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery("(max-width:768px)"); // 모바일 판단
 
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // form state
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(dayjs());
+  const [endDate, setEndDate] = useState(dayjs());
   const [quantity, setQuantity] = useState(1);
 
   // 아이템 불러오기
@@ -49,14 +52,14 @@ function RentalRequest() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // 👉 대여 신청 → 결제 페이지로 이동
+  // 대여 신청 → 결제 페이지로 이동
   const handleSubmit = (e) => {
     e.preventDefault();
     navigate("/rentals/pay", {
       state: {
         item,
-        startDate,
-        endDate,
+        startDate: startDate.format("YYYY-MM-DD"),
+        endDate: endDate.format("YYYY-MM-DD"),
         quantity,
       },
     });
@@ -90,37 +93,32 @@ function RentalRequest() {
     <DashboardLayout>
       <DashboardNavbar />
 
-      {/* ✅ 여기 꾸밈용 헤더 삽입 */}
-      <PageHeader
-        title="장비 대여"
-        bg="linear-gradient(60deg,#42a5f5,#1e88e5)" // 필요에 따라 색상/이미지 변경
-      />
+      {/* 꾸밈용 헤더 */}
+      <PageHeader title="장비 대여" bg="linear-gradient(60deg,#42a5f5,#1e88e5)" />
 
       <MDBox pt={6} pb={3}>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} alignItems="stretch">
           {/* 왼쪽: 장비 카드 */}
           <Grid item xs={12} md={6}>
-            <Card>
+            <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
               <CardMedia
                 component="img"
                 height="250"
                 image={getImageUrl(item.thumbnailUrl)}
                 alt={item.name}
+                sx={{ objectFit: "contain" }}
               />
-              <CardContent>
-                <MDTypography variant="h5" fontWeight="bold">
+              <CardContent sx={{ flexGrow: 1 }}>
+                <MDTypography variant="h1" fontWeight="bold" gutterBottom sx={{ mb: 1 }}>
                   {item.name}
                 </MDTypography>
-                <MDTypography variant="body2" color="textSecondary">
-                  {item.categoryName ?? "-"} / {item.subCategoryName ?? "-"}
+                <MDTypography variant="h6" color="textSecondary" sx={{ mb: 3 }}>
+                  {item.partnerName ?? "-"}
                 </MDTypography>
-                <MDTypography variant="body2" color="textSecondary">
-                  업체: {item.partnerName ?? "-"}
-                </MDTypography>
-                <MDTypography variant="body2" sx={{ mt: 1 }}>
+                <MDTypography variant="h4" fontWeight="bold" sx={{ mb: 1 }}>
                   재고: {item.stockQuantity ?? "-"} 개
                 </MDTypography>
-                <MDTypography variant="body2">
+                <MDTypography variant="h3" fontWeight="bold">
                   일일 대여료: {item.dailyPrice ? `${item.dailyPrice.toLocaleString()}원` : "-"}
                 </MDTypography>
                 {item.detailDescription && (
@@ -134,56 +132,179 @@ function RentalRequest() {
 
           {/* 오른쪽: 대여 신청 폼 */}
           <Grid item xs={12} md={6}>
-            <Card sx={{ p: 3 }}>
-              <MDTypography variant="h5" mb={2}>
-                📅 대여 신청
+            <Card
+              sx={{
+                p: 3,
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <MDTypography variant="h1" mb={3} textAlign="center">
+                대여 신청
               </MDTypography>
-              <form onSubmit={handleSubmit}>
+              <form
+                onSubmit={handleSubmit}
+                style={{
+                  flexGrow: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <MDBox mb={2}>
-                    <DatePicker
-                      label="대여 시작일"
-                      value={startDate ? dayjs(startDate) : null}
-                      onChange={(newValue) =>
-                        setStartDate(newValue ? newValue.format("YYYY-MM-DD") : "")
-                      }
-                      disablePast
-                      slotProps={{ textField: { fullWidth: true, required: true } }}
-                    />
-                  </MDBox>
-                  <MDBox mb={2}>
-                    <DatePicker
-                      label="대여 종료일"
-                      value={endDate ? dayjs(endDate) : null}
-                      onChange={(newValue) =>
-                        setEndDate(newValue ? newValue.format("YYYY-MM-DD") : "")
-                      }
-                      disablePast
-                      minDate={startDate ? dayjs(startDate) : dayjs()}
-                      slotProps={{ textField: { fullWidth: true, required: true } }}
-                    />
-                  </MDBox>
+                  <Grid container spacing={2} mb={2}>
+                    {/* 시작일 */}
+                    <Grid item xs={6}>
+                      {isMobile ? (
+                        <DatePicker
+                          label="대여 시작일"
+                          value={startDate}
+                          onChange={(newValue) => setStartDate(newValue)}
+                          disablePast
+                          slotProps={{ textField: { fullWidth: true } }}
+                        />
+                      ) : (
+                        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                          <StaticDatePicker
+                            displayStaticWrapperAs="desktop"
+                            value={startDate}
+                            onChange={(newValue) => setStartDate(newValue)}
+                            disablePast
+                            renderInput={(params) => <TextField {...params} fullWidth />}
+                          />
+                        </div>
+                      )}
+                    </Grid>
+
+                    {/* 종료일 */}
+                    <Grid item xs={6}>
+                      {isMobile ? (
+                        <DatePicker
+                          label="대여 종료일"
+                          value={endDate}
+                          onChange={(newValue) => setEndDate(newValue)}
+                          disablePast
+                          minDate={startDate}
+                          slotProps={{ textField: { fullWidth: true } }}
+                        />
+                      ) : (
+                        <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                          <StaticDatePicker
+                            displayStaticWrapperAs="desktop"
+                            value={endDate}
+                            onChange={(newValue) => setEndDate(newValue)}
+                            disablePast
+                            minDate={startDate}
+                            renderInput={(params) => <TextField {...params} fullWidth />}
+                          />
+                        </div>
+                      )}
+                    </Grid>
+                  </Grid>
                 </LocalizationProvider>
 
-                <MDBox mb={2}>
-                  <TextField
-                    fullWidth
-                    label="수량"
-                    type="number"
-                    inputProps={{ min: 1, max: item.stockQuantity }}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    required
-                  />
+                <MDBox mb={3}>
+                  <MDTypography variant="body2" sx={{ mb: 1 }}>
+                    수량
+                  </MDTypography>
+                  <MDBox display="flex" alignItems="stretch" width="fit-content">
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        borderRadius: 0,
+                        borderColor: "#bdbdbd",
+                        width: "50px",
+                        height: "50px",
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        color: "#000",
+                        minWidth: "unset",
+                        px: 0,
+                        "&:hover": { backgroundColor: "#f5f5f5", borderColor: "#1976d2" },
+                      }}
+                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                    >
+                      −
+                    </Button>
+
+                    <TextField
+                      value={quantity}
+                      onChange={(e) => {
+                        const val = Number(e.target.value);
+                        if (val >= 1 && val <= item.stockQuantity) setQuantity(val);
+                      }}
+                      inputProps={{
+                        min: 1,
+                        max: item.stockQuantity,
+                        style: {
+                          textAlign: "center",
+                          fontWeight: "bold",
+                          fontSize: "1.2rem",
+                          height: "50px",
+                          padding: "0 8px",
+                        },
+                      }}
+                      sx={{
+                        width: "80px",
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 0,
+                          borderLeft: "none",
+                          borderRight: "none",
+                        },
+                        "& .MuiOutlinedInput-notchedOutline": { borderColor: "#bdbdbd" },
+                        "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#1976d2" },
+                        "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "#1976d2",
+                        },
+                      }}
+                    />
+
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        borderRadius: 0,
+                        borderColor: "#bdbdbd",
+                        width: "50px",
+                        height: "50px",
+                        fontSize: "1.5rem",
+                        fontWeight: "bold",
+                        color: "#000",
+                        minWidth: "unset",
+                        px: 0,
+                        "&:hover": { backgroundColor: "#f5f5f5", borderColor: "#1976d2" },
+                      }}
+                      onClick={() => setQuantity((prev) => Math.min(item.stockQuantity, prev + 1))}
+                    >
+                      +
+                    </Button>
+                  </MDBox>
                 </MDBox>
-                <Button type="submit" variant="contained" color="primary" fullWidth>
-                  결제하기
-                </Button>
+
+                <MDBox display="flex" justifyContent="center" gap={2} width="100%">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                      maxWidth: "350px",
+                      backgroundColor: "#1976d2",
+                      color: "#fff",
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      py: 2.5,
+                      "&:hover": { backgroundColor: "#115293" },
+                    }}
+                  >
+                    결제하기
+                  </Button>
+                </MDBox>
               </form>
             </Card>
           </Grid>
         </Grid>
       </MDBox>
+
       <Footer />
     </DashboardLayout>
   );
