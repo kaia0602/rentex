@@ -1,5 +1,6 @@
 package com.rentex.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rentex.penalty.domain.Penalty;
 import com.rentex.rental.domain.Rental;
 import com.rentex.user.domain.User;
@@ -19,10 +20,14 @@ public class MyPageDTO {
     private List<RentalInfo> rentalHistory;
     private List<PenaltyInfo> penaltyHistory;
 
-    // Partner 전용
-    private String businessNo;
-    private String contactEmail;
+    // Partner 전용(개인정보수정을 위해서 JsonProperty를 추가해서 연동)
+    @JsonProperty("contact_phone")
     private String contactPhone;
+    @JsonProperty("contact_email")
+    private String contactEmail;
+    @JsonProperty("business_no")
+    private String businessNo;
+
 
     public static MyPageDTO from(User user, List<Rental> rentals, List<Penalty> penalties) {
         return MyPageDTO.builder()

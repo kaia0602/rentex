@@ -41,8 +41,11 @@ import {
 import { getToken, clearToken } from "utils/auth";
 import api from "api/client";
 import { List } from "@mui/material";
+import { useAuth } from "context/AuthContext";
+import MDAvatar from "components/MDAvatar";
 
 function DashboardNavbar({ absolute, light, isMini }) {
+  const { isLoggedIn, user, logout } = useAuth();
   const [navbarType, setNavbarType] = useState();
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentNavbar, fixedNavbar, openConfigurator, darkMode } = controller;
@@ -51,33 +54,17 @@ function DashboardNavbar({ absolute, light, isMini }) {
   const [nickname, setNickname] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = getToken();
-    if (!token) return;
-
-    api
-      .get("/users/me") // ✅ baseURL 자동 + 토큰 자동 첨부됨
-      .then((res) => {
-        setNickname(res.data.nickname);
-      })
-      .catch((err) => {
-        console.error("사용자 정보 불러오기 실패:", err);
-      });
-  }, []);
-
-  // 로그아웃
-  const handleLogout = async () => {
-    try {
-      clearToken();
-      navigate("/authentication/sign-in");
-    } catch (err) {
-      console.error("로그아웃 실패:", err);
-    }
+  const handleLogout = () => {
+    logout();
+    navigate("/authentication/sign-in");
   };
 
   useEffect(() => {
-    if (fixedNavbar) setNavbarType("sticky");
-    else setNavbarType("static");
+    if (fixedNavbar) {
+      setNavbarType("sticky");
+    } else {
+      setNavbarType("static");
+    }
 
     function handleTransparentNavbar() {
       setTransparentNavbar(dispatch, (fixedNavbar && window.scrollY === 0) || !fixedNavbar);
@@ -116,58 +103,59 @@ function DashboardNavbar({ absolute, light, isMini }) {
     <AppBar
       position={absolute ? "absolute" : navbarType}
       color="inherit"
-      sx={(theme) => ({
-        ...navbar(theme, { transparentNavbar, absolute, light, darkMode }),
-      })}
+      sx={(theme) => navbar(theme, { transparentNavbar, absolute, light, darkMode })}
     >
-      <Toolbar>
-        <MDBox color="inherit" mb={{ xs: 1, md: 0 }}>
+      <Toolbar sx={(theme) => navbarContainer(theme)}>
+        <MDBox color="inherit" mb={{ xs: 1, md: 0 }} sx={(theme) => navbarRow(theme, { isMini })}>
           <Breadcrumbs icon="home" title={route[route.length - 1]} route={route} light={light} />
         </MDBox>
         {isMini ? null : (
-          <MDBox display="flex" alignItems="center" ml="auto">
-            {/* ✅ 닉네임 표시 + 기본 간격 */}
-            {nickname && (
-              <MDBox display="flex" alignItems="center" pr={2} sx={{ ml: 1 }}>
-                <MDTypography variant="button" fontWeight="medium">
-                  👤 {nickname} 님
-                </MDTypography>
-              </MDBox>
-            )}
-
-            <IconButton size="small" color="inherit" onClick={handleLogout} sx={{ ml: 1 }}>
-              <Icon>logout</Icon>
-            </IconButton>
-
-            <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/mypage">
-                <IconButton size="small" disableRipple sx={{ ml: 1 }}>
-                  <Icon sx={iconsStyle}>account_circle</Icon>
-                </IconButton>
-              </Link>
-
-              <Link to="/qna">
-                <IconButton size="small" disableRipple="inherit" sx={{ ml: 1 }}>
-                  <Icon sx={iconsStyle}>help_center</Icon>
-                </IconButton>
-              </Link>
-
-              <Link to="/notice">
-                <IconButton size="small" disableRipple="inherit" sx={{ ml: 1 }}>
-                  <Icon sx={iconsStyle}>campaign</Icon>
-                </IconButton>
-              </Link>
-
-              <Link to="/guide">
-                <IconButton size="small" disableRipple="inherit" sx={{ ml: 1 }}>
-                  <Icon sx={iconsStyle}>menu_book</Icon>
-                </IconButton>
-              </Link>
+          <MDBox sx={(theme) => navbarRow(theme, { isMini })}>
+            <MDBox pr={1}>
+              <MDInput label="Search here" />
+            </MDBox>
+            <MDBox display="flex" alignItems="center" ml="auto">
+              {isLoggedIn ? (
+                <>
+                  {/* 공용 user 상태를 사용하여 닉네임과 프로필 이미지를 표시 */}
+                  {user && (
+                    <MDBox display="flex" alignItems="center" pr={2}>
+                      <MDAvatar
+                        src={user.profileImageUrl || "https://via.placeholder.com/150"}
+                        alt="profile-image"
+                        size="sm"
+                        shadow="sm"
+                        sx={{ mr: 1 }}
+                      />
+                      <MDTypography variant="button" fontWeight="medium">
+                        {user.nickname} 님
+                      </MDTypography>
+                    </MDBox>
+                  )}
+                  <IconButton
+                    size="small"
+                    color="inherit"
+                    onClick={handleLogout}
+                    sx={navbarIconButton}
+                  >
+                    <Icon title="로그아웃">logout</Icon>
+                  </IconButton>
+                </>
+              ) : (
+                <Link to="/authentication/sign-in">
+                  <IconButton sx={navbarIconButton} size="small" disableRipple>
+                    <Icon sx={iconsStyle} title="로그인">
+                      login
+                    </Icon>
+                  </IconButton>
+                </Link>
+              )}
 
               <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
+                sx={navbarIconButton}
                 onClick={handleMiniSidenav}
                 sx={{ ml: 1 }}
               >
@@ -175,27 +163,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
                   {miniSidenav ? "menu_open" : "menu"}
                 </Icon>
               </IconButton>
-
-              {/* <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                onClick={handleConfiguratorOpen}
-                sx={{ ml: 1 }}
-              >
-                <Icon sx={iconsStyle}>settings</Icon>
-              </IconButton>
-
-              <IconButton
-                size="small"
-                disableRipple
-                color="inherit"
-                onClick={handleOpenMenu}
-                sx={{ ml: 1 }}
-              >
-                <Icon sx={iconsStyle}>notifications</Icon>
-              </IconButton>
-              {renderMenu()} */}
             </MDBox>
           </MDBox>
         )}

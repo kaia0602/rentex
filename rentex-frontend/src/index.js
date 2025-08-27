@@ -20,6 +20,8 @@ import App from "App";
 
 // Material Dashboard 2 React Context Provider
 import { MaterialUIControllerProvider } from "context";
+// AuthProvider(전역 인증 상태 제공용)
+import { AuthProvider } from "./context/AuthContext";
 
 const container = document.getElementById("app");
 const root = createRoot(container);
@@ -27,7 +29,9 @@ const root = createRoot(container);
 root.render(
   <BrowserRouter>
     <MaterialUIControllerProvider>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </MaterialUIControllerProvider>
   </BrowserRouter>,
 );
