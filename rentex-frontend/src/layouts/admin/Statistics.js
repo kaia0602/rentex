@@ -52,6 +52,7 @@ export default function AdminStatistics() {
           <MDButton
             variant="outlined"
             size="small"
+            color="info"
             onClick={() =>
               navigate(`/admin/statistics/${r.partnerId}?year=${year}&month=${month}`, {
                 state: { partnerId: r.partnerId, partnerName: r.partnerName, year, month },

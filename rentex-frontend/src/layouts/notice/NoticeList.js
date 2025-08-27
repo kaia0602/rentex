@@ -8,6 +8,13 @@ import Chip from "@mui/material/Chip";
 import Pagination from "@mui/material/Pagination";
 import CircularProgress from "@mui/material/CircularProgress";
 import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ToggleButton from "@mui/material/ToggleButton";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
@@ -70,24 +77,40 @@ export default function NoticeList() {
   const navigate = useNavigate();
   const page = Number(sp.get("page") || 1);
 
+  const qParam = sp.get("q") || "";
+  const fParam = sp.get("f") || "all";
+
   // ✅ 컴포넌트 내부에서 getAuth 호출
   const { isAdmin } = getAuth();
 
   const [loading, setLoading] = useState(true);
   const [resp, setResp] = useState({ content: [], totalPages: 1, totalElements: 0 });
 
+  const [query, setQuery] = useState(qParam);
+  const [field, setField] = useState(fParam);
+
+  useEffect(() => setQuery(qParam), [qParam]);
+  useEffect(() => setField(fParam), [fParam]);
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
     api
-      .get(`/notices?page=${page - 1}&size=10`)
+      .get("/notices", {
+        params: {
+          page: page - 1,
+          size: 10,
+          q: qParam || undefined,
+          f: fParam || undefined,
+        },
+      })
       .then((res) => mounted && setResp(res.data))
       .catch(() => mounted && setResp({ content: [], totalPages: 1, totalElements: 0 }))
       .finally(() => mounted && setLoading(false));
     return () => {
       mounted = false;
     };
-  }, [page]);
+  }, [page, qParam, fParam]);
 
   const columns = [
     { Header: "번호", accessor: "id", align: "center" },
@@ -97,9 +120,22 @@ export default function NoticeList() {
     { Header: "댓글", accessor: "commentCount", align: "center" },
   ];
 
+  const filteredContent = useMemo(() => {
+    const list = Array.isArray(resp?.content) ? resp.content : [];
+    if (!qParam) return list;
+    const needle = qParam.toLowerCase();
+    return list.filter((n) => {
+      const title = (n.title || "").toLowerCase();
+      const body = (n.content || n.body || n.summary || "").toLowerCase();
+      if (fParam === "title") return title.includes(needle);
+      if (fParam === "content") return body.includes(needle);
+      return title.includes(needle) || body.includes(needle);
+    });
+  }, [resp, qParam, fParam]);
+
   const rows = useMemo(
     () =>
-      (resp.content || []).map((n) => ({
+      (filteredContent || []).map((n) => ({
         id: n.id,
         title: (
           <Stack direction="row" spacing={1} alignItems="center">
@@ -116,10 +152,21 @@ export default function NoticeList() {
         createdAt: formatDate(n.createdAt),
         commentCount: <Chip size="small" variant="outlined" label={n.commentCount} />,
       })),
-    [resp],
+    [filteredContent],
   );
 
-  const handlePage = (_, v) => setSp({ page: v });
+  const handlePage = (_, v) => setSp({ page: v, q: qParam || "", f: fParam || "all" });
+
+  const submitSearch = (e) => {
+    e?.preventDefault?.();
+    setSp({ page: 1, q: (query || "").trim(), f: field || "all" });
+  };
+
+  const clearSearch = () => {
+    setQuery("");
+    setField("all");
+    setSp({ page: 1 }); // 검색 해제
+  };
 
   return (
     <DashboardLayout>
@@ -135,7 +182,9 @@ export default function NoticeList() {
                 <div>
                   <MDTypography variant="h6">공지사항</MDTypography>
                   <MDTypography variant="button" color="text">
-                    총 {resp.totalElements ?? 0}건
+                    {qParam
+                      ? `검색 "${qParam}" 총 ${filteredContent.length}건`
+                      : `총${resp?.totalElements ?? 0}건`}
                   </MDTypography>
                 </div>
                 {isAdmin && (
@@ -143,6 +192,41 @@ export default function NoticeList() {
                     글쓰기
                   </MDButton>
                 )}
+              </MDBox>
+              <MDBox px={3} pt={2}>
+                <form onSubmit={submitSearch}>
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={1.5}
+                    alignItems={{ xs: "stretch", sm: "center" }}
+                  >
+                    <TextField
+                      size="small"
+                      placeholder="검색어를 입력하세요"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      sx={{ minWidth: 320, background: "white", borderRadius: 1 }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon fontSize="small" />
+                          </InputAdornment>
+                        ),
+                        endAdornment: query ? (
+                          <InputAdornment position="end">
+                            <IconButton size="small" onClick={clearSearch}>
+                              <ClearIcon fontSize="small" />
+                            </IconButton>
+                          </InputAdornment>
+                        ) : null,
+                      }}
+                    />
+
+                    <MDButton type="submit" color="info" variant="outlined" size="small">
+                      검색
+                    </MDButton>
+                  </Stack>
+                </form>
               </MDBox>
 
               <CardContent>

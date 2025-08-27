@@ -21,9 +21,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.email = :email AND u.withdrawnAt IS NULL")
     Optional<User> findActiveByEmail(@Param("email") String email);
 
+<<<<<<< HEAD
     /** (포함) 이메일로 userId 조회 — 원본 유지(native) */
     @Query(value = "SELECT u.id FROM users u WHERE u.email = :email LIMIT 1", nativeQuery = true)
     Long findUserIdByEmail(@Param("email") String email);
+=======
+    /** 전체 유저 리스트 (관리자 전용) */
+    @Query("SELECT new com.rentex.admin.dto.UserResponseDTO(" +
+            "u.id, u.email, u.name, u.nickname, u.role, u.createdAt, u.penaltyPoints, " +
+            "u.businessNo, u.contactEmail, u.contactPhone) " +
+            "FROM User u where u.role = 'USER' ")
+    List<UserResponseDTO> findAllUsersForAdmin();
+>>>>>>> feature/penalty-payment
 
     /** (제외) 이메일로 userId 조회 — 탈퇴자 제외(native) */
     @Query(value = "SELECT u.id FROM users u WHERE u.email = :email AND u.withdrawn_at IS NULL LIMIT 1", nativeQuery = true)

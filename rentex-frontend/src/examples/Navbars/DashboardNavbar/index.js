@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 // @mui material
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/Icon";
+import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
 
@@ -40,6 +40,7 @@ import {
 // ✅ 토큰 유틸 & API 클라이언트
 import { getToken, clearToken } from "utils/auth";
 import api from "api/client";
+import { List } from "@mui/material";
 
 function DashboardNavbar({ absolute, light, isMini }) {
   const [navbarType, setNavbarType] = useState();
@@ -125,10 +126,6 @@ function DashboardNavbar({ absolute, light, isMini }) {
         </MDBox>
         {isMini ? null : (
           <MDBox display="flex" alignItems="center" ml="auto">
-            <MDBox pr={1}>
-              <MDInput label="Search here" />
-            </MDBox>
-
             {/* ✅ 닉네임 표시 + 기본 간격 */}
             {nickname && (
               <MDBox display="flex" alignItems="center" pr={2} sx={{ ml: 1 }}>
@@ -143,9 +140,27 @@ function DashboardNavbar({ absolute, light, isMini }) {
             </IconButton>
 
             <MDBox color={light ? "white" : "inherit"}>
-              <Link to="/authentication/sign-in">
+              <Link to="/mypage">
                 <IconButton size="small" disableRipple sx={{ ml: 1 }}>
                   <Icon sx={iconsStyle}>account_circle</Icon>
+                </IconButton>
+              </Link>
+
+              <Link to="/qna">
+                <IconButton size="small" disableRipple="inherit" sx={{ ml: 1 }}>
+                  <Icon sx={iconsStyle}>help_center</Icon>
+                </IconButton>
+              </Link>
+
+              <Link to="/notice">
+                <IconButton size="small" disableRipple="inherit" sx={{ ml: 1 }}>
+                  <Icon sx={iconsStyle}>campaign</Icon>
+                </IconButton>
+              </Link>
+
+              <Link to="/guide">
+                <IconButton size="small" disableRipple="inherit" sx={{ ml: 1 }}>
+                  <Icon sx={iconsStyle}>menu_book</Icon>
                 </IconButton>
               </Link>
 
@@ -161,7 +176,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
                 </Icon>
               </IconButton>
 
-              <IconButton
+              {/* <IconButton
                 size="small"
                 disableRipple
                 color="inherit"
@@ -180,7 +195,7 @@ function DashboardNavbar({ absolute, light, isMini }) {
               >
                 <Icon sx={iconsStyle}>notifications</Icon>
               </IconButton>
-              {renderMenu()}
+              {renderMenu()} */}
             </MDBox>
           </MDBox>
         )}
