@@ -1,5 +1,10 @@
 // Material Dashboard 2 React layouts
+import React from "react";
+import Icon from "@mui/material/Icon";
+
 import Dashboard from "layouts/dashboard";
+
+// 공용
 import PublicItems from "layouts/rentals/publicItems";
 import PublicItemDetail from "layouts/rentals/publicItemDetail";
 import Billing from "layouts/billing";
@@ -11,15 +16,18 @@ import NoticeList from "layouts/notice/NoticeList";
 import NoticeDetail from "layouts/notice/NoticeDetail";
 import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
-
 import Guide from "layouts/guide/Guide";
 
+// QnA
 import InquiryList from "layouts/qna/InquiryList";
 import InquiryDetail from "layouts/qna/InquiryDetail";
 import InquiryForm from "layouts/qna/InquiryForm";
 import AdminInquiryDetail from "layouts/qna/AdminInquiryDetail";
+import Terms from "layouts/guide/Terms";
+import Privacy from "layouts/guide/Privacy";
+import Policy from "layouts/guide/Policy";
 
-// 유저 관련
+// 유저
 import UserDashboard from "layouts/user";
 import MyPageHome from "layouts/user/MyPageHome";
 import EditProfile from "layouts/user/EditProfile";
@@ -33,7 +41,7 @@ import PaymentHistory from "layouts/user/PaymentHistory";
 import PaymentDetail from "layouts/user/PaymentDetail";
 import UserGuide from "layouts/user/UserGuide";
 
-// 업체(파트너) 관련
+// 파트너
 import PartnerDashboard from "layouts/partner";
 import PartnerItemList from "layouts/partner/items";
 import PartnerItemDetail from "layouts/partner/items/ItemDetail";
@@ -44,7 +52,7 @@ import PartnerStatistics from "layouts/partner/statistics";
 import PartnerSettings from "layouts/partner/settings";
 import NewItemForm from "layouts/partner/items/new";
 
-// 관리자 관련
+// 관리자
 import AdminDashboard from "layouts/admin";
 import AdminPartners from "layouts/admin/Partners";
 import AdminPenalties from "layouts/admin/Penalties";
@@ -57,13 +65,9 @@ import UserDetail from "layouts/admin/UserDetail";
 import PartnerDetail from "layouts/admin/PartnerDetail";
 import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
-// @mui icons
-import React from "react";
-import Icon from "@mui/material/Icon";
-
 const routes = [
   // =====================
-  // 공통 (모든 Role 접근 가능)
+  // 공용 (모든 Role 접근 가능)
   // =====================
   {
     type: "collapse",
@@ -72,7 +76,6 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -83,7 +86,7 @@ const routes = [
     component: <PublicItems />,
   },
   {
-    type: "collapse",
+    type: "route",
     name: "장비 상세 (공용)",
     key: "public-item-detail",
     route: "/items/:id",
@@ -91,7 +94,6 @@ const routes = [
     noCollapse: true,
     display: false,
   },
-
   {
     type: "collapse",
     name: "결제관리",
@@ -99,16 +101,6 @@ const routes = [
     icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/billing",
     component: <Billing />,
-    // role: ["USER", "PARTNER", "ADMIN"],
-  },
-  {
-    type: "collapse",
-    name: "RTL",
-    key: "rtl",
-    icon: <Icon fontSize="small">format_textdirection_r_to_l</Icon>,
-    route: "/rtl",
-    component: <RTL />,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -117,28 +109,30 @@ const routes = [
     icon: <Icon fontSize="small">campaign</Icon>,
     route: "/notice",
     component: <NoticeList />,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "공지 상세 (숨김)",
     key: "notice-detail",
     route: "/notice/:id",
     component: <NoticeDetail />,
+    display: false,
   },
   {
-    type: "collapse",
+    type: "route",
     name: "공지 작성 (숨김)",
     key: "notice-new",
     route: "/admin/notice/new",
     component: <AdminNoticeForm />,
+    display: false,
   },
   {
-    type: "collapse",
+    type: "route",
     name: "공지 수정 (숨김)",
     key: "notice-edit",
     route: "/admin/notice/:id/edit",
     component: <AdminNoticeForm mode="edit" />,
+    display: false,
   },
   {
     type: "collapse",
@@ -147,10 +141,9 @@ const routes = [
     icon: <Icon fontSize="small">help_outline</Icon>,
     route: "/qna",
     component: <InquiryList />,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "문의 상세 (숨김)",
     key: "qna-detail",
     route: "/qna/:id",
@@ -158,7 +151,7 @@ const routes = [
     display: false,
   },
   {
-    type: "collapse",
+    type: "route",
     name: "문의 작성 (숨김)",
     key: "qna-new",
     route: "/qna/new",
@@ -166,24 +159,24 @@ const routes = [
     display: false,
   },
   {
-    type: "collapse",
+    type: "route",
     name: "문의 수정 (숨김)",
     key: "qna-edit",
     route: "/qna/:id/edit",
     component: <InquiryForm />,
     display: false,
   },
-  // 관리자 문의 목록/상세/작성 (사이드바 숨김)
+  // 관리자 문의 (사이드바 숨김)
   {
-    type: "collapse",
-    name: "문의 목록(관리자)",
+    type: "route",
+    name: "문의 목록(관리자 숨김)",
     key: "admin-qna",
     route: "/admin/inquiries",
     component: <InquiryList />,
     display: false,
   },
   {
-    type: "collapse",
+    type: "route",
     name: "문의 상세(관리자 숨김)",
     key: "admin-qna-detail",
     route: "/admin/inquiries/:id",
@@ -191,7 +184,7 @@ const routes = [
     display: false,
   },
   {
-    type: "collapse",
+    type: "route",
     name: "문의 작성(관리자 숨김)",
     key: "admin-qna-new",
     route: "/admin/inquiries/new",
@@ -202,22 +195,47 @@ const routes = [
     type: "collapse",
     name: "이용 가이드",
     key: "guide",
-    icon: <Icon>menu_book</Icon>,
+    icon: <Icon fontSize="small">menu_book</Icon>,
     route: "/guide",
     component: <Guide />,
-    display: true,
   },
   {
-    type: "collapse",
-    name: "프로필",
-    key: "profile",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/profile",
-    component: <Profile />,
-    // role: ["USER", "PARTNER", "ADMIN"],
+    type: "route",
+    name: "이용약관",
+    key: "terms",
+    route: "/terms",
+    component: <Terms />,
+    display: false,
+  },
+  {
+    type: "route",
+    name: "개인정보처리방침",
+    key: "privacy",
+    route: "/privacy",
+    component: <Privacy />,
+    display: false,
+  },
+  {
+    type: "route",
+    name: "운영정책",
+    key: "policy",
+    route: "/policy",
+    component: <Policy />,
+    display: false,
   },
 
-  // 인증 관련
+  // {
+  //   type: "collapse",
+  //   name: "프로필",
+  //   key: "profile",
+  //   icon: <Icon fontSize="small">person</Icon>,
+  //   route: "/profile",
+  //   component: <Profile />,
+  // },
+
+  // =====================
+  // 인증
+  // =====================
   {
     type: "collapse",
     name: "로그인",
@@ -225,7 +243,6 @@ const routes = [
     icon: <Icon fontSize="small">login</Icon>,
     route: "/authentication/sign-in",
     component: <SignIn />,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -234,17 +251,12 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/authentication/sign-up",
     component: <SignUp />,
-    // role: ["USER", "PARTNER", "ADMIN"],
   },
 
   // =====================
-  // 유저 관련
+  // 유저
   // =====================
-  {
-    type: "title",
-    title: "유저 관련",
-    key: "role-test-title",
-  },
+  { type: "title", title: "유저 관련", key: "user-section-title" },
   {
     type: "collapse",
     name: "USER 대시보드",
@@ -252,7 +264,6 @@ const routes = [
     icon: <Icon fontSize="small">person</Icon>,
     route: "/test/user",
     component: <UserDashboard />,
-    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -261,55 +272,42 @@ const routes = [
     icon: <Icon fontSize="small">home</Icon>,
     route: "/mypage",
     component: <MyPageHome />,
-    // role: ["USER", "ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "회원정보 수정 (숨김)",
     key: "edit-profile",
     route: "/mypage/edit",
     component: <EditProfile />,
     noCollapse: true,
     display: false,
-    // role: ["USER", "ADMIN"],
   },
   {
-    name: "이용 가이드",
+    type: "route",
+    name: "이용 가이드 (유저 숨김)",
     key: "user-guide",
     route: "/mypage/guide",
     component: <UserGuide />,
-    display: false, // 메뉴엔 숨김
+    display: false,
   },
   {
-    type: "collapse",
-    name: "대여 요청 (숨김용)",
+    type: "route",
+    name: "대여 요청 (숨김)",
     key: "rental-request",
     route: "/rentals/request/:id",
     component: <RentalRequest />,
     noCollapse: true,
     display: false,
-    // role: ["USER", "ADMIN"],
   },
   {
-    type: "collapse",
-    name: "대여 결제",
+    type: "route",
+    name: "대여 결제 (숨김)",
     key: "rental-pay",
     route: "/rentals/pay",
     component: <RentalPay />,
     noCollapse: true,
     display: false,
-    // role: ["USER", "ADMIN"],
   },
-  // { 중복 주석처리
-  //   type: "collapse",
-  //   name: "대여 상세",
-  //   key: "rental-detail",
-  //   route: "/mypage/rentals/:id",
-  //   component: <RentalDetail />,
-  //   noCollapse: true,
-  //   display: false,
-  //   // role: ["USER", "ADMIN"],
-  // },
   {
     type: "collapse",
     name: "내 대여 내역",
@@ -317,17 +315,15 @@ const routes = [
     icon: <Icon fontSize="small">list_alt</Icon>,
     route: "/mypage/rentals",
     component: <MyRentals />,
-    // role: ["USER", "ADMIN"],
   },
   {
-    type: "collapse",
-    name: "대여 상세 (숨김용)",
+    type: "route",
+    name: "대여 상세 (숨김)",
     key: "rental-detail",
     route: "/mypage/rentals/:id",
     component: <RentalDetail />,
     noCollapse: true,
     display: false,
-    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -336,17 +332,15 @@ const routes = [
     icon: <Icon fontSize="small">gavel</Icon>,
     route: "/mypage/penalty",
     component: <PenaltyPage />,
-    // role: ["USER", "ADMIN"],
   },
   {
-    type: "collapse",
-    name: "벌점 결제 (숨김용)",
+    type: "route",
+    name: "벌점 결제 (숨김)",
     key: "pay-penalty",
     route: "/mypage/pay-penalty",
     component: <PayPenalty />,
     noCollapse: true,
     display: false,
-    // role: ["USER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -355,24 +349,20 @@ const routes = [
     icon: <Icon fontSize="small">credit_score</Icon>,
     route: "/mypage/payments",
     component: <PaymentHistory />,
-    // role: ["USER", "ADMIN"],
   },
   {
     type: "route",
-    name: "결제 상세",
+    name: "결제 상세 (숨김)",
     key: "payment-detail",
     route: "/mypage/payments/:id",
     component: <PaymentDetail />,
-    display: false, // 사이드바에 표시하지 않음
+    display: false,
   },
+
   // =====================
-  // 파트너 관련
+  // 파트너
   // =====================
-  {
-    type: "title",
-    title: "파트너 관련",
-    key: "partner-section-title",
-  },
+  { type: "title", title: "파트너 관련", key: "partner-section-title" },
   {
     type: "collapse",
     name: "PARTNER 대시보드",
@@ -380,7 +370,6 @@ const routes = [
     icon: <Icon fontSize="small">business</Icon>,
     route: "/test/partner",
     component: <PartnerDashboard />,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -389,7 +378,6 @@ const routes = [
     icon: <Icon fontSize="small">add_box</Icon>,
     route: "/partner/items/new",
     component: <NewItemForm />,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -398,17 +386,15 @@ const routes = [
     icon: <Icon fontSize="small">inventory</Icon>,
     route: "/partner/items",
     component: <PartnerItemList />,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "장비 상세 (숨김)",
     key: "partner-item-detail",
     route: "/partner/items/:id",
     component: <PartnerItemDetail />,
     noCollapse: true,
     display: false,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -417,7 +403,6 @@ const routes = [
     icon: <Icon fontSize="small">manage_search</Icon>,
     route: "/partner/rentals/manage",
     component: <PartnerRentalManage />,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -426,17 +411,15 @@ const routes = [
     icon: <Icon fontSize="small">assignment</Icon>,
     route: "/partner/rentals",
     component: <PartnerRentalRequests />,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "대여 상세 (숨김)",
     key: "partner-rental-detail",
     route: "/partner/rentals/:id",
     component: <PartnerRentalDetail />,
     noCollapse: true,
     display: false,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -445,7 +428,6 @@ const routes = [
     icon: <Icon fontSize="small">bar_chart</Icon>,
     route: "/partner/statistics",
     component: <PartnerStatistics />,
-    // role: ["PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -454,17 +436,12 @@ const routes = [
     icon: <Icon fontSize="small">settings</Icon>,
     route: "/partner/settings",
     component: <PartnerSettings />,
-    // role: ["PARTNER", "ADMIN"],
   },
 
   // =====================
-  // 관리자 관련
+  // 관리자
   // =====================
-  {
-    type: "title",
-    title: "관리자 관련",
-    key: "admin-section-title",
-  },
+  { type: "title", title: "관리자 관련", key: "admin-section-title" },
   {
     type: "collapse",
     name: "ADMIN 대시보드",
@@ -472,112 +449,102 @@ const routes = [
     icon: <Icon fontSize="small">admin_panel_settings</Icon>,
     route: "/test/admin",
     component: <AdminDashboard />,
-    // role: ["ADMIN"],
   },
   {
     type: "collapse",
     name: "업체 관리",
     key: "admin-partners",
+    icon: <Icon fontSize="small">business</Icon>,
     route: "/admin/partners",
-    icon: <i className="material-icons">business</i>,
     component: <AdminPartners />,
-    // role: ["ADMIN"],
   },
   {
     type: "collapse",
     name: "업체 거래내역 관리",
-    key: "Rental-manage",
+    key: "admin-rentals",
+    icon: <Icon fontSize="small">receipt_long</Icon>,
     route: "/admin/rentals",
-    icon: <i className="material-icons">business</i>,
     component: <AdminRentalManage />,
-    // role: ["ADMIN"],
   },
   {
-    type: "collapse",
-    name: "파트너 설정",
-    key: "partner-edit",
-    icon: <Icon fontSize="small">settings</Icon>,
-    route: "/admin/partners",
+    // 잘못된 경로 수정: 디테일/설정 페이지는 개별 id 경로로
+    type: "route",
+    name: "파트너 상세 (숨김)",
+    key: "admin-partner-detail",
+    route: "/admin/partners/:id",
     component: <PartnerDetail />,
-    // role: ["ADMIN"],
+    display: false,
   },
   {
     type: "collapse",
     name: "벌점 관리",
     key: "admin-penalties",
+    icon: <Icon fontSize="small">report</Icon>,
     route: "/admin/penalties",
-    icon: <i className="material-icons">report</i>,
     component: <AdminPenalties />,
-    // role: ["ADMIN"],
   },
   {
     type: "collapse",
     name: "정산 통계",
     key: "admin-statistics",
+    icon: <Icon fontSize="small">bar_chart</Icon>,
     route: "/admin/statistics",
-    icon: <i className="material-icons">bar_chart</i>,
     component: <AdminStatistics />,
-    // role: ["ADMIN"],
   },
   {
     type: "collapse",
     name: "사용자 관리",
     key: "admin-users",
+    icon: <Icon fontSize="small">group</Icon>,
     route: "/admin/users",
-    icon: <i className="material-icons">group</i>,
     component: <AdminUsers />,
-    // role: ["ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "사용자 상세 (숨김)",
     key: "admin-user-detail",
     route: "/admin/users/:id",
     component: <UserDetail />,
     noCollapse: true,
     display: false,
-    // role: ["ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "벌점 상세 (숨김)",
     key: "admin-penalty-detail",
     route: "/admin/penalties/:userId",
     component: <AdminPenaltyDetail />,
     noCollapse: true,
     display: false,
-    // role: ["ADMIN"],
   },
   {
-    type: "collapse",
+    type: "route",
     name: "정산 상세 (숨김)",
     key: "admin-partner-statistics-detail",
     route: "/admin/statistics/:partnerId",
     component: <PartnerStatisticsDetail />,
     noCollapse: true,
     display: false,
-    // role: ["ADMIN"],
   },
-  {
-    type: "collapse",
-    name: "PDF 정산서",
-    key: "admin-statements-pdf",
-    route: "/admin/statements/pdf",
-    icon: <i className="material-icons">picture_as_pdf</i>,
-    component: <StatementPdfPage />,
-    // role: ["ADMIN"],
-  },
+  // {
+  //   type: "collapse",
+  //   name: "PDF 정산서",
+  //   key: "admin-statements-pdf",
+  //   icon: <Icon fontSize="small">picture_as_pdf</Icon>,
+  //   route: "/admin/statements/pdf",
+  //   component: <StatementPdfPage />,
+  // },
 
   // =====================
-  // 기타 (OAuth Redirect 등)
+  // 기타
   // =====================
   {
-    type: "",
+    type: "route",
     name: "OAuth Redirect",
     key: "oauth-redirect",
     route: "/oauth-redirect",
     component: <OAuthRedirect />,
-    // role: ["USER", "PARTNER", "ADMIN"],
+    display: false,
   },
 ];
 

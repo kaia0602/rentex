@@ -5,12 +5,17 @@
 
 import PropTypes from "prop-types";
 
+// react-router
+import { Link as RouterLink } from "react-router-dom";
+
 // @mui
 import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
 
 // icons
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -25,10 +30,10 @@ function Footer({ light }) {
   const textColor = light ? "white" : "text";
   const strongColor = light ? "white" : "dark";
 
-  // ✅ 환경변수에서만 불러옴 (코드에 하드코딩 X)
+  // ✅ 환경변수(아이콘/버전 표기 용)
   const version = process.env.REACT_APP_VERSION || "";
-  const githubUrl = process.env.REACT_APP_GITHUB_URL || ""; // 없으면 GitHub 아이콘 숨김
-  const contactEmail = process.env.REACT_APP_CONTACT_EMAIL || ""; // 없으면 메일 아이콘 숨김
+  const githubUrl = process.env.REACT_APP_GITHUB_URL || "";
+  const contactEmail = process.env.REACT_APP_CONTACT_EMAIL || "";
   const contactSubject = process.env.REACT_APP_CONTACT_SUBJECT || "[RENTEX] 문의드립니다";
   const contactBody =
     process.env.REACT_APP_CONTACT_BODY ||
@@ -40,7 +45,7 @@ function Footer({ light }) {
 
 감사합니다.`;
 
-  // mailto 링크 구성 (환경변수 없으면 렌더링 자체를 건너뜁니다)
+  // mailto 링크 (이메일이 없으면 표시 안 함)
   const mailHref =
     contactEmail &&
     `mailto:${contactEmail}?subject=${encodeURIComponent(contactSubject)}&body=${encodeURIComponent(
@@ -77,7 +82,7 @@ function Footer({ light }) {
             </MDTypography>
           </Grid>
 
-          {/* Nav links */}
+          {/* Nav links (내부 라우트) */}
           <Grid item xs={12} md>
             <MDBox
               component="ul"
@@ -93,35 +98,28 @@ function Footer({ light }) {
               }}
             >
               <li>
-                <Link href="/" underline="none">
+                <Link component={RouterLink} to="/terms" underline="none">
                   <MDTypography variant="button" color={strongColor}>
-                    홈
+                    이용약관
                   </MDTypography>
                 </Link>
               </li>
               <li>
-                <Link href="/items" underline="none">
+                <Link component={RouterLink} to="/privacy" underline="none">
                   <MDTypography variant="button" color={strongColor}>
-                    장비 목록
+                    개인정보처리방침
                   </MDTypography>
                 </Link>
               </li>
               <li>
-                <Link href="/notice" underline="none">
+                <Link component={RouterLink} to="/policy" underline="none">
                   <MDTypography variant="button" color={strongColor}>
-                    공지사항
+                    운영정책
                   </MDTypography>
                 </Link>
               </li>
               <li>
-                <Link href="/guide" underline="none">
-                  <MDTypography variant="button" color={strongColor}>
-                    이용 가이드
-                  </MDTypography>
-                </Link>
-              </li>
-              <li>
-                <Link href="/qna" underline="none">
+                <Link component={RouterLink} to="/qna" underline="none">
                   <MDTypography variant="button" color={strongColor}>
                     문의사항
                   </MDTypography>
@@ -130,7 +128,7 @@ function Footer({ light }) {
             </MDBox>
           </Grid>
 
-          {/* Social / Contact */}
+          {/* Social / Contact (환경변수 기반) */}
           <Grid item xs={12} md="auto">
             <MDBox display="flex" alignItems="center" gap={1}>
               {githubUrl && (
@@ -157,6 +155,24 @@ function Footer({ light }) {
             </MDBox>
           </Grid>
         </Grid>
+
+        {/* Business block */}
+        <Box mt={2}>
+          <Divider sx={{ mb: 1 }} />
+          <MDTypography variant="caption" color={textColor} display="block">
+            상호명: <strong>주식회사 렌텍스</strong> &nbsp;|&nbsp; 대표: 이재용 &nbsp;|&nbsp;
+            사업자등록번호: 111-22-33333
+          </MDTypography>
+          <MDTypography variant="caption" color={textColor} display="block">
+            영업소재지: 사랑시 고백구 행복동 사랑고백행복센터 101호
+          </MDTypography>
+          <MDTypography variant="caption" color={textColor} display="block">
+            이메일: rentex@rentex.com &nbsp;|&nbsp; 제휴문의: rentex@rentex.com
+          </MDTypography>
+          <MDTypography variant="caption" color={textColor} display="block">
+            대표전화: 1234-5678 (평일 오전 9시 ~ 오후 6시)
+          </MDTypography>
+        </Box>
 
         {/* Bottom row */}
         <MDBox mt={2} textAlign="center">
