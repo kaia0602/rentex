@@ -44,24 +44,30 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private User saveOrUpdate(OAuthAttributes attributes) {
-        User user = userRepository.findByEmail(attributes.getEmail())
+        return userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> {
+                    // 탈퇴 회원이면 복구
+                    if (entity.getWithdrawnAt() != null) {
+                        entity.recover();
+                    }
+                    // 소셜 정보 최신화
+                    entity.updateName(attributes.getName());
                     entity.updateNickname(attributes.getName());
-                    entity.updateProfileImage(attributes.getPicture()); // 프로필 이미지 업데이트
-                    return entity;
+                    entity.updateProfileImage(attributes.getPicture());
+                    return entity; // 영속 상태라 save() 불필요(Dirty Checking)
                 })
-                .orElse(User.builder()
-                        .email(attributes.getEmail())
-                        .password("SOCIAL_LOGIN_PASSWORD")
-                        .name(attributes.getName())
-                        .nickname(attributes.getName())
-                        .role("USER")
-                        .profileImageUrl(attributes.getPicture()) // 신규 생성 시도 저장
-                        .build()
-                );
-
-        return userRepository.save(user);
+                .orElseGet(() -> {
+                    // 신규 소셜 가입자 생성
+                    return userRepository.save(User.builder()
+                            .email(attributes.getEmail())
+                            // NOTE: password는 nullable=false라 값이 필요함(아래 참고)
+                            .password("SOCIAL_LOGIN_PASSWORD")
+                            .name(attributes.getName())
+                            .nickname(attributes.getName())
+                            .role("USER")
+                            .profileImageUrl(attributes.getPicture())
+                            .build());
+                });
     }
-
 
 }

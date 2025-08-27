@@ -268,9 +268,6 @@ function PublicItems() {
                     {item.description || "설명이 없습니다."}
                   </MDTypography>
                   <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-                    {item.categoryName} / {item.subCategoryName}
-                  </MDTypography>
-                  <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
                     업체: {item.partnerName ?? "-"}
                   </MDTypography>
                   <MDTypography variant="body2" color="textSecondary" sx={{ mb: 1 }}>

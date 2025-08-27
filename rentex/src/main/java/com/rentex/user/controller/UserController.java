@@ -1,15 +1,20 @@
 package com.rentex.user.controller;
 
+import com.rentex.common.upload.ProfileImageUploadService;
 import com.rentex.user.dto.MyPageDTO;
 import com.rentex.user.dto.ProfileUpdateRequestDTO;
 import com.rentex.user.service.UserService;
 import com.rentex.user.dto.SignUpRequestDTO;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final ProfileImageUploadService profileImageUploadService;
 
     @PostMapping("/signup")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequestDTO requestDTO) {
@@ -42,8 +48,8 @@ public class UserController {
         return ResponseEntity.ok(myPageInfo);
     }
 
-    // ✅ 회원 정보(닉네임) 수정 API 추가
-    @PutMapping("/me") // 리소스 전체가 아닌 일부를 수정하지만, 편의상 PUT 사용
+    // ✅ 회원 정보 API 추가
+    @PatchMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<String> updateMyProfile(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -67,4 +73,51 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    // 유저 프로필 이미지 수정 관련 내용
+    // 프로필 이미지 업로드(파일 업로드)
+    @PostMapping("/me/profile-image")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> uploadProfileImage(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("file") MultipartFile file) {
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        String imageUrl = profileImageUploadService.uploadAndResize(file);
+
+        // 업로드된 이미지 URL로 사용자 정보 업데이트
+        userService.updateProfileImageUrl(userId, imageUrl);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(imageUrl);
+    }
+
+    // URL로 프로필 이미지 URL 업데이트
+    @PatchMapping("/me/profile-image")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> updateProfileImageUrl(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody ProfileImageUrlUpdateRequest request) { // 요청 본문에서 URL 받음
+
+        Long userId = Long.parseLong(userDetails.getUsername());
+        userService.updateProfileImageUrl(userId, request.getUrl());
+
+        return ResponseEntity.ok("프로필 이미지 URL이 성공적으로 변경되었습니다.");
+    }
+
+    // ✅ DTO 클래스 추가
+    @Getter
+    @NoArgsConstructor
+    static class ProfileImageUrlUpdateRequest {
+        private String url;
+    }
+
+    // 프로필 이미지 삭제
+    @DeleteMapping("/me/profile-image")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteProfileImage(@AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        userService.deleteProfileImage(userId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

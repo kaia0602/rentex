@@ -1,4 +1,3 @@
-// src/hooks/useCurrentUser.js
 import { useEffect, useState } from "react";
 import api from "api/client"; // ✅ axios 대신 이거 가져오기
 

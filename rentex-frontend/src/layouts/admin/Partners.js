@@ -27,7 +27,6 @@ function AdminPartners() {
   const [debounced, setDebounced] = useState("");
 
   const columns = [
-    { Header: "ID", accessor: "id", align: "center" },
     { Header: "업체명", accessor: "name", align: "center" },
     { Header: "사업자번호", accessor: "businessNo", align: "center" },
     { Header: "이메일", accessor: "email", align: "center" },

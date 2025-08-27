@@ -11,7 +11,7 @@ function OAuthRedirect() {
 
     if (token) {
       setToken(token);
-      alert("구글 로그인 성공!");
+      alert("소셜 로그인 성공!");
 
       // ✅ 로그인 성공하면 대시보드로 이동
       nav("/dashboard");
