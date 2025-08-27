@@ -20,6 +20,8 @@ import MDInput from "components/MDInput";
 import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 
+import logoUrl from "assets/images/"
+
 // ✅ 스타일 import
 import {
   navbar,
