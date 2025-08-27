@@ -12,7 +12,7 @@ import MDTypography from "components/MDTypography";
 // Layout components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 import PartnerMonthlyRevenueChart from "./components/PartnerMonthlyRevenueChart";
 
 // Partner Header

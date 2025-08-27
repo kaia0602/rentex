@@ -16,7 +16,7 @@ import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "examples/Footer";
+import Footer from "layouts/authentication/components/Footer";
 import { getImageUrl } from "utils/imageUrl";
 
 // ✅ 새로 만든 꾸밈용 헤더 import
