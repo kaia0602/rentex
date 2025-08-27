@@ -94,7 +94,7 @@ function RentalRequest() {
       <DashboardNavbar />
 
       {/* 꾸밈용 헤더 */}
-      <PageHeader title="장비 대여" bg="linear-gradient(60deg,#42a5f5,#1e88e5)" />
+      <PageHeader title="장비 대여 / 대여 신청" bg="linear-gradient(60deg,#42a5f5,#1e88e5)" />
 
       <MDBox pt={6} pb={3}>
         <Grid container spacing={3} alignItems="stretch">

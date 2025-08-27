@@ -26,7 +26,6 @@ function AdminUsers() {
   const navigate = useNavigate();
 
   const columns = [
-    { Header: "ID", accessor: "id", align: "center" },
     { Header: "이름", accessor: "name", align: "center" },
     { Header: "닉네임", accessor: "nickname", align: "center" },
     { Header: "이메일", accessor: "email", align: "center" },

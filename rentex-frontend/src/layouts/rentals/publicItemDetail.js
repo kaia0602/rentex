@@ -8,7 +8,7 @@ import { Grid, Card, CardMedia, CardContent, Button, Typography } from "@mui/mat
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import Footer from "layouts/authentication/components/Footer";
+import Footer from "examples/Footer";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 
@@ -76,7 +76,7 @@ function PublicItemsDetail() {
                 src={getImageUrl(item.thumbnailUrl)}
                 alt={item.name}
                 sx={{
-                  maxHeight: "100%",
+                  maxHeight: 600,
                   maxWidth: "100%",
                   objectFit: "contain",
                   display: "block", // ✅ flexbox 중앙정렬 보정
