@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { UserProvider } from "context/UserContext";
+
+import { AuthProvider, useAuth } from "context/AuthContext";
 
 // @mui material components
 import { ThemeProvider } from "@mui/material/styles";
@@ -41,7 +42,7 @@ import AdminPenalties from "layouts/admin/Penalties";
 import AdminPenaltyDetail from "layouts/admin/PenaltyDetail";
 import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
-export default function App() {
+function MainLayout() {
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
@@ -56,6 +57,10 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+
+  //AuthContext에서 로그인 상태 가져옴
+  const { user } = useAuth();
+  const isLoggedIn = !!user;
 
   // Cache for the rtl
   useMemo(() => {
@@ -95,6 +100,16 @@ export default function App() {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
+
+  // 로그인 상태에 따라 routes 배열을 필터링
+  const filteredRoutes = useMemo(() => {
+    if (isLoggedIn) {
+      // 로그인 상태일 때: '로그인', '회원가입' 메뉴 숨김
+      return routes.filter((route) => route.key !== "sign-in" && route.key !== "sign-up");
+    }
+    // 로그아웃 상태일 때: '로그아웃' 메뉴 숨김
+    return routes.filter((route) => route.key !== "sign-out");
+  }, [isLoggedIn]);
 
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
@@ -141,7 +156,7 @@ export default function App() {
               color={sidenavColor}
               brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
               brandName="Material Dashboard 2"
-              routes={routes}
+              routes={filteredRoutes} // 5. 필터링된 routes를 사용합니다.
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
             />
@@ -151,7 +166,7 @@ export default function App() {
         )}
         {layout === "vr" && <Configurator />}
         <Routes>
-          {getRoutes(routes)}
+          {getRoutes(filteredRoutes)}
           {/* 동적 라우트 직접 추가 */}
           <Route path="/rentals/:id" element={<PublicItemDetail />} />
           <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
@@ -172,7 +187,7 @@ export default function App() {
             color={sidenavColor}
             brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
             brandName="Material Dashboard 2"
-            routes={routes}
+            routes={filteredRoutes}
             onMouseEnter={handleOnMouseEnter}
             onMouseLeave={handleOnMouseLeave}
           />
@@ -182,7 +197,7 @@ export default function App() {
       )}
       {layout === "vr" && <Configurator />}
       <Routes>
-        {getRoutes(routes)}
+        {getRoutes(filteredRoutes)}
         {/* 동적 라우트 직접 추가 */}
         <Route path="/rentals/:id" element={<PublicItemDetail />} />
         <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
@@ -196,5 +211,14 @@ export default function App() {
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
     </ThemeProvider>
+  );
+}
+
+// 최종 App 컴포넌트는 AuthProvider로 MainLayout을 감싸는 역할
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainLayout />
+    </AuthProvider>
   );
 }

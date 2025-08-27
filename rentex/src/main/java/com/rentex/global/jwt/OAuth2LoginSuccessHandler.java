@@ -52,10 +52,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     .profileImageUrl(picture) // 신규 저장 시 프로필 이미지 반영
                     .build();
         } else {
-            user.updateNickname(name);
-            if (picture != null) {
-                user.updateProfileImage(picture);
-            }
+            // 소셜 로그인마다 구글 프로필로 덮어 씌움으로 주석처리함.
+//            user.updateNickname(name);
+//            if (picture != null) {
+//                user.updateProfileImage(picture);
+//            }
         }
 
         user = userRepository.save(user);

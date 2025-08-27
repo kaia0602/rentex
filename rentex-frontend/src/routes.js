@@ -6,6 +6,7 @@ import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
 import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
+import Logout from "layouts/authentication/sign-out";
 import SignUp from "layouts/authentication/sign-up";
 import NoticeList from "layouts/notice/NoticeList";
 import NoticeDetail from "layouts/notice/NoticeDetail";
@@ -218,6 +219,14 @@ const routes = [
   },
 
   // 인증 관련
+  {
+    type: "collapse",
+    name: "로그아웃",
+    key: "sign-out",
+    icon: <Icon fontSize="small">logout</Icon>,
+    route: "/authentication/sign-out",
+    component: <Logout />,
+  },
   {
     type: "collapse",
     name: "로그인",
