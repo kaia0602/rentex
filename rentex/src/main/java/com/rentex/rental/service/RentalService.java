@@ -89,23 +89,39 @@ public class RentalService {
     }
 
     // 대여 요청 생성 (USER 또는 ADMIN)
+    @Transactional
     public Rental requestRental(RentalRequestDto requestDto, User actor) {
-        // 권한 부여
+        // 권한 체크
         if (!(isUser(actor) || isAdmin(actor))) {
             throw new AccessDeniedException("사용자 또는 관리자만 대여 요청이 가능합니다.");
         }
+
         // 벌점 차단
         if (actor.getPenaltyPoints() >= 3) {
             throw new PenaltyBlockedException();
         }
 
+        // 아이템 조회
         Item item = itemRepository.findById(requestDto.itemId())
                 .orElseThrow(() -> new ItemNotFoundException("해당 장비가 존재하지 않습니다."));
 
-        if (item.getStockQuantity() < requestDto.quantity()) {
-            throw new ItemUnavailableException("재고가 부족합니다.");
+        // 사용 불가 차단
+        if (item.getStatus() == Item.ItemStatus.UNAVAILABLE) {
+            // 프론트에서 코드 분기하기 쉽도록 메시지를 명확히 유지
+            throw new ItemUnavailableException("이 장비는 현재 사용 불가 상태입니다."); // ITEM_UNAVAILABLE
         }
 
+        // 재고 차단 (0 또는 수량 미달)
+        if (item.getStockQuantity() <= 0 || item.getStockQuantity() < requestDto.quantity()) {
+            throw new ItemUnavailableException("재고가 부족합니다."); // OUT_OF_STOCK
+        }
+
+        // (선택) 수량 유효성
+        if (requestDto.quantity() <= 0) {
+            throw new IllegalArgumentException("대여 수량이 올바르지 않습니다.");
+        }
+
+        // 기존 중복(가용성) 차단
         boolean isOverlapping = rentalRepository.existsByItemAndStatusIn(
                 item,
                 List.of(RentalStatus.REQUESTED, RentalStatus.APPROVED, RentalStatus.SHIPPED, RentalStatus.RECEIVED)
@@ -114,6 +130,7 @@ public class RentalService {
             throw new ItemUnavailableException("이미 대여 중이거나 승인 대기 중인 장비입니다.");
         }
 
+        // 생성 및 이력 기록
         Rental rental = Rental.builder()
                 .user(getManagedActor(actor))
                 .item(item)
@@ -122,14 +139,17 @@ public class RentalService {
                 .endDate(requestDto.endDate())
                 .status(RentalStatus.REQUESTED)
                 .build();
+
         rentalRepository.save(rental);
 
         User managedActor = getManagedActor(actor);
         rentalHistoryRepository.save(RentalHistory.of(
                 rental, null, RentalStatus.REQUESTED, getActorType(managedActor), "대여 요청함", managedActor
         ));
+
         return rental;
     }
+
 
     // 결제 처리 메서드 (수정본)
     @Transactional

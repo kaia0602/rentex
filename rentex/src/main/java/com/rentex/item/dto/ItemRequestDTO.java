@@ -15,8 +15,8 @@ import java.util.List;
 public class ItemRequestDTO {
     private String name;
     private String description;
-    private int stockQuantity;
-    private int dailyPrice;
+    private Integer stockQuantity;
+    private Integer dailyPrice;
     private String status; // 예: "AVAILABLE", "UNAVAILABLE"
     private Long partnerId;
     private Long categoryId;      // 대분류 카테고리 ID
