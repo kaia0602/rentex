@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "api/client"; // ✅ axios 대신 api 인스턴스 사용
+import api from "api/client";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -10,8 +10,16 @@ import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 import MDButton from "components/MDButton";
 
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
+
 function AdminUsers() {
   const [rows, setRows] = useState([]);
+  const [query, setQuery] = useState("");
+  const [debounced, setDebounced] = useState("");
   const navigate = useNavigate();
 
   const columns = [
@@ -33,35 +41,75 @@ function AdminUsers() {
     api
       .get("/admin/users")
       .then((res) => {
-        const mappedRows = res.data.map((user) => ({
-          id: user.id,
-          name: user.name,
-          nickname: user.nickname,
-          email: user.email,
-          createdAt: user.createdAt,
-          penaltyPoints: user.penaltyPoints || 0, // ✅ 필드명 통일
+        const data = Array.isArray(res.data) ? res.data : [];
+        const mapped = data.map((u) => ({
+          id: u.id,
+          name: u.name ?? "-",
+          nickname: u.nickname ?? "-",
+          email: u.email ?? "-",
+          createdAt: u.createdAt ?? null,
+          penaltyPoints: u.penaltyPoints ?? 0,
           actions: (
-            <MDButton color="info" size="small" onClick={() => navigate(`/admin/users/${user.id}`)}>
+            <MDButton color="info" size="small" onClick={() => navigate(`/admin/users/${u.id}`)}>
               상세
             </MDButton>
           ),
         }));
-        setRows(mappedRows);
+        setRows(mapped);
       })
-      .catch((err) => {
-        console.error("유저 목록 조회 실패:", err);
-      });
+      .catch((err) => console.error("유저 목록 조회 실패:", err));
   }, [navigate]);
+
+  // 디바운스
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(query.trim().toLowerCase()), 200);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  // 검색 필터
+  const filteredRows = useMemo(() => {
+    if (!debounced) return rows;
+    return rows.filter((r) => {
+      const hay = [r.name, r.nickname, r.email, String(r.id ?? "")].join(" ").toLowerCase();
+      return hay.includes(debounced);
+    });
+  }, [rows, debounced]);
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
       <MDBox py={3}>
-        <MDTypography variant="h5" mb={2}>
-          사용자 목록
+        <MDBox display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <MDTypography variant="h5">사용자 목록</MDTypography>
+          <TextField
+            size="small"
+            placeholder="이름, 닉네임, 이메일, ID 검색"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            sx={{ minWidth: 360, background: "white", borderRadius: 1 }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => setQuery("")}>
+                    <ClearIcon fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            }}
+          />
+        </MDBox>
+
+        <MDTypography variant="button" color="text" sx={{ mb: 1, display: "inline-block" }}>
+          총 {filteredRows.length}건
         </MDTypography>
+
         <DataTable
-          table={{ columns, rows }}
+          table={{ columns, rows: filteredRows }}
           isSorted={false}
           entriesPerPage
           showTotalEntries

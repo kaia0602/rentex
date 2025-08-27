@@ -160,6 +160,26 @@ export default function PartnerStatisticsIndex() {
     }
   };
 
+  const RAD = Math.PI / 180;
+  const renderPieLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => {
+    if (!percent || percent < 0.05) return null; // 5% 미만 숨김
+    const r = outerRadius + 14;
+    const x = cx + r * Math.cos(-midAngle * RAD);
+    const y = cy + r * Math.sin(-midAngle * RAD);
+    const anchor = x > cx ? "start" : "end";
+    const nm = name || "";
+    const nameShort = nm.length > 10 ? nm.slice(0, 10) + "…" : nm;
+    const pct = `${Math.round(percent * 100)}%`;
+    return (
+      <text x={x} y={y} textAnchor={anchor} dominantBaseline="central" fill="#555" fontSize={12}>
+        <tspan x={x}>{nameShort}</tspan>
+        <tspan x={x} dy="1.1em">
+          {pct}
+        </tspan>
+      </text>
+    );
+  };
+
   const printStatement = () => {
     if (!data) return alert("출력할 데이터가 없습니다.");
     const today = new Date();
@@ -299,19 +319,19 @@ tfoot td { font-weight: 700; background: #fafafa; }
                 <MDBox mt={2}>
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={8}>
-                      <Card>
+                      <Card sx={{ overflow: "visible" }}>
                         <MDBox p={2}>
                           <MDTypography variant="button" mb={1} display="block">
                             아이템별 매출 TOP {topBarData.length} (원)
                           </MDTypography>
                           <div
                             ref={barWrapRef}
-                            style={{ width: "100%", height: 320, overflow: "visible" }}
+                            style={{ width: "100%", height: 360, overflow: "visible" }}
                           >
                             <ResponsiveContainer width="100%" height="100%">
                               <BarChart
                                 data={topBarData}
-                                margin={{ top: 8, right: 24, left: 24, bottom: 64 }}
+                                margin={{ top: 8, right: 32, left: 32, bottom: 64 }}
                               >
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis
@@ -336,30 +356,29 @@ tfoot td { font-weight: 700; background: #fafafa; }
                         </MDBox>
                       </Card>
                     </Grid>
+
                     <Grid item xs={12} md={4}>
-                      <Card>
-                        {" "}
+                      <Card sx={{ overflow: "visible" }}>
                         <MDBox p={2}>
                           <MDTypography variant="button" mb={1} display="block">
                             수량 비중
                           </MDTypography>
                           <div
                             ref={pieWrapRef}
-                            style={{ width: "100%", height: 320, overflow: "visible" }}
+                            style={{ width: "100%", height: 360, overflow: "visible" }}
                           >
                             <ResponsiveContainer width="100%" height="100%">
-                              <PieChart margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
+                              <PieChart margin={{ top: 20, right: 72, bottom: 20, left: 72 }}>
                                 <Pie
                                   dataKey="quantity"
                                   nameKey="name"
                                   data={chartData}
                                   innerRadius={60}
-                                  outerRadius={110}
-                                  labelLine
+                                  outerRadius={95}
                                   paddingAngle={3}
-                                  label={({ name, percent }) =>
-                                    `${name} ${(percent * 100).toFixed(0)}%`
-                                  }
+                                  minAngle={2}
+                                  labelLine
+                                  label={renderPieLabel}
                                 >
                                   {chartData.map((_, i) => (
                                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
