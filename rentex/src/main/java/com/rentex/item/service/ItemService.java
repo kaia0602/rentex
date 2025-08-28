@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -127,9 +128,22 @@ public class ItemService {
         if (dto.getDetailDescription() != null) item.setDetailDescription(dto.getDetailDescription());
 
         if (detailImages != null && !detailImages.isEmpty()) {
+            List<String> originalImg = item.getDetailImages();
             List<String> detailImageUrls = detailImages.stream()
                     .filter(file -> !file.isEmpty())
-                    .map(fileUploadService::upload)
+                    .map((file)->{
+                        String result = "";
+                        for (String imgStr : originalImg) {
+                            int fileNameIdx = imgStr.indexOf('_');
+                            imgStr = imgStr.substring(fileNameIdx);
+                            if(!file.getOriginalFilename().equals(imgStr)) {
+                                result = fileUploadService.upload(file);
+                            }else{
+                                result = imgStr;
+                            }
+                        }
+                        return result;
+                    })
                     .toList();
             item.setDetailImages(detailImageUrls);
         }
@@ -155,4 +169,19 @@ public class ItemService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + id));
         itemRepository.delete(item);
     }
+
+    @Transactional
+    public String uploadDetailImage(Long itemId, MultipartFile file) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + itemId));
+
+        String url = fileUploadService.upload(file);
+        List<String> images = item.getDetailImages();
+        if (images == null) images = new ArrayList<>();
+        images.add(url);
+        item.setDetailImages(images);
+
+        return url; // 프론트에 반환
+    }
+
 }

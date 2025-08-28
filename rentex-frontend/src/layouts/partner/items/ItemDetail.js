@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import api from "api/client";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -8,26 +8,20 @@ import Footer from "layouts/authentication/components/Footer";
 
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
-
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
 
 import PageHeader from "layouts/dashboard/header/PageHeader";
-
 import { useCategories } from "components/Hooks/useCategories";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 function PartnerItemDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { categories } = useCategories();
+  const { categories, subCategories, fetchSubCategories } = useCategories();
 
-  const [subCategories, setSubCategories] = useState([]);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [thumbnailFile, setThumbnailFile] = useState(null);
-
-  const [detailImageFiles, setDetailImageFiles] = useState([]); // 상세 이미지 파일
   const [form, setForm] = useState({
     name: "",
     categoryId: "",
@@ -35,54 +29,43 @@ function PartnerItemDetail() {
     dailyPrice: 0,
     stockQuantity: 0,
     description: "",
-    detailDescription: "", // ✅ 상세 설명
-    detailImages: [], // ✅ 기존 상세 이미지 URL들 or 새 파일
+    detailDescription: "",
     status: "AVAILABLE",
+    detailImages: [],
     partnerId: null,
   });
 
-  // 상위 카테고리 변경 시 소분류 조회
-  useEffect(() => {
-    if (!form.categoryId) {
-      setSubCategories([]);
-      setForm((prev) => ({ ...prev, subCategoryId: "" }));
-      return;
-    }
-    api
-      .get(`/categories/${form.categoryId}/subcategories`)
-      .then((res) => setSubCategories(res.data))
-      .catch(() => {
-        setSubCategories([]);
-        alert("소분류 정보를 불러오는데 실패했습니다.");
-      });
-  }, [form.categoryId]);
+  const [thumbnail, setThumbnail] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [detailImageFiles, setDetailImageFiles] = useState([]);
 
-  // 아이템 상세 조회
   useEffect(() => {
     api
       .get(`/partner/items/${id}`)
       .then((res) => {
         const data = res.data;
         setForm({
-          name: data.name,
+          name: data.name || "",
           categoryId: data.categoryId || "",
           subCategoryId: data.subCategoryId || "",
           dailyPrice: data.dailyPrice || 0,
           stockQuantity: data.stockQuantity || 0,
           description: data.description || "",
           detailDescription: data.detailDescription || "",
-          detailImages: data.detailImages || [],
           status: data.status || "AVAILABLE",
+          detailImages: data.detailImages || [],
           partnerId: data.partnerId || null,
         });
         setPreviewUrl(data.thumbnailUrl || null);
       })
-      .catch(() => {
-        alert("장비 상세 정보를 불러오는데 실패했습니다.");
-      });
+      .catch(() => alert("장비 상세 정보를 불러오는데 실패했습니다."));
   }, [id]);
 
-  // input 변경
+  useEffect(() => {
+    if (!form.categoryId) return setForm((prev) => ({ ...prev, subCategoryId: "" }));
+    fetchSubCategories(form.categoryId);
+  }, [form.categoryId]);
+
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     setForm((prev) => ({
@@ -91,37 +74,40 @@ function PartnerItemDetail() {
     }));
   };
 
-  // 썸네일 파일 변경
-  const handleFileChange = (e) => {
+  const handleThumbnailChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setThumbnailFile(file);
+      setThumbnail(file);
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
-  // 상세 이미지 파일 변경
   const handleDetailImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    setDetailImageFiles(files);
-    // 미리보기 위해 form.detailImages에 추가
-    setForm((prev) => ({ ...prev, detailImages: files }));
+    if (form.detailImages.length + files.length > 5) {
+      alert("상세 이미지는 최대 5개까지 업로드 가능합니다.");
+      return;
+    }
+    setDetailImageFiles((prev) => [...prev, ...files]);
+    setForm((prev) => ({ ...prev, detailImages: [...prev.detailImages, ...files] }));
   };
 
-  // FormData 빌드
+  const removeDetailImage = (idx) => {
+    const newform = form;
+    newform.detailImages = newform.detailImages.filter((_, i) => i !== idx);
+    setForm({ ...newform });
+    setDetailImageFiles((prev) => prev.filter((_, i) => i !== idx));
+  };
+
   const buildFormData = () => {
     const formToSend = { ...form };
-    delete formToSend.detailImages; // 파일은 별도로 append
+    // delete formToSend.detailImages;
 
     const formData = new FormData();
     formData.append("item", new Blob([JSON.stringify(formToSend)], { type: "application/json" }));
 
-    if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
-    if (detailImageFiles.length > 0) {
-      detailImageFiles.forEach((file) => {
-        formData.append("detailImages", file);
-      });
-    }
+    if (thumbnail) formData.append("thumbnail", thumbnail);
+    detailImageFiles.forEach((file) => formData.append("detailImages", file));
 
     return formData;
   };
@@ -133,7 +119,7 @@ function PartnerItemDetail() {
         headers: { "Content-Type": "multipart/form-data" },
       });
       alert("수정 성공!");
-      navigate("/partner/items");
+      navigate(`/partner/items/${id}`);
     } catch (error) {
       console.error("수정 실패:", error.response?.data || error.message);
       alert("수정 실패!");
@@ -143,219 +129,291 @@ function PartnerItemDetail() {
   return (
     <DashboardLayout>
       <DashboardNavbar />
+      <PageHeader title="장비 수정" bg="linear-gradient(60deg, #1b6bffff, #3b90ffff)" />
 
-      <PageHeader title="장비 상세정보" bg="linear-gradient(60deg, #1b6bffff, #3b90ffff)" />
+      <MDBox sx={{ background: "#f5f7fa", minHeight: "100vh", py: 5 }}>
+        <Card sx={{ p: 4, borderRadius: 3, boxShadow: 3, maxWidth: 1000, mx: "auto" }}>
+          <MDTypography variant="h5" gutterBottom mb={5}>
+            🛠 장비 수정
+          </MDTypography>
 
-      <MDBox py={3}>
-        <MDTypography variant="h5" mb={3}>
-          장비 상세 / 수정 – ID: {id}
-        </MDTypography>
-
-        <Card>
-          <MDBox p={3}>
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={2}>
-                {/* 썸네일 미리보기 */}
-                <Grid item xs={12}>
-                  {previewUrl && (
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              {/* 왼쪽: 썸네일 */}
+              <Grid item xs={12} md={6}>
+                <MDTypography variant="body2" mb={1}>
+                  썸네일 이미지
+                </MDTypography>
+                <div
+                  style={{
+                    width: "100%",
+                    height: 270,
+                    border: "2px dashed #ccc",
+                    borderRadius: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                    background: "#fafafa",
+                    cursor: "pointer",
+                    transition: "border-color 0.2s, background 0.2s",
+                    marginBottom: 16,
+                  }}
+                  onClick={() => document.getElementById("thumbnail-upload").click()}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#3b90ff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#ccc")}
+                >
+                  {previewUrl ? (
                     <img
                       src={previewUrl}
-                      alt="썸네일 미리보기"
-                      style={{
-                        width: "100%",
-                        maxHeight: 200,
-                        objectFit: "contain",
-                        borderRadius: 8,
-                        marginBottom: 10,
-                      }}
+                      alt="썸네일"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
+                  ) : (
+                    <CameraAltIcon style={{ fontSize: 40, color: "#aaa" }} />
                   )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ marginBottom: 16 }}
-                  />
-                </Grid>
+                </div>
+                <input
+                  id="thumbnail-upload"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleThumbnailChange}
+                />
+              </Grid>
 
-                <Grid item xs={12} md={6}>
-                  <MDInput
-                    label="장비명"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                  />
-                </Grid>
+              {/* 오른쪽: 기본 정보 */}
+              <Grid item xs={12} md={6}>
+                <MDInput
+                  label="장비명"
+                  name="name"
+                  fullWidth
+                  required
+                  value={form.name}
+                  onChange={handleChange}
+                />
 
-                <Grid item xs={12} md={6}>
+                <MDBox sx={{ mt: 3 }}>
+                  <MDTypography variant="body2" mb={1}>
+                    대분류
+                  </MDTypography>
                   <select
                     name="categoryId"
                     value={form.categoryId}
                     onChange={handleChange}
+                    required
                     style={{
                       width: "100%",
-                      padding: 8,
+                      height: 40,
                       borderRadius: 4,
-                      borderColor: "#ccc",
+                      border: "1px solid #ccc",
+                      paddingLeft: 8,
                     }}
-                    required
                   >
-                    <option value="">카테고리 선택</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
+                    <option value="">대분류 선택</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
                       </option>
                     ))}
                   </select>
-                </Grid>
+                </MDBox>
 
-                <Grid item xs={12} md={6}>
+                <MDBox sx={{ mt: 2 }}>
+                  <MDTypography variant="body2" mb={1}>
+                    소분류
+                  </MDTypography>
                   <select
                     name="subCategoryId"
                     value={form.subCategoryId}
                     onChange={handleChange}
                     disabled={!form.categoryId || subCategories.length === 0}
+                    required
                     style={{
                       width: "100%",
-                      padding: 8,
+                      height: 40,
                       borderRadius: 4,
-                      borderColor: "#ccc",
+                      border: "1px solid #ccc",
+                      paddingLeft: 8,
                     }}
-                    required
                   >
                     <option value="">소분류 선택</option>
-                    {subCategories.map((sub) => (
-                      <option key={sub.id} value={sub.id}>
-                        {sub.name}
+                    {subCategories.map((sc) => (
+                      <option key={sc.id} value={sc.id}>
+                        {sc.name}
                       </option>
                     ))}
                   </select>
+                </MDBox>
+
+                <Grid container spacing={2} sx={{ mt: 2 }}>
+                  <Grid item xs={6}>
+                    <MDInput
+                      label="대여 단가"
+                      name="dailyPrice"
+                      type="number"
+                      fullWidth
+                      required
+                      value={form.dailyPrice}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <MDInput
+                      label="재고 수량"
+                      name="stockQuantity"
+                      type="number"
+                      fullWidth
+                      required
+                      value={form.stockQuantity}
+                      onChange={handleChange}
+                    />
+                  </Grid>
                 </Grid>
 
-                <Grid item xs={12} md={6}>
-                  <MDInput
-                    label="대여 단가 (₩)"
-                    name="dailyPrice"
-                    type="number"
-                    value={form.dailyPrice}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                  />
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  <MDInput
-                    label="재고 수량"
-                    name="stockQuantity"
-                    type="number"
-                    value={form.stockQuantity}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <MDInput
-                    label="설명"
-                    name="description"
-                    value={form.description}
-                    onChange={handleChange}
-                    multiline
-                    rows={3}
-                    fullWidth
-                  />
-                </Grid>
-
-                {/* ✅ 상세 설명 */}
-                <Grid item xs={12}>
-                  <MDInput
-                    label="상세 설명"
-                    name="detailDescription"
-                    value={form.detailDescription}
-                    onChange={handleChange}
-                    multiline
-                    rows={5}
-                    fullWidth
-                  />
-                </Grid>
-
-                {/* ✅ 상세 이미지 업로드 */}
-                <Grid item xs={12}>
-                  <MDTypography variant="body1" mb={1}>
-                    상세 이미지 등록
-                  </MDTypography>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleDetailImagesChange}
-                  />
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "10px",
-                      marginTop: "10px",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    {form.detailImages &&
-                      form.detailImages.length > 0 &&
-                      form.detailImages.map((img, idx) => {
-                        const src = typeof img === "string" ? img : URL.createObjectURL(img);
-                        return (
-                          <img
-                            key={idx}
-                            src={src}
-                            alt={`상세이미지-${idx}`}
-                            style={{
-                              width: 120,
-                              height: 120,
-                              objectFit: "cover",
-                              borderRadius: 8,
-                            }}
-                          />
-                        );
-                      })}
-                  </div>
-                </Grid>
-
-                <Grid item xs={12} md={6}>
+                <MDBox sx={{ mt: 2 }}>
                   <select
                     name="status"
                     value={form.status}
                     onChange={handleChange}
                     style={{
                       width: "100%",
-                      padding: 8,
+                      height: 40,
                       borderRadius: 4,
-                      borderColor: "#ccc",
+                      border: "1px solid #ccc",
+                      paddingLeft: 8,
                     }}
                     required
                   >
                     <option value="AVAILABLE">사용 가능</option>
                     <option value="UNAVAILABLE">사용 불가</option>
                   </select>
-                </Grid>
+                </MDBox>
               </Grid>
 
-              <MDBox mt={3} display="flex" justifyContent="flex-end" gap={1}>
-                <MDButton
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => navigate("/partner/items")}
-                >
-                  목록으로
-                </MDButton>
-                <MDButton type="submit" color="info">
-                  저장하기
-                </MDButton>
-              </MDBox>
-            </form>
-          </MDBox>
+              {/* 전체 너비: 설명 */}
+              <Grid item xs={12}>
+                <MDInput
+                  label="설명"
+                  name="description"
+                  multiline
+                  rows={3}
+                  fullWidth
+                  value={form.description}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              {/* 전체 너비: 상세 설명 */}
+              <Grid item xs={12}>
+                <MDInput
+                  label="상세 설명"
+                  name="detailDescription"
+                  multiline
+                  rows={5}
+                  fullWidth
+                  value={form.detailDescription}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              {/* 전체 너비: 상세 이미지 */}
+              <Grid item xs={12}>
+                <MDTypography variant="h6" mb={1}>
+                  상세 이미지 (최대 5개)
+                </MDTypography>
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 10 }}>
+                  {Array.from({ length: 5 }).map((_, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        width: 120,
+                        height: 120,
+                        border: "2px dashed #ccc",
+                        borderRadius: 8,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        position: "relative",
+                        overflow: "hidden",
+                        background: "#fafafa",
+                        cursor: form.detailImages[idx] ? "default" : "pointer",
+                        transition: "border-color 0.2s, background 0.2s",
+                      }}
+                      onClick={() => {
+                        if (!form.detailImages[idx])
+                          document.getElementById("detail-upload").click();
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!form.detailImages[idx]) e.currentTarget.style.borderColor = "#3b90ff";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!form.detailImages[idx]) e.currentTarget.style.borderColor = "#ccc";
+                      }}
+                    >
+                      {form.detailImages[idx] ? (
+                        <>
+                          <img
+                            src={
+                              typeof form.detailImages[idx] === "string"
+                                ? form.detailImages[idx]
+                                : URL.createObjectURL(form.detailImages[idx])
+                            }
+                            alt={`상세-${idx}`}
+                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeDetailImage(idx);
+                            }}
+                            style={{
+                              position: "absolute",
+                              top: -5,
+                              right: -5,
+                              background: "red",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: "50%",
+                              width: 20,
+                              height: 20,
+                              cursor: "pointer",
+                            }}
+                          >
+                            ×
+                          </button>
+                        </>
+                      ) : (
+                        <span style={{ color: "#aaa", fontSize: 24 }}>+</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <input
+                  id="detail-upload"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleDetailImagesChange}
+                />
+              </Grid>
+            </Grid>
+
+            <MDBox mt={4} display="flex" justifyContent="flex-end" gap={1}>
+              <MDButton
+                variant="outlined"
+                color="secondary"
+                onClick={() => navigate("/partner/items")}
+              >
+                목록으로
+              </MDButton>
+              <MDButton type="submit" color="info">
+                저장하기
+              </MDButton>
+            </MDBox>
+          </form>
         </Card>
       </MDBox>
       <Footer />

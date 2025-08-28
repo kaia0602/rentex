@@ -29,7 +29,10 @@ function PartnerItemList() {
   useEffect(() => {
     api
       .get("/partner/items") // JWT 토큰 자동 포함
-      .then((res) => setItems(res.data))
+      .then((res) => {
+        console.log(res.data);
+        setItems(res.data);
+      })
       .catch((err) => console.error("장비 목록 불러오기 실패:", err));
   }, []);
 
