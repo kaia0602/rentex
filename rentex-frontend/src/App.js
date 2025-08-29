@@ -41,6 +41,9 @@ import AdminPenalties from "layouts/admin/Penalties";
 import AdminPenaltyDetail from "layouts/admin/PenaltyDetail";
 import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
+import PrivateRoute from "components/PrivateRoute";
+import Unauthorized from "layouts/Unauthorized";
+
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
   const {
@@ -102,6 +105,19 @@ export default function App() {
         return getRoutes(route.collapse);
       }
       if (route.route) {
+        // roles가 명시된 경우만 PrivateRoute로 감싼다
+        if (route.roles) {
+          return (
+            <Route
+              exact
+              path={route.route}
+              key={route.key}
+              element={<PrivateRoute roles={route.roles}>{route.component}</PrivateRoute>}
+            />
+          );
+        }
+
+        // roles 없는 경우는 그냥 일반 라우트
         return <Route exact path={route.route} element={route.component} key={route.key} />;
       }
       return null;

@@ -1,5 +1,6 @@
 package com.rentex.dashboard.service;
 
+import com.rentex.admin.dto.AdminDashboardDTO;
 import com.rentex.dashboard.dto.*;
 import com.rentex.item.domain.Item;
 import com.rentex.item.domain.Item.ItemStatus;
@@ -8,6 +9,8 @@ import com.rentex.payment.repository.PaymentRepository;
 import com.rentex.rental.domain.RentalStatus;
 import com.rentex.rental.repository.RentalRepository;
 import com.rentex.rental.repository.RentalHistoryRepository;
+import com.rentex.user.domain.Role;
+import com.rentex.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -29,7 +32,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class DashboardService {
 
-
+    private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final ItemRepository itemRepository;
     private final RentalHistoryRepository rentalHistoryRepository;
@@ -43,8 +46,8 @@ public class DashboardService {
         long active = rentalRepository.countByStatus(RentalStatus.RECEIVED); // 진행 중
         long available = itemRepository.countByStatus(ItemStatus.AVAILABLE);
         long overdue = rentalRepository.countByIsOverdueTrue();
-
-        return new DashboardSummaryDTO(total, active, available, overdue);
+        long partners = userRepository.countByRole("PARTNER");
+        return new DashboardSummaryDTO(total, active, available, overdue, partners);
     }
 
     /** 최근 7일 추이 (REQUESTED / RECEIVED / RETURNED) */
@@ -142,6 +145,22 @@ public class DashboardService {
                 .toList();
 
         return new HighlightsResponse(topRentedItems, latestItems);
+    }
+
+    public AdminDashboardDTO getPublicSummary() {
+        // ✅ 기본 버전(탈퇴자/비활성 제외 로직이 없다면 이대로)
+        long users = userRepository.countByRole("USER");
+        long partners = userRepository.countByRole("PARTNER");
+
+        long transactions = rentalRepository.count();
+        long revenue = 0L; // TODO: 결제 모듈 붙으면 합계로 교체
+
+        return new AdminDashboardDTO(users, partners, transactions, revenue);
+    }
+
+    public PartnerCountDTO getPartnerCount() {
+        long partners = userRepository.countByRole("PARTNER");
+        return new PartnerCountDTO(partners);
     }
 
 }

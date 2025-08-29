@@ -80,7 +80,7 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
-    roles: ["USER", "PARTNER", "ADMIN"],
+    // roles: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",

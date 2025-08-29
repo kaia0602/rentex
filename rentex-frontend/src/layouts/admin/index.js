@@ -151,17 +151,20 @@ function AdminDashboard() {
     const fetchPartnerRevenues = async () => {
       try {
         const res = await api.get("/admin/statistics/partner-revenues", {
-          params: {
-            from: "2025-01-01",
-            to: "2025-12-31",
-          },
+          params: { from: "2025-01-01", to: "2025-12-31" },
         });
-        // DTO: { partnerId, partnerName, totalRevenue }
-        setPartners(res.data);
+        // 응답이 배열인지 확인 후만 세팅
+        if (Array.isArray(res.data)) {
+          setPartners(res.data);
+        } else {
+          setPartners([]); // 에러 객체일 경우 안전하게 초기화
+        }
       } catch (err) {
         console.error("파트너별 수익 조회 실패", err);
+        setPartners([]); // 실패 시 안전한 상태로
       }
     };
+
     const fetchTopCategories = async () => {
       try {
         const res = await api.get("/categories/subcategories/revenue");
@@ -207,7 +210,7 @@ function AdminDashboard() {
     },
     {
       title: "총 수익",
-      value: stats.revenue.toLocaleString() + "원",
+      value: (stats.revenue ?? 0).toLocaleString() + "원",
       path: "/admin/statistics",
       icon: <AttachMoneyIcon />,
       color: "#f44336",
