@@ -36,7 +36,7 @@ function AdminPartners() {
 
   useEffect(() => {
     api
-      .get("/admin/partners")
+      .get("/partners")
       .then((res) => {
         const mappedRows = res.data.map((partner) => ({
           id: partner.id,

@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useAuth } from "context/AuthContext";
 import api from "api/client";
 import { useCategories } from "components/Hooks/useCategories";
 import { getImageUrl } from "utils/imageUrl";
+import FavoriteButton from "components/FavoriteButton";
+import Box from "@mui/material/Box";
 
 // MUI
 import {
@@ -26,6 +29,10 @@ import PageHeader from "layouts/dashboard/header/PageHeader";
 
 function PublicItems() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isLoggedIn, user } = useAuth();
+  const role = String(user?.role || "").toUpperCase();
+  const isUser = isLoggedIn && (role === "USER" || role === "ROLE_USER");
   const { categories, subCategories, fetchSubCategories } = useCategories();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -250,6 +257,7 @@ function PublicItems() {
                   height: "100%",
                   display: "flex",
                   flexDirection: "column",
+                  position: "relative",
                 }}
                 onClick={() => navigate(`/items/${item.id}${location.search}`)}
               >
@@ -260,6 +268,14 @@ function PublicItems() {
                   alt={item.name}
                   style={{ objectFit: "cover" }}
                 />
+
+                {/* ✅ 우측 상단 하트 버튼 */}
+                {isUser && (
+                  <Box sx={{ position: "absolute", top: 8, right: 8 }}>
+                    <FavoriteButton itemId={item.id} />
+                  </Box>
+                )}
+
                 <CardContent sx={{ flexGrow: 1, minHeight: 150 }}>
                   <MDTypography variant="subtitle1" fontWeight="medium" sx={{ mb: 1 }}>
                     {item.name}

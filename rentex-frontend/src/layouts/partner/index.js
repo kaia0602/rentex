@@ -65,7 +65,7 @@ function Overview() {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await api.get("/admin/partners/dashboard"); // PartnerDashboardDTO 반환
+        const res = await api.get("/partners/dashboard"); // PartnerDashboardDTO 반환
         const data = res.data;
         setItemCount(data.registeredItemCount);
         setPendingCount(data.pendingRentalCount);

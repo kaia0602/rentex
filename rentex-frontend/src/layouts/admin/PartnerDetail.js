@@ -56,7 +56,7 @@ function PartnerDetail() {
     (async () => {
       try {
         const [pRes, itemsRes] = await Promise.all([
-          api.get(`/admin/partners/${id}`).catch(() => ({ data: null })),
+          api.get(`/partners/${id}`).catch(() => ({ data: null })),
           fetchPartnerItems(id),
         ]);
 

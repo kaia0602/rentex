@@ -87,13 +87,48 @@ public class SecurityConfig {
 
                 // --- URL 접근 권한 설정 ---
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
-                        .requestMatchers("/uploads/**", "/oauth2/**").permitAll()
-                        .requestMatchers("/api/dashboard/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/partner/statistics/**").permitAll()
-                        .requestMatchers("/api/partner/items/**").authenticated()
-                        .anyRequest().permitAll() // ⚠️ 배포 시엔 authenticated()로 바꿔도 됨
+                        // preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 인증/소셜/패스워드 초기화
+                        .requestMatchers("/api/auth/login", "/api/auth/refresh", "/api/auth/logout").permitAll()
+                        .requestMatchers("/api/auth/password-reset/**").permitAll()
+                        .requestMatchers("/oauth2/**").permitAll()
+
+                        // 정적 파일: GET만 허용
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
+
+                        // 공개 GET API
+                        .requestMatchers(HttpMethod.GET, "/api/items/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/notices/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/dashboard/**").permitAll()
+
+                        // 공개 예외(특정 경로)
+                        .requestMatchers(HttpMethod.GET, "/api/rentals/items/*/availability").permitAll()
+
+                        // 더 구체적인 규칙을 상단에 배치(permitAll과 충돌 방지)
+                        .requestMatchers("/api/items/my").authenticated() // 공개 GET 규칙보다 위!
+                        .requestMatchers("/api/favorites/**").authenticated()
+                        .requestMatchers("/api/mypage/**").authenticated()
+                        .requestMatchers("/api/penalties/**").authenticated()
+                        .requestMatchers("/api/rentals/**").authenticated()
+                        .requestMatchers("/api/users/me/**").authenticated()
+
+                        // 회원가입은 공개
+                        .requestMatchers(HttpMethod.POST, "/api/users/signup").permitAll()
+
+                        // 파트너/관리자 구분 (복수/단수 경로 주의)
+                        .requestMatchers("/api/partners/**").hasRole("ADMIN")                // 업체 관리(ADMIN)
+                        .requestMatchers("/api/partner/**").hasAnyRole("PARTNER","ADMIN")    // 파트너 본인 영역
+
+                        // 전체 관리자
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // 그 외는 기본 인증 요구
+                        .anyRequest().authenticated()
                 )
+
 
                 // --- OAuth2 소셜 로그인 설정 ---
                 .oauth2Login(oauth2 -> oauth2

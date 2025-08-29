@@ -160,17 +160,6 @@ function DashboardNavbar({ absolute, light, isMini, showSearch, showMenuIcons })
               {/* Restored menu icons (optional) */}
               {showMenuIcons && (
                 <>
-                  <Link to="/mypage">
-                    <IconButton
-                      size="small"
-                      disableRipple
-                      sx={navbarIconButton}
-                      aria-label="mypage"
-                    >
-                      <Icon sx={iconsStyle}>account_circle</Icon>
-                    </IconButton>
-                  </Link>
-
                   <Link to="/qna">
                     <IconButton size="small" disableRipple sx={navbarIconButton} aria-label="qna">
                       <Icon sx={iconsStyle}>help_center</Icon>

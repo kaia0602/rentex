@@ -21,11 +21,16 @@ import {
   setWhiteSidenav,
 } from "context";
 
+import { useAuth } from "context/AuthContext"; // AuthContext 가져오기
+
 function Sidenav({ color, brand, brandName, routes, ...rest }) {
   const [controller, dispatch] = useMaterialUIController();
   const { miniSidenav, transparentSidenav, whiteSidenav, darkMode, sidenavColor } = controller;
   const location = useLocation();
   const collapseName = location.pathname.replace("/", "");
+
+  const { user } = useAuth(); // 현재 로그인 사용자 정보 가져오기
+  const userRole = user?.role || "GUEST"; // 로그인 안 하면 GUEST로 처리
 
   let textColor = "white";
   if (transparentSidenav || (whiteSidenav && !darkMode)) {
@@ -48,9 +53,11 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     return () => window.removeEventListener("resize", handleMiniSidenav);
   }, [dispatch, location]);
 
-  // ✅ role 무시 (display=false만 거름)
+  // ✅ role 기반 필터링 추가
   const renderRoutes = routes
-    .filter(({ display }) => display !== false)
+    .filter(
+      ({ display, roles }) => display !== false && (!roles || roles.includes(userRole)), // roles가 없으면 공용, 있으면 role 체크
+    )
     .map(({ type, name, icon, title, noCollapse, key, href, route }) => {
       if (type === "collapse") {
         return href ? (

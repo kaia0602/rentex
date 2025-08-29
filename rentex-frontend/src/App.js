@@ -41,6 +41,9 @@ import AdminPenalties from "layouts/admin/Penalties";
 import AdminPenaltyDetail from "layouts/admin/PenaltyDetail";
 import AdminRentalManage from "layouts/admin/AdminRentalManage";
 
+import PrivateRoute from "components/PrivateRoute";
+import Unauthorized from "layouts/Unauthorized";
+
 export default function App() {
   const [controller, dispatch] = useMaterialUIController();
   const {
@@ -102,6 +105,19 @@ export default function App() {
         return getRoutes(route.collapse);
       }
       if (route.route) {
+        // roles가 명시된 경우만 PrivateRoute로 감싼다
+        if (route.roles) {
+          return (
+            <Route
+              exact
+              path={route.route}
+              key={route.key}
+              element={<PrivateRoute roles={route.roles}>{route.component}</PrivateRoute>}
+            />
+          );
+        }
+
+        // roles 없는 경우는 그냥 일반 라우트
         return <Route exact path={route.route} element={route.component} key={route.key} />;
       }
       return null;
@@ -155,7 +171,7 @@ export default function App() {
           {/* 동적 라우트 직접 추가 */}
           <Route path="/rentals/:id" element={<PublicItemDetail />} />
           <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
-          <Route path="/admin/partners/:id" element={<PartnerDetail />} />
+          <Route path="/partners/:id" element={<PartnerDetail />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/users/:id" element={<AdminUserDetail />} />
           {/* catch-all */}
@@ -186,7 +202,7 @@ export default function App() {
         {/* 동적 라우트 직접 추가 */}
         <Route path="/rentals/:id" element={<PublicItemDetail />} />
         <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
-        <Route path="/admin/partners/:id" element={<PartnerDetail />} />
+        <Route path="/partners/:id" element={<PartnerDetail />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/penalties" element={<AdminPenalties />} />
         <Route path="/admin/penaltyDetail/:userId" element={<AdminPenaltyDetail />} />

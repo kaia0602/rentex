@@ -8,11 +8,14 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import Skeleton from "@mui/material/Skeleton";
 import Alert from "@mui/material/Alert";
+import CardMedia from "@mui/material/CardMedia";
 
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDButton from "components/MDButton";
 import DataTable from "examples/Tables/DataTable";
+import FavoriteButton from "components/FavoriteButton";
+import { fetchMyFavorites } from "api/favorite";
 
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -70,6 +73,7 @@ function MyPageHome() {
   const [rentals, setRentals] = useState([]);
   const [penalties, setPenalties] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -79,10 +83,11 @@ function MyPageHome() {
         setLoading(true);
         setError("");
 
-        const [rentalRes, penaltyRes, paymentRes] = await Promise.all([
+        const [rentalRes, penaltyRes, paymentRes, favoriteList] = await Promise.all([
           api.get("/rentals/me", { signal: controller.signal }),
           api.get("/penalties/me", { signal: controller.signal }),
           api.get("/mypage/payments", { signal: controller.signal }),
+          fetchMyFavorites(),
         ]);
 
         // 대여 내역 (최대 5개)
@@ -121,6 +126,9 @@ function MyPageHome() {
               : p.status || "-",
         }));
         setPayments(paymentsMapped);
+
+        // 찜 목록 (최대 6개 미리보기)
+        setFavorites(Array.isArray(favoriteList) ? favoriteList.slice(0, 6) : []);
       } catch (err) {
         if (err?.name !== "CanceledError" && err?.message !== "canceled") {
           console.error("마이페이지 데이터 불러오기 실패:", err);
@@ -310,6 +318,77 @@ function MyPageHome() {
                         전체 보기
                       </MDButton>
                     )}
+                  </MDBox>
+                </MDBox>
+              </Card>
+            </Grid>
+
+            {/* 내가 찜한 장비 (미리보기) */}
+            <Grid item xs={12}>
+              <Card variant="outlined">
+                <MDBox p={3} display="flex" flexDirection="column">
+                  <MDTypography variant="h6" mb={2}>
+                    내가 찜한 장비
+                  </MDTypography>
+
+                  {loading ? (
+                    <Skeleton variant="rectangular" height={180} />
+                  ) : favorites.length ? (
+                    <Grid container spacing={2}>
+                      {favorites.map((it) => (
+                        <Grid key={it.id} item xs={12} sm={6} md={4} lg={3} xl={2}>
+                          <Card>
+                            <MDBox position="relative">
+                              <CardMedia
+                                image={it.thumbnailUrl || "/images/no-image.png"}
+                                alt={it.name}
+                                component="img"
+                                style={{ height: 140, objectFit: "cover", cursor: "pointer" }}
+                                onClick={() => navigate(`/items/${it.id}`)}
+                              />
+                              <MDBox position="absolute" top={8} right={8}>
+                                <FavoriteButton itemId={it.id} initial />
+                              </MDBox>
+                            </MDBox>
+                            <MDBox p={1.5}>
+                              <MDTypography variant="button" fontWeight="bold" noWrap>
+                                {it.name}
+                              </MDTypography>
+                              {typeof it.price !== "undefined" && (
+                                <MDTypography variant="caption" color="text" display="block">
+                                  {fmtWon(it.price)} / 일
+                                </MDTypography>
+                              )}
+                            </MDBox>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  ) : (
+                    <Empty
+                      text="아직 찜한 장비가 없습니다."
+                      action={
+                        <MDButton
+                          variant="outlined"
+                          color="info"
+                          size="small"
+                          onClick={() => navigate("/items")}
+                        >
+                          장비 보러가기
+                        </MDButton>
+                      }
+                    />
+                  )}
+
+                  <MDBox mt={2} display="flex" justifyContent="flex-end">
+                    <MDButton
+                      variant="outlined"
+                      color="dark"
+                      size="small"
+                      onClick={() => navigate("/mypage/favorites")}
+                    >
+                      전체 보기
+                    </MDButton>
                   </MDBox>
                 </MDBox>
               </Card>
