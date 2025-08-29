@@ -103,7 +103,15 @@ function SignUp() {
         </MDTypography>
       </MDBox>
       <MDBox pt={4} pb={3} px={3}>
-        <MDTypography variant="body2" color="text" display="block" textAlign="center" mx={3} mb={3}>
+        <MDTypography
+          variant="body2"
+          color="text"
+          display="block"
+          fontWeight="medium"
+          textAlign="center"
+          mx={3}
+          mb={3}
+        >
           렌텍스에 오신 것을 환영합니다.
         </MDTypography>
         <MDBox display="flex" flexDirection="column" gap={3}>
@@ -137,9 +145,16 @@ function SignUp() {
         </MDBox>
 
         <MDBox mt={3} textAlign="center">
-          <MDButton variant="text" color="info" onClick={() => navigate("/authentication/sign-in")}>
+          <MDTypography
+            component={Link}
+            to="/authentication/sign-in"
+            variant="button"
+            color="info"
+            fontWeight="medium"
+            textGradient
+          >
             로그인창으로 돌아가기
-          </MDButton>
+          </MDTypography>
         </MDBox>
       </MDBox>
     </>
