@@ -29,4 +29,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     // 등록 장비 수
     Long countByPartnerId(Long partnerId);
 
+    long countByStatus(Item.ItemStatus status);       // AVAILABLE 개수
+
 }
