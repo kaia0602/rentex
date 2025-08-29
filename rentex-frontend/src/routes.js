@@ -80,7 +80,6 @@ const routes = [
     icon: <Icon fontSize="small">dashboard</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
-    // roles: ["USER", "PARTNER", "ADMIN"],
   },
   {
     type: "collapse",
@@ -98,14 +97,6 @@ const routes = [
     component: <PublicItemDetail />,
     noCollapse: true,
     display: false,
-  },
-  {
-    type: "collapse",
-    name: "결제관리",
-    key: "billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/billing",
-    component: <Billing />,
   },
   {
     type: "collapse",
@@ -228,16 +219,6 @@ const routes = [
     component: <Policy />,
     display: false,
   },
-
-  // {
-  //   type: "collapse",
-  //   name: "프로필",
-  //   key: "profile",
-  //   icon: <Icon fontSize="small">person</Icon>,
-  //   route: "/profile",
-  //   component: <Profile />,
-  // },
-
   // =====================
   // 인증
   // =====================
@@ -263,16 +244,8 @@ const routes = [
   // =====================
   // 유저
   // =====================
-  { type: "title", title: "유저 관련", key: "user-section-title", roles: ["USER"] },
-  {
-    type: "collapse",
-    name: "USER 대시보드",
-    key: "user-dashboard",
-    icon: <Icon fontSize="small">person</Icon>,
-    route: "/test/user",
-    component: <UserDashboard />,
-    roles: ["USER"],
-  },
+  // { type: "title", title: "유저 관련", key: "user-section-title", roles: ["USER"] },
+
   {
     type: "collapse",
     name: "마이페이지",
@@ -390,7 +363,7 @@ const routes = [
   // =====================
   // 파트너
   // =====================
-  { type: "title", title: "파트너 관련", key: "partner-section-title", roles: ["PARTNER"] },
+  // { type: "title", title: "파트너 관련", key: "partner-section-title", roles: ["PARTNER"] },
   {
     type: "collapse",
     name: "PARTNER 대시보드",
@@ -488,7 +461,7 @@ const routes = [
   // =====================
   // 관리자
   // =====================
-  { type: "title", title: "관리자 관련", key: "admin-section-title", roles: ["ADMIN"] },
+  // { type: "title", title: "관리자 관련", key: "admin-section-title", roles: ["ADMIN"] },
   {
     type: "collapse",
     name: "ADMIN 대시보드",
@@ -583,15 +556,6 @@ const routes = [
     display: false,
     roles: ["ADMIN"],
   },
-  // {
-  //   type: "collapse",
-  //   name: "PDF 정산서",
-  //   key: "admin-statements-pdf",
-  //   icon: <Icon fontSize="small">picture_as_pdf</Icon>,
-  //   route: "/admin/statements/pdf",
-  //   component: <StatementPdfPage />,
-  // },
-
   // =====================
   // 기타
   // =====================
