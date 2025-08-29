@@ -155,7 +155,7 @@ export default function App() {
           {/* 동적 라우트 직접 추가 */}
           <Route path="/rentals/:id" element={<PublicItemDetail />} />
           <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
-          <Route path="/admin/partners/:id" element={<PartnerDetail />} />
+          <Route path="/partners/:id" element={<PartnerDetail />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/users/:id" element={<AdminUserDetail />} />
           {/* catch-all */}
@@ -186,7 +186,7 @@ export default function App() {
         {/* 동적 라우트 직접 추가 */}
         <Route path="/rentals/:id" element={<PublicItemDetail />} />
         <Route path="/partner/items/:id" element={<PartnerItemDetail />} />
-        <Route path="/admin/partners/:id" element={<PartnerDetail />} />
+        <Route path="/partners/:id" element={<PartnerDetail />} />
         <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/penalties" element={<AdminPenalties />} />
         <Route path="/admin/penaltyDetail/:userId" element={<AdminPenaltyDetail />} />
