@@ -1,6 +1,6 @@
 // src/layouts/admin/AdminPenaltyDetail.jsx
 /* eslint-disable react/prop-types */
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Grid, Card, CardContent, CircularProgress, Chip, Divider, Stack } from "@mui/material";
 import MDBox from "components/MDBox";
@@ -45,7 +45,7 @@ export default function AdminPenaltyDetail() {
     [],
   );
 
-  const fetchAll = async () => {
+  const fetchAll = useCallback(async () => {
     if (!Number.isFinite(uid)) return;
     setLoading(true);
     try {
@@ -68,12 +68,11 @@ export default function AdminPenaltyDetail() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [uid]); // ✅ uid가 바뀔 때만 새로 정의됨
 
   useEffect(() => {
     fetchAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uid]);
+  }, [fetchAll]); // ✅ 더 이상 eslint-disable 불필요
 
   const rows = useMemo(
     () =>

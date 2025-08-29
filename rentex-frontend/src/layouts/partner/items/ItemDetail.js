@@ -64,7 +64,7 @@ function PartnerItemDetail() {
   useEffect(() => {
     if (!form.categoryId) return setForm((prev) => ({ ...prev, subCategoryId: "" }));
     fetchSubCategories(form.categoryId);
-  }, [form.categoryId]);
+  }, [form.categoryId, fetchSubCategories]);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;

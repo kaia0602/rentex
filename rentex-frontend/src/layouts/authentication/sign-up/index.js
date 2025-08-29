@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
+import PersonIcon from "@mui/icons-material/Person";
+import BusinessIcon from "@mui/icons-material/Business";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -30,14 +32,13 @@ function SignUp() {
     contactEmail: "",
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ 유지
 
   const handlePhoneChange = (e) => {
     const formattedPhoneNumber = e.target.value
-      .replace(/\D/g, "") // 숫자 이외의 문자를 모두 제거합니다.
-      .replace(/^(\d{0,3})(\d{0,4})(\d{0,4}).*/, "$1-$2-$3") // XXX-XXXX-XXXX 형식으로 포맷팅합니다.
-      .replace(/-{1,2}$/g, ""); // 마지막에 붙는 하이픈(-)을 제거합니다.
-
-    // 포맷팅된 값으로 formData 상태를 업데이트합니다.
+      .replace(/\D/g, "")
+      .replace(/^(\d{0,3})(\d{0,4})(\d{0,4}).*/, "$1-$2-$3")
+      .replace(/-{1,2}$/g, "");
     setFormData((prev) => ({ ...prev, contactPhone: formattedPhoneNumber }));
   };
 
@@ -49,6 +50,7 @@ function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const isPartner = step === "partnerForm";
@@ -58,7 +60,7 @@ function SignUp() {
         password: formData.password,
         name: formData.name,
         nickname: formData.nickname,
-        contactPhone: formData.contactPhone.replace(/-/g, ""), // 하이픈 제거
+        contactPhone: formData.contactPhone.replace(/-/g, ""),
         userType: isPartner ? "PARTNER" : "USER",
       };
 
@@ -74,9 +76,12 @@ function SignUp() {
     } catch (err) {
       const msg = err.response?.data?.message || "회원가입 중 오류가 발생했습니다.";
       setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // ✅ 디자인 단순화 + 아이콘 + 로그인 링크 유지
   const renderChooseType = () => (
     <>
       <MDBox textAlign="center" mb={2}>
@@ -88,7 +93,13 @@ function SignUp() {
         </MDTypography>
       </MDBox>
       <MDBox display="flex" justifyContent="center" gap={2} mt={2} mb={1}>
-        <MDButton variant="gradient" color="info" size="large" onClick={() => setStep("userForm")}>
+        <MDButton
+          variant="gradient"
+          color="info"
+          size="large"
+          onClick={() => setStep("userForm")}
+          startIcon={<PersonIcon />} // ✅ 기능 유지
+        >
           일반 회원
         </MDButton>
         <MDButton
@@ -96,9 +107,22 @@ function SignUp() {
           color="success"
           size="large"
           onClick={() => setStep("partnerForm")}
+          startIcon={<BusinessIcon />} // ✅ 기능 유지
         >
           사업자 회원
         </MDButton>
+      </MDBox>
+      <MDBox mt={3} textAlign="center">
+        <MDTypography
+          component={Link}
+          to="/authentication/sign-in"
+          variant="button"
+          color="info"
+          fontWeight="medium"
+          textGradient
+        >
+          로그인창으로 돌아가기
+        </MDTypography>
       </MDBox>
     </>
   );
@@ -171,7 +195,6 @@ function SignUp() {
                 required
               />
             </MDBox>
-
             <MDBox mb={2}>
               <MDInput
                 type="tel"
@@ -216,11 +239,23 @@ function SignUp() {
                 {error}
               </MDTypography>
             )}
-            <MDBox mt={4} mb={1}>
-              <MDButton type="submit" variant="gradient" color="info" fullWidth>
-                가입하기
+
+            {/* ✅ loading / 뒤로가기 버튼 유지 */}
+            <MDBox mt={4} mb={1} display="flex" flexDirection="column" gap={2}>
+              <MDButton type="submit" variant="gradient" color="info" fullWidth disabled={loading}>
+                {loading ? "가입 처리 중..." : "가입하기"}
+              </MDButton>
+              <MDButton
+                type="button"
+                variant="text"
+                color="info"
+                onClick={() => setStep("chooseType")}
+                fullWidth
+              >
+                뒤로가기
               </MDButton>
             </MDBox>
+
             <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
                 이미 계정이 있으신가요?{" "}

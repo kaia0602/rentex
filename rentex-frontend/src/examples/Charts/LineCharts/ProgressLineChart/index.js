@@ -105,7 +105,7 @@ function ProgressLineChart({ color, icon, title, count, progress, height, chart 
             <Line data={data} options={options} style={{ height }} redraw />
           </MDBox>
         ),
-        [chart, height, color],
+        [chart, height, color, data, options],
       )}
     </Card>
   );

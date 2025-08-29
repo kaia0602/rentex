@@ -63,7 +63,7 @@ function ItemDetailView() {
   // 상위 카테고리 변경 시 소분류 갱신 (조회용)
   useEffect(() => {
     if (form.categoryId) fetchSubCategories(form.categoryId);
-  }, [form.categoryId]);
+  }, [form.categoryId, fetchSubCategories]);
 
   return (
     <DashboardLayout>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Grid,
@@ -70,7 +70,7 @@ export default function AdminPenalties() {
     [],
   );
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get("/admin/penalties", {
@@ -83,19 +83,21 @@ export default function AdminPenalties() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [q, role]); // ✅ q, role이 바뀌면 새로운 refresh
 
+  // 검색 시 debounce
   useEffect(() => {
     if (composing) return;
     const id = setTimeout(() => {
       refresh();
     }, 200);
     return () => clearTimeout(id);
-  }, [q, role, composing]);
+  }, [refresh, composing]); // ✅ 이제 refresh를 deps에 안전하게 넣을 수 있음
 
+  // 최초 1회 실행
   useEffect(() => {
-    refresh(); /* eslint-disable-next-line */
-  }, []);
+    refresh();
+  }, [refresh]); // ✅ 경고 없음
 
   const rows = useMemo(
     () =>

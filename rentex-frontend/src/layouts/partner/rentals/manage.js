@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -101,7 +101,7 @@ function PartnerRentalManage() {
     },
   ];
 
-  const fetchRentals = async () => {
+  const fetchRentals = useCallback(async () => {
     try {
       const res = await api.get("/rentals/partner/manage", {
         params: {
@@ -125,11 +125,11 @@ function PartnerRentalManage() {
     } catch (err) {
       console.error("❌ 대여 목록 조회 실패:", err);
     }
-  };
+  }, [status]); // ✅ status 바뀔 때만 새로 정의
 
   useEffect(() => {
     fetchRentals();
-  }, [status]);
+  }, [fetchRentals]); // ✅ 안정적, 경고 없음
 
   return (
     <DashboardLayout>

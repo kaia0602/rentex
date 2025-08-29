@@ -91,7 +91,7 @@ function PaymentHistory() {
           </MDButton>
         ),
       })),
-    [rentalData],
+    [rentalData, navigate],
   );
 
   const penaltyRows = useMemo(
@@ -121,7 +121,7 @@ function PaymentHistory() {
           </MDButton>
         ),
       })),
-    [penaltyData],
+    [penaltyData, navigate],
   );
 
   const fetchData = async () => {

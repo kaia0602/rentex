@@ -105,7 +105,7 @@ function Overview() {
                   <MDTypography variant="h5" fontWeight="bold" sx={{ mt: 1 }}>
                     {itemCount === 0
                       ? "등록된 장비가 없습니다!"
-                      : `현재 ${itemCount}개의 장비가 등록되어 있습니다.`}
+                      : `현재 ${itemCount || 0}개의 장비가 등록되어 있습니다.`}
                   </MDTypography>
                 </MDBox>
                 <MDBox mt={2}>
@@ -137,7 +137,7 @@ function Overview() {
                       <MDTypography variant="h5" fontWeight="bold" sx={{ mt: 1 }}>
                         {pendingCount === 0
                           ? "현재 대여 중인 요청이 없습니다!"
-                          : `현재 ${pendingCount}건의 대여 요청이 있습니다.`}
+                          : `현재 ${pendingCount || 0}건의 대여 요청이 있습니다.`}
                       </MDTypography>
                     </MDBox>
                     <MDBox mt={2}>

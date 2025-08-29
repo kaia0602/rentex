@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 // Layout
@@ -24,14 +24,19 @@ function PartnerDetail() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const pickList = (raw) => {
+  const pickList = useCallback((raw) => {
     if (!raw) return [];
     if (Array.isArray(raw)) return raw;
     if (Array.isArray(raw.content)) return raw.content;
     if (Array.isArray(raw.items)) return raw.items;
     if (raw.data) return pickList(raw.data);
     return [];
-  };
+  }, []); // ✅ deps 없음 → 참조 안정화
+
+  useEffect(() => {
+    const list = pickList(apiResponse);
+    setList(list);
+  }, [pickList, apiResponse]); // ✅ 이제 경고 사라짐
 
   const fetchPartnerItems = async (pid) => {
     const candidates = [`/partner/items/partner/${pid}`, `/admin/partners/${pid}/items`];
@@ -85,7 +90,7 @@ function PartnerDetail() {
     return () => {
       mounted = false;
     };
-  }, [id]);
+  }, [id, pickList]);
 
   const columns = [
     { Header: "장비명", accessor: "name", align: "center" },

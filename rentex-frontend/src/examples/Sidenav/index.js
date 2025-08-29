@@ -51,7 +51,7 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
     window.addEventListener("resize", handleMiniSidenav);
     handleMiniSidenav();
     return () => window.removeEventListener("resize", handleMiniSidenav);
-  }, [dispatch, location]);
+  }, [dispatch, location, transparentSidenav, whiteSidenav]);
 
   // ✅ role 기반 필터링 추가
   const renderRoutes = routes
@@ -133,16 +133,32 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
           </MDTypography>
         </MDBox>
-        <MDBox component={NavLink} to="/" display="flex" alignItems="center">
-          {brand && <MDBox component="img" src={brand} alt="Brand" width="2rem" />}
-          <MDBox
-            width={!brandName && "100%"}
-            sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
-          >
-            <MDTypography component="h6" variant="button" fontWeight="medium" color={textColor}>
-              {brandName}
-            </MDTypography>
-          </MDBox>
+        <MDBox
+          component={NavLink}
+          to="/"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          {/* 로고 이미지 */}
+          {brand && (
+            <MDBox
+              component="img"
+              src={brand}
+              alt="Brand"
+              width="120px" // 원하는 크기
+              height="auto"
+            />
+          )}
+
+          {/* 글자는 아예 없앰 */}
+          {false && (
+            <MDBox sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}>
+              <MDTypography component="h6" variant="button" fontWeight="medium" color={textColor}>
+                {brandName}
+              </MDTypography>
+            </MDBox>
+          )}
         </MDBox>
       </MDBox>
       <Divider

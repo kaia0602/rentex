@@ -14,6 +14,12 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import PropTypes from "prop-types";
 
+import main1 from "assets/images/main1.png";
+import main2 from "assets/images/main2.png";
+import main3 from "assets/images/main3.png";
+import main4 from "assets/images/main4.png";
+import main5 from "assets/images/main5.png";
+
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -55,27 +61,37 @@ const statusLabels = {
 /* -------------------------------------------------------
    상단 이미지 슬라이더
 --------------------------------------------------------*/
-function ImageCarousel({ images = [], height = 220, intervalMs = 4500 }) {
+function ImageCarousel({ images = [], height = 220, intervalMs = 6500 }) {
   const [idx, setIdx] = useState(0);
   const timer = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
 
   useEffect(() => {
-    if (!images?.length) return;
+    if (!images?.length || !isPlaying) return;
     timer.current = setInterval(() => setIdx((p) => (p + 1) % images.length), intervalMs);
     return () => clearInterval(timer.current);
-  }, [images, intervalMs]);
+  }, [images, intervalMs, isPlaying]);
 
   if (!images?.length) return null;
 
   return (
-    <MDBox position="relative" sx={{ borderRadius: "16px", overflow: "hidden", height }}>
+    <MDBox position="relative" sx={{ borderRadius: "16px", overflow: "hidden", width: "100%" }}>
+      {/* 이미지 */}
       <MDBox
         component="img"
         src={images[idx].src}
         alt={images[idx].alt || `slide-${idx}`}
-        sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+        sx={{
+          display: "block",
+          width: "100%",
+          height: "auto",
+          maxHeight: "60vh",
+          objectFit: "contain",
+          margin: "0 auto",
+        }}
       />
-      {/* 제목/설명 */}
+
+      {/* 제목/설명 박스 */}
       {(images[idx].title || images[idx].desc) && (
         <MDBox
           position="absolute"
@@ -101,18 +117,58 @@ function ImageCarousel({ images = [], height = 220, intervalMs = 4500 }) {
           )}
         </MDBox>
       )}
+
+      {/* 인디케이터 */}
+      <MDBox
+        position="absolute"
+        bottom={images[idx].title || images[idx].desc ? 60 : 20} // 제목 있으면 조금 더 위로
+        left="50%"
+        sx={{
+          transform: "translateX(-50%)",
+          display: "flex",
+          gap: 1.2,
+          zIndex: 5, // ✅ 제목박스보다 위에
+        }}
+      >
+        {images.map((_, i) => (
+          <IconButton
+            key={i}
+            size="small"
+            onClick={() => setIdx(i)}
+            sx={{
+              width: 14, // ✅ 점 크기 키움
+              height: 14,
+              borderRadius: "50%",
+              bgcolor: "black", // ✅ 항상 검정
+              border: "2px solid white", // ✅ 흰색 테두리로 대비 확보
+              opacity: i === idx ? 1 : 0.5, // ✅ 현재 슬라이드 강조
+              p: 0,
+            }}
+          />
+        ))}
+      </MDBox>
+
+      {/* 정지/재생 버튼 */}
+      <IconButton
+        onClick={() => setIsPlaying(!isPlaying)}
+        size="small"
+        sx={{ position: "absolute", bottom: 8, right: 8, bgcolor: "rgba(0,0,0,0.35)", zIndex: 2 }}
+      >
+        <Icon sx={{ color: "white" }}>{isPlaying ? "pause" : "play_arrow"}</Icon>
+      </IconButton>
+
       {/* 좌/우 버튼 */}
       <IconButton
         onClick={() => setIdx((p) => (p - 1 + images.length) % images.length)}
         size="small"
-        sx={{ position: "absolute", top: "50%", left: 8, bgcolor: "rgba(0,0,0,0.35)" }}
+        sx={{ position: "absolute", top: "50%", left: 8, bgcolor: "rgba(0,0,0,0.35)", zIndex: 2 }}
       >
         <Icon sx={{ color: "white" }}>chevron_left</Icon>
       </IconButton>
       <IconButton
         onClick={() => setIdx((p) => (p + 1) % images.length)}
         size="small"
-        sx={{ position: "absolute", top: "50%", right: 8, bgcolor: "rgba(0,0,0,0.35)" }}
+        sx={{ position: "absolute", top: "50%", right: 8, bgcolor: "rgba(0,0,0,0.35)", zIndex: 2 }}
       >
         <Icon sx={{ color: "white" }}>chevron_right</Icon>
       </IconButton>
@@ -186,7 +242,6 @@ NoticePreview.propTypes = {
    하이라이트 리스트
 --------------------------------------------------------*/
 function HighlightList({ title, items, type }) {
-  if (!items?.length) return null;
   return (
     <Card>
       <MDBox p={2}>
@@ -196,41 +251,48 @@ function HighlightList({ title, items, type }) {
       </MDBox>
       <Divider />
       <CardContent>
-        {items.map((h, idx) => (
-          <MDBox key={idx} display="flex" gap={2} alignItems="center">
-            {h.thumbnailUrl && (
-              <MDBox
-                component="img"
-                src={h.thumbnailUrl}
-                alt={h.name}
-                sx={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px" }}
-              />
-            )}
-            <MDBox flex={1}>
-              <MDTypography variant="button" fontWeight="bold">
-                {h.name}
-              </MDTypography>
-              <MDTypography variant="caption" color="text">
-                {type === "top"
-                  ? `최근 7일 대여 ${h.rentCountRecent7d}회`
-                  : fmtDateTime(h.createdAt)}
+        {!items || items.length === 0 ? (
+          <MDTypography variant="button" color="text">
+            등록된 데이터가 없습니다.
+          </MDTypography>
+        ) : (
+          items.map((h, idx) => (
+            <MDBox key={idx} display="flex" gap={2} alignItems="center">
+              {h.thumbnailUrl && (
+                <MDBox
+                  component="img"
+                  src={h.thumbnailUrl}
+                  alt={h.name}
+                  sx={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px" }}
+                />
+              )}
+              <MDBox flex={1}>
+                <MDTypography variant="button" fontWeight="bold">
+                  {h.name}
+                </MDTypography>
+                <MDTypography variant="caption" color="text">
+                  {type === "top"
+                    ? `최근 7일 대여 ${h.rentCountRecent7d}회`
+                    : fmtDateTime(h.createdAt)}
+                </MDTypography>
+              </MDBox>
+              <MDTypography
+                component={Link}
+                to={`/items/${h.itemId || h.id}`}
+                variant="button"
+                color="info"
+                fontWeight="bold"
+              >
+                자세히
               </MDTypography>
             </MDBox>
-            <MDTypography
-              component={Link}
-              to={`/items/${h.itemId || h.id}`}
-              variant="button"
-              color="info"
-              fontWeight="bold"
-            >
-              자세히
-            </MDTypography>
-          </MDBox>
-        ))}
+          ))
+        )}
       </CardContent>
     </Card>
   );
 }
+
 HighlightList.propTypes = {
   title: PropTypes.string.isRequired,
   type: PropTypes.string, // "top" | "latest"
@@ -259,15 +321,29 @@ export default function Dashboard() {
 
   const heroImages = [
     {
-      src: "/assets/hero/rental_flow.jpg",
+      src: main1,
       title: "간편한 대여 · 반납",
       desc: "요청부터 반납까지 한 화면에서.",
     },
-    { src: "/assets/hero/partner.jpg", title: "파트너 관리", desc: "업체/장비/정산을 한 번에." },
     {
-      src: "/assets/hero/dashboard.jpg",
+      src: main2,
+      title: "렌트부터 반납까지",
+      desc: "일정 관리와 차량 예약을 한눈에.",
+    },
+    {
+      src: main3,
+      title: "장비 등록 · 관리 · 정산",
+      desc: "파트너를 위한 통합 관리 서비스.",
+    },
+    {
+      src: main4,
+      title: "효율적인 업무 흐름",
+      desc: "대여, 승인, 반납까지 스마트하게.",
+    },
+    {
+      src: main5,
       title: "실시간 대시보드",
-      desc: "상태, 추이, 활동을 한 눈에.",
+      desc: "데이터와 현황을 한눈에 확인하세요.",
     },
   ];
 

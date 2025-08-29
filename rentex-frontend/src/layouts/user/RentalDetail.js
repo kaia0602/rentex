@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 // 타임라인
 import Timeline from "@mui/lab/Timeline";
@@ -54,7 +54,7 @@ function RentalDetail() {
     return `${yyyy}-${MM}-${dd} ${HH}:${mm}`;
   };
 
-  const fetchRentalDetail = async () => {
+  const fetchRentalDetail = useCallback(async () => {
     try {
       const res = await api.get(`/rentals/${id}`); // ✅ 유저 전용 API
       setRental(res.data);
@@ -63,21 +63,21 @@ function RentalDetail() {
       alert("상세 정보를 불러오지 못했습니다.");
       navigate("/mypage/rentals");
     }
-  };
+  }, [id, navigate]); // ✅ id, navigate 안정적 deps
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     try {
       const res = await api.get(`/rentals/${id}/history`);
       setHistory(res.data);
     } catch (err) {
       console.error("❌ 이력 조회 실패:", err);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchRentalDetail();
     fetchHistory();
-  }, [id]);
+  }, [fetchRentalDetail, fetchHistory]); // ✅ 경고 없음
 
   if (!rental) return null;
 

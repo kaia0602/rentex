@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -103,7 +103,7 @@ function AdminRentalManage() {
     },
   ];
 
-  const fetchRentals = async () => {
+  const fetchRentals = useCallback(async () => {
     try {
       const res = await api.get("/rentals/partner/manage", {
         params: {
@@ -119,7 +119,7 @@ function AdminRentalManage() {
         user: r.userNickname,
         partnerName: r.partnerName,
         period: `${r.startDate} ~ ${r.endDate}`,
-        status: r.status, // ✅ enum 값 그대로
+        status: r.status,
         statusLabel: r.statusLabel,
         requestDate: r.createdAt,
       }));
@@ -128,11 +128,11 @@ function AdminRentalManage() {
     } catch (err) {
       console.error("❌ 대여 목록 조회 실패:", err);
     }
-  };
+  }, [status]); // ✅ status가 바뀔 때만 함수 새로 정의
 
   useEffect(() => {
     fetchRentals();
-  }, [status]);
+  }, [fetchRentals]); // ✅ 더 이상 무한 루프 없음, 경고도 제거
 
   return (
     <DashboardLayout>

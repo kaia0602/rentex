@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Typography } from "@mui/material";
+import PropTypes from "prop-types";
 
 function ExpandableText({ text, limit = 250 }) {
   const [expanded, setExpanded] = useState(false);
@@ -22,5 +23,11 @@ function ExpandableText({ text, limit = 250 }) {
     </div>
   );
 }
+
+// ✅ PropTypes 정의
+ExpandableText.propTypes = {
+  text: PropTypes.string.isRequired, // text는 필수 문자열
+  limit: PropTypes.number, // limit은 숫자 (기본값 250)
+};
 
 export default ExpandableText;

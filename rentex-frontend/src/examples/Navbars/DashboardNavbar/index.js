@@ -19,6 +19,7 @@ import MDInput from "components/MDInput";
 import Breadcrumbs from "examples/Breadcrumbs";
 import NotificationItem from "examples/Items/NotificationItem";
 import MDAvatar from "components/MDAvatar";
+import BasicImage from "assets/images/BasicImage.jpeg";
 
 // styles
 import {
@@ -121,7 +122,7 @@ function DashboardNavbar({ absolute, light, isMini, showSearch, showMenuIcons })
                   {user && (
                     <MDBox display="flex" alignItems="center" pr={2}>
                       <MDAvatar
-                        src={user.profileImageUrl || "https://via.placeholder.com/150"}
+                        src={user.profileImageUrl || BasicImage}
                         alt="profile-image"
                         size="sm"
                         shadow="sm"

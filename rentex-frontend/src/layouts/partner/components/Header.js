@@ -30,12 +30,9 @@ function Header({ children }) {
     api
       .get("/users/me")
       .then((res) => {
-        console.log("사용자 데이터:", res.data);
         setUser(res.data);
       })
-      .catch((err) => {
-        console.error("사용자 정보 불러오기 실패:", err);
-      });
+      .catch((err) => {});
   }, []);
 
   return (
@@ -76,10 +73,10 @@ function Header({ children }) {
             {user && (
               <MDBox height="100%" mt={0.5} lineHeight={1}>
                 <MDTypography variant="h5" fontWeight="medium">
-                  {user.name}
+                  {user.name || ""}
                 </MDTypography>
                 <MDTypography variant="button" color="text" fontWeight="regular">
-                  {user.businessNo}
+                  {user.businessNo || ""}
                 </MDTypography>
               </MDBox>
             )}
@@ -92,7 +89,7 @@ function Header({ children }) {
             </MDBox>
           </Grid>
         </Grid>
-        {children}
+        {children && children}
       </Card>
     </MDBox>
   );
