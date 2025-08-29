@@ -100,13 +100,31 @@ function PartnerItemDetail() {
   };
 
   const buildFormData = () => {
-    const formToSend = { ...form };
-    // delete formToSend.detailImages;
+    // form.detailImages -> 기존 이미지 URL 배열
+    // detailImageFiles -> 새로 선택한 파일 배열
 
+    // detailImages 배열은 JSON에서 제거 (파일+URL 섞이면 안 됨)
+    const { detailImages, ...formToSend } = form;
+
+    // ✅ dto.detailImages는 "삭제 안 한 기존 이미지 URL"만 담아 보내기
     const formData = new FormData();
-    formData.append("item", new Blob([JSON.stringify(formToSend)], { type: "application/json" }));
+    // DTO를 JSON으로 보내기
+    formData.append(
+      "item",
+      new Blob(
+        [
+          JSON.stringify({
+            ...formToSend,
+            detailImages: form.detailImages.filter((img) => typeof img === "string"),
+          }),
+        ],
+        { type: "application/json" },
+      ),
+    );
 
     if (thumbnail) formData.append("thumbnail", thumbnail);
+
+    // 새로 추가된 파일만 파일 배열에 들어있음
     detailImageFiles.forEach((file) => formData.append("detailImages", file));
 
     return formData;
