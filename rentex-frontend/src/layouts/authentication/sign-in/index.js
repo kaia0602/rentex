@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import { Link, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -17,16 +17,19 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
-import naverIcon from "assets/images/logos/naverIcon.png";
+import naverIconUrl from "assets/images/logos/naverIcon.png";
 
 // API & Auth utils
 import api from "api/client";
 import { useAuth } from "context/AuthContext";
 
 function Basic() {
-  // 1. isLoggedIn 상태도 함께 가져옵니다.
   const { isLoggedIn, login } = useAuth();
   const nav = useNavigate();
+  const location = useLocation();
+
+  const popupRef = useRef(null);
+
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(false);
@@ -40,28 +43,54 @@ function Basic() {
     confirmPassword: "",
   });
   const [resetError, setResetError] = useState("");
-  const [snackbar, setSnackbar] = useState({ open: false, color: "info", title: "", content: "" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    color: "info",
+    title: "",
+    content: "",
+  });
 
-  // 2. useEffect 훅을 추가하여 isLoggedIn 상태 변경을 감지합니다.
-  // isLoggedIn이 true로 바뀌면, 성공 알림을 띄우고 대시보드로 이동시킵니다.
+  // ▼ 팝업에서 오는 메시지 수신(토큰 전달)
   useEffect(() => {
-    if (isLoggedIn) {
-      setSnackbar({
-        open: true,
-        color: "success",
-        title: "로그인 성공",
-        content: "환영합니다!",
-      });
+    const handler = (event) => {
+      // 보안: 반드시 본인 origin만 허용
+      if (event.origin !== window.location.origin) return;
+      if (!event.data || typeof event.data !== "object") return;
 
-      const timer = setTimeout(() => {
-        nav("/dashboard");
-      }, 1000);
+      if (event.data.type === "OAUTH_SUCCESS" && event.data.token) {
+        login(event.data.token); // → AuthProvider가 /users/me 자동 수화
+        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
+        setSnackbar({
+          open: true,
+          color: "success",
+          title: "소셜 로그인 성공",
+          content: "환영합니다!",
+        });
+        setTimeout(() => nav("/dashboard"), 1000);
+      } else if (event.data.type === "OAUTH_ERROR") {
+        setSnackbar({
+          open: true,
+          color: "error",
+          title: "소셜 로그인 실패",
+          content: event.data.message || "인증 중 오류가 발생했습니다.",
+        });
+        if (popupRef.current && !popupRef.current.closed) popupRef.current.close();
+      }
+    };
 
-      return () => clearTimeout(timer);
-    }
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, [login, nav]);
+
+  // 일반 로그인 성공 시 대시보드 이동
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    setSnackbar({ open: true, color: "success", title: "로그인 성공", content: "환영합니다!" });
+    const timer = setTimeout(() => nav("/dashboard"), 1000);
+    return () => clearTimeout(timer);
   }, [isLoggedIn, nav]);
 
-  const closeSnackbar = () => setSnackbar({ ...snackbar, open: false });
+  const closeSnackbar = () => setSnackbar((prev) => ({ ...prev, open: false }));
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -79,14 +108,12 @@ function Basic() {
       });
 
       const authHeader = res.headers["authorization"];
-
-      // ✅ 'token' 대신 'accessToken'이라는 명확한 변수 이름을 사용합니다.
       const accessToken = authHeader?.startsWith("Bearer ")
         ? authHeader.substring(7)
         : res.data?.accessToken || res.data?.token || null;
 
       if (accessToken) {
-        login(accessToken);
+        login(accessToken); // → AuthProvider가 /users/me 자동 수화
       } else {
         throw new Error("서버 응답에서 토큰을 찾을 수 없습니다.");
       }
@@ -111,6 +138,7 @@ function Basic() {
     setResetError("");
   };
 
+  // 이메일 인증 완료 스낵바
   useEffect(() => {
     if (searchParams.get("verified") === "true") {
       setSnackbar({
@@ -182,6 +210,23 @@ function Basic() {
     }
   };
 
+  // 팝업 열기 공통 함수
+  const openOAuthPopup = (provider) => {
+    const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
+    const serverBase = apiBase.replace(/\/api$/, "");
+
+    const width = 520;
+    const height = 650;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    popupRef.current = window.open(
+      `${serverBase}/oauth2/authorization/${provider}`,
+      `oauth_${provider}`,
+      `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=yes,status=no`,
+    );
+  };
+
   return (
     <BasicLayout image={bgImage}>
       <Card>
@@ -205,6 +250,7 @@ function Basic() {
             </MDTypography>
           )}
         </MDBox>
+
         <MDBox pt={4} pb={3} px={3}>
           {viewMode === "login" ? (
             <>
@@ -229,6 +275,7 @@ function Basic() {
                     fullWidth
                   />
                 </MDBox>
+
                 {loginFailed && (
                   <MDBox mb={2} textAlign="right">
                     <MDTypography variant="button" color="text">
@@ -247,6 +294,7 @@ function Basic() {
                     </MDTypography>
                   </MDBox>
                 )}
+
                 <MDBox mt={4} mb={1}>
                   <MDButton
                     type="submit"
@@ -260,34 +308,35 @@ function Basic() {
                 </MDBox>
               </MDBox>
 
+              {/* Google 로그인 (팝업) */}
               <MDBox mt={2}>
                 <MDButton
                   variant="outlined"
                   color="info"
                   fullWidth
-                  onClick={() => {
-                    const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
-                    const serverBase = apiBase.replace(/\/api$/, "");
-                    window.location.href = `${serverBase}/oauth2/authorization/google`;
-                  }}
+                  onClick={() => openOAuthPopup("google")}
                 >
                   <GoogleIcon sx={{ mr: 1 }} /> Google로 로그인
                 </MDButton>
               </MDBox>
+
+              {/* Naver 로그인 (팝업) */}
               <MDBox mt={2}>
                 <MDButton
                   variant="outlined"
                   color="info"
                   fullWidth
-                  onClick={() => {
-                    const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
-                    const serverBase = apiBase.replace(/\/api$/, "");
-                    window.location.href = `${serverBase}/oauth2/authorization/naver`;
-                  }}
+                  onClick={() => openOAuthPopup("naver")}
                 >
-                  <naverIcon /> Naver로 로그인
+                  <img
+                    src={naverIconUrl}
+                    alt="Naver"
+                    style={{ width: 18, height: 18, marginRight: 8 }}
+                  />
+                  Naver로 로그인
                 </MDButton>
               </MDBox>
+
               <MDBox mt={3} mb={1} textAlign="center">
                 <MDTypography variant="button" color="text">
                   계정이 없으신가요?{" "}
@@ -331,6 +380,7 @@ function Basic() {
                   </MDBox>
                 </MDBox>
               )}
+
               {resetStep === "enterCodeAndPassword" && (
                 <MDBox component="form" role="form" onSubmit={handleVerifyAndReset}>
                   <MDBox mb={2}>
@@ -376,6 +426,7 @@ function Basic() {
                   </MDBox>
                 </MDBox>
               )}
+
               {resetError && (
                 <MDBox mt={2} textAlign="center">
                   <MDTypography variant="caption" color="error">
@@ -383,6 +434,7 @@ function Basic() {
                   </MDTypography>
                 </MDBox>
               )}
+
               <MDBox mt={3} mb={1} textAlign="center">
                 <MDTypography
                   component="a"
@@ -399,6 +451,7 @@ function Basic() {
           )}
         </MDBox>
       </Card>
+
       <MDSnackbar
         color={snackbar.color}
         icon={snackbar.color === "success" ? "check" : "warning"}

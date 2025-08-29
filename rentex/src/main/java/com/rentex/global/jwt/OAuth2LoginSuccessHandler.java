@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import java.io.IOException;
 
@@ -67,21 +69,24 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtTokenProvider.createRefreshToken(userId);
 
         // ── 4) Refresh Token 쿠키 저장
+        boolean isProd = !"local".equals(System.getProperty("spring.profiles.active"));
+
         ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
                 .httpOnly(true)
-                .secure(false)         // TODO: 운영환경에서는 true
-                .sameSite("Lax")       // TODO: 크로스도메인이면 "None" + secure(true)
+                .secure(isProd)                                // prod에서는 true
+                .sameSite(isProd ? "None" : "Lax")            // prod는 None, local은 Lax
                 .path("/")
-                .maxAge(60L * 60L * 24L * 14L) // 14일
+                .maxAge(60L * 60L * 24L * 14L)
                 .build();
+
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         // ── 5) Access Token 헤더 추가
         response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
         // ── 6) 프론트로 리다이렉트
-        response.sendRedirect(frontendUrl + "/oauth-redirect?token=" + accessToken);
-    }
+        String encoded = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+        response.sendRedirect(frontendUrl + "/authentication/sign-in/popup-bridge?token=" + encoded);    }
 
     private static String nvl(String v, String alt) {
         return v == null || v.isBlank() ? alt : v;
