@@ -17,6 +17,7 @@ import NoticeDetail from "layouts/notice/NoticeDetail";
 import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 import Guide from "layouts/guide/Guide";
+import OAuthPopupBridge from "layouts/authentication/sign-in/OAuthPopupBridge";
 
 // QnA
 import InquiryList from "layouts/qna/InquiryList";
@@ -554,6 +555,14 @@ const routes = [
     key: "oauth-redirect",
     route: "/oauth-redirect",
     component: <OAuthRedirect />,
+    display: false,
+  },
+  {
+    type: "route",
+    name: "OAuth Popup Bridge",
+    key: "oauth-popup-bridge",
+    route: "/authentication/sign-in/popup-bridge",
+    component: <OAuthPopupBridge />,
     display: false,
   },
 ];

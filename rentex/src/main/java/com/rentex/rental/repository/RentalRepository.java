@@ -18,6 +18,9 @@ import java.util.List;
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Long> {
 
+    long countByStatus(RentalStatus status);          // 진행 중(=RECEIVED) 카운트
+    long countByIsOverdueTrue();                      // 연체 건수 (isOverdue = true)
+
     boolean existsByItemAndStatusIn(Item item, List<RentalStatus> statuses);
 
     // User 엔티티 기반 메서드 추가 (탈퇴 시 사용)

@@ -352,7 +352,7 @@ tfoot td { font-weight: 700; background: #fafafa; }
                     <ResponsiveContainer width="100%" height={360}>
                       <BarChart
                         data={topBarData}
-                        margin={{ top: 80, right: 16, left: 8, bottom: 48 }}
+                        margin={{ top: 80, right: 16, left: 38, bottom: 48 }}
                       >
                         <CartesianGrid strokeDasharray="4 4" vertical={false} />
                         <XAxis
@@ -396,7 +396,7 @@ tfoot td { font-weight: 700; background: #fafafa; }
                 ) : (
                   <div ref={pieWrapRef} style={{ width: "100%", minHeight: 360 }}>
                     <ResponsiveContainer width="100%" height={360}>
-                      <PieChart margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
+                      <PieChart margin={{ top: 24, right: 8, bottom: 8, left: 8 }}>
                         <Pie
                           dataKey="quantity"
                           nameKey="name"
@@ -409,12 +409,15 @@ tfoot td { font-weight: 700; background: #fafafa; }
                             <Cell key={i} fill={COLORS[i % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(v) => nf.format(Number(v))} />
+                        <Tooltip
+                          formatter={(v) => nf.format(Number(v))}
+                          contentStyle={{ fontSize: "8px" }}
+                        />
                         <Legend
                           verticalAlign="bottom"
                           align="center"
                           layout="horizontal"
-                          wrapperStyle={{ paddingTop: 8 }}
+                          wrapperStyle={{ paddingTop: 8, fontSize: "12px" }}
                         />
                       </PieChart>
                     </ResponsiveContainer>
