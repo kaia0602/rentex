@@ -18,13 +18,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 응답 인터셉터: 401 공통 처리
+// 응답 인터셉터: 401/403 공통 처리
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err?.response?.status === 401) {
-      // clearToken();
-      // window.location.href = "/authentication/sign-in";
+    const status = err?.response?.status;
+    if (status === 401) {
+      // 로그인 필요
+      clearToken();
+      window.alert("로그인이 필요합니다.");
+      window.location.href = "/authentication/sign-in";
+    } else if (status === 403) {
+      // 권한 없음
+      alert("권한이 없습니다.");
+      // 필요하면 메인 페이지로 이동
+      window.location.href = "/";
     }
     return Promise.reject(err);
   },
