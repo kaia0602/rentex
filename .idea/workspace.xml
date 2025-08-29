@@ -6,8 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="9dd1f50d-4255-4934-84ca-8e64c2b7643a" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/admin/Statistics.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/examples/Sidenav/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/rentex-frontend/src/layouts/dashboard/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/rentex/src/main/java/com/rentex/penalty/repository/UserPenaltyRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +129,8 @@
       <workItem from="1755831571808" duration="7490000" />
       <workItem from="1756090781896" duration="5340000" />
       <workItem from="1756252716596" duration="15301000" />
-      <workItem from="1756339152203" duration="8136000" />
+      <workItem from="1756339152203" duration="15681000" />
+      <workItem from="1756425850267" duration="1892000" />
     </task>
     <servers />
   </component>
@@ -142,16 +144,6 @@
           <url>file://$PROJECT_DIR$/rentex/src/main/java/com/rentex/notice/service/NoticeService.java</url>
           <line>78</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/rentex/src/main/java/com/rentex/common/upload/LocalFileUploadService.java</url>
-          <line>37</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/rentex/src/main/java/com/rentex/global/config/WebConfig.java</url>
-          <line>30</line>
-          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
