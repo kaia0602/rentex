@@ -3,9 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
-// MUI
 import Container from "@mui/material/Container";
-import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Divider from "@mui/material/Divider";
@@ -19,23 +17,18 @@ import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import InputAdornment from "@mui/material/InputAdornment";
 
-// Icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import SendIcon from "@mui/icons-material/Send";
 
-// MD components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "layouts/authentication/components/Footer";
 
-// Custom header
 import PageHeader from "layouts/dashboard/header/PageHeader";
-
-// API
 import api from "../../api/client";
 
 /* ------------------------ JWT helpers ------------------------ */
@@ -54,7 +47,6 @@ function parseJwt(token) {
     return null;
   }
 }
-
 function getAuth() {
   const t = localStorage.getItem("ACCESS_TOKEN");
   const payload = t ? parseJwt(t) : null;
@@ -82,7 +74,6 @@ export default function NoticeDetail() {
     data: null,
   });
   const [comment, setComment] = useState("");
-
   const { userId, isAdmin } = useMemo(getAuth, []);
 
   const fetchDetail = async () => {
@@ -140,9 +131,11 @@ export default function NoticeDetail() {
     return (
       <DashboardLayout>
         <DashboardNavbar />
-        <MDBox p={3} display="flex" justifyContent="center">
+        <MDBox p={6} display="flex" justifyContent="center">
           <CircularProgress />
         </MDBox>
+        {/* 푸터 여백 확보 */}
+        <MDBox height={32} />
         <Footer />
       </DashboardLayout>
     );
@@ -152,9 +145,12 @@ export default function NoticeDetail() {
     return (
       <DashboardLayout>
         <DashboardNavbar />
-        <MDBox p={3}>
-          <Alert severity="error">공지 상세 조회 실패: {String(error)}</Alert>
+        <MDBox p={6}>
+          <Alert severity="error" sx={{ borderRadius: 2 }}>
+            공지 상세 조회 실패: {String(error)}
+          </Alert>
         </MDBox>
+        <MDBox height={32} />
         <Footer />
       </DashboardLayout>
     );
@@ -168,48 +164,75 @@ export default function NoticeDetail() {
     <DashboardLayout>
       <DashboardNavbar />
 
-      {/* 상단 꾸밈용 헤더 */}
+      {/* 상단 헤더 */}
       <PageHeader title="공지사항" bg="linear-gradient(60deg, #66bb6a, #388e3c)" />
 
-      <Container maxWidth="lg">
-        {/* 본문 카드 (우상단: 뒤로 / 중앙: 제목·메타 / 우하단: 수정·삭제) */}
-        <Card sx={{ borderRadius: 3, boxShadow: "0 6px 24px rgba(0,0,0,0.06)", mt: 2 }}>
+      <Container
+        maxWidth="md"
+        sx={{
+          py: { xs: 2, md: 4 },
+          pb: { xs: 10, md: 12 }, // ✅ 푸터와 안정 거리 확보(안전 영역)
+        }}
+      >
+        {/* 본문 카드 */}
+        <Card
+          sx={{
+            borderRadius: 3,
+            px: { xs: 1, md: 0 },
+            boxShadow: "0 2px 6px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06)", // 부드러운 그림자
+            backdropFilter: "blur(6px)",
+          }}
+        >
           <CardContent sx={{ p: { xs: 2.5, md: 4 }, position: "relative" }}>
-            {/* 오른쪽 상단 뒤로 버튼 */}
+            {/* 우상단 뒤로 */}
             <Button
               onClick={() => navigate("/notice")}
               size="small"
               startIcon={<ArrowBackIosNewIcon />}
-              sx={{ position: "absolute", top: 16, right: 16, textTransform: "none" }}
+              sx={{
+                position: { xs: "static", md: "absolute" },
+                top: 16,
+                right: 16,
+                textTransform: "none",
+                alignSelf: { xs: "flex-start", md: "auto" },
+                mb: { xs: 1, md: 0 },
+              }}
             >
               뒤로
             </Button>
 
             {/* 제목 */}
-            <MDTypography variant="h4" fontWeight="bold" textAlign="center" mb={1}>
+            <MDTypography variant="h4" fontWeight="bold" textAlign="center" mb={1.5}>
               {notice.title}
             </MDTypography>
 
-            {/* 작성자/작성일 */}
-            <MDTypography variant="caption" color="text" display="block" textAlign="center" mb={2}>
+            {/* 메타 */}
+            <MDTypography
+              variant="caption"
+              color="text"
+              display="block"
+              textAlign="center"
+              sx={{ opacity: 0.8 }}
+              mb={2}
+            >
               작성자: {notice.authorName ?? "-"} · {fmtDateTime(notice.createdAt)}
               {notice.updatedAt && ` · 수정일: ${fmtDateTime(notice.updatedAt)}`}
             </MDTypography>
 
             <Divider sx={{ my: 2 }} />
 
-            {/* 본문 내용 */}
+            {/* 본문 */}
             <MDTypography
               variant="body1"
               sx={{ whiteSpace: "pre-wrap", lineHeight: 1.9, fontSize: 16 }}
-              mb={4}
+              mb={3}
             >
               {notice.content}
             </MDTypography>
 
-            {/* 카드 하단 오른쪽: 수정/삭제 */}
+            {/* 액션 */}
             {isAdmin && (
-              <MDBox textAlign="right">
+              <MDBox textAlign="right" mt={1}>
                 <Button
                   component={Link}
                   to={`/admin/notice/${notice.id}/edit`}
@@ -218,10 +241,10 @@ export default function NoticeDetail() {
                   startIcon={<EditIcon />}
                   sx={{
                     mr: 1,
-                    // 글자/아이콘만 회색으로 고정
-                    "&.MuiButton-outlined": { color: "#9e9e9e !important" },
-                    "&.MuiButton-outlined:hover": { color: "#9e9e9e !important" },
-                    "& .MuiButton-startIcon": { color: "#9e9e9e !important" },
+                    borderColor: "#d0d7de",
+                    "&:hover": { borderColor: "#c2c9d1", backgroundColor: "transparent" },
+                    color: "#6b7280 !important",
+                    "& .MuiButton-startIcon": { color: "#6b7280 !important" },
                   }}
                 >
                   수정
@@ -243,13 +266,13 @@ export default function NoticeDetail() {
 
         {/* 댓글 섹션 */}
         <MDBox mt={3}>
-          <Card sx={{ borderRadius: 3 }}>
+          <Card sx={{ borderRadius: 3, boxShadow: "0 6px 20px rgba(0,0,0,0.04)" }}>
             <CardContent sx={{ p: { xs: 2.5, md: 3 } }}>
               <MDTypography variant="h6" fontWeight="bold" mb={2}>
                 댓글 ({comments.length})
               </MDTypography>
 
-              {/* 댓글 입력 */}
+              {/* 입력 */}
               <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} mb={2}>
                 <TextField
                   value={comment}
@@ -268,7 +291,10 @@ export default function NoticeDetail() {
                         </IconButton>
                       </InputAdornment>
                     ),
-                    sx: { borderRadius: 2 },
+                    sx: {
+                      borderRadius: 2,
+                      backgroundColor: "#f7f8fa",
+                    },
                   }}
                 />
                 <Button
@@ -277,10 +303,8 @@ export default function NoticeDetail() {
                   size="small"
                   sx={{
                     px: 4,
-                    // 글자/아이콘만 흰색으로 고정
                     "&.MuiButton-contained": { color: "#ffffff !important" },
                     "&.MuiButton-contained:hover": { color: "#ffffff !important" },
-                    "& .MuiButton-startIcon": { color: "#ffffff !important" },
                   }}
                 >
                   등록
@@ -289,7 +313,7 @@ export default function NoticeDetail() {
 
               <Divider sx={{ mb: 2 }} />
 
-              {/* 댓글 목록 */}
+              {/* 목록 */}
               {comments.length === 0 ? (
                 <Alert severity="info" sx={{ borderRadius: 2 }}>
                   아직 댓글이 없습니다. 첫 댓글을 남겨보세요.
@@ -304,7 +328,18 @@ export default function NoticeDetail() {
                     return (
                       <MDBox key={c.id}>
                         <Stack direction="row" spacing={1.5} alignItems="flex-start">
-                          <Avatar sx={{ width: 36, height: 36, fontSize: 14 }}>{initials}</Avatar>
+                          <Avatar
+                            sx={{
+                              width: 36,
+                              height: 36,
+                              fontSize: 14,
+                              bgcolor: "#eef2f7",
+                              color: "#475569",
+                              border: "1px solid #e5e7eb",
+                            }}
+                          >
+                            {initials}
+                          </Avatar>
                           <MDBox flex={1}>
                             <Stack
                               direction="row"
@@ -315,7 +350,7 @@ export default function NoticeDetail() {
                               <MDTypography fontWeight="medium">
                                 {c.authorName ?? `user#${c.authorId}`}
                               </MDTypography>
-                              <MDTypography variant="caption" color="text">
+                              <MDTypography variant="caption" color="text" sx={{ opacity: 0.7 }}>
                                 {fmtDateTime(c.createdAt)}
                               </MDTypography>
                             </Stack>
@@ -323,7 +358,8 @@ export default function NoticeDetail() {
                             {/* 말풍선 */}
                             <MDBox
                               sx={{
-                                backgroundColor: "#f7f8fa",
+                                backgroundColor: "#f9fafb",
+                                border: "1px solid #eef2f7",
                                 borderRadius: 2,
                                 p: 1.25,
                               }}
@@ -357,6 +393,8 @@ export default function NoticeDetail() {
           </Card>
         </MDBox>
       </Container>
+
+      <MDBox height={12} />
 
       <Footer />
     </DashboardLayout>

@@ -59,7 +59,7 @@ export default function AdminPenaltyDetail() {
           userId: userRes.data.userId ?? uid,
           name: userRes.data.name ?? "",
           email: userRes.data.email ?? "",
-          penaltyPoints: Number(userRes.data.penaltyPoints ?? 0),
+          penaltyPoints: Number(userRes.data.penaltyPoints),
         });
       }
     } catch (e) {
@@ -80,7 +80,7 @@ export default function AdminPenaltyDetail() {
       rowsData.map((r) => ({
         id: r.id,
         reason: r.reason,
-        points: r.points,
+        points: r.penaltyPoints,
         givenAt: r.givenAt ? new Date(r.givenAt).toLocaleString("ko-KR") : "-",
         status: r.status,
         actions:
