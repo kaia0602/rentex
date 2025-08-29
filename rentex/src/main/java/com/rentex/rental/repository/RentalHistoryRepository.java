@@ -34,4 +34,6 @@ public interface RentalHistoryRepository extends JpaRepository<RentalHistory, Lo
 
     // 최근 활동 (동적 limit 지원하려면 Pageable 사용)
     Page<RentalHistory> findByOrderByCreatedAtDesc(Pageable pageable);
+
+
 }

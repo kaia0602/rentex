@@ -89,6 +89,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
                         .requestMatchers("/uploads/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/api/dashboard/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/partner/statistics/**").permitAll()
                         .requestMatchers("/api/partner/items/**").authenticated()
                         .anyRequest().permitAll() // ⚠️ 배포 시엔 authenticated()로 바꿔도 됨

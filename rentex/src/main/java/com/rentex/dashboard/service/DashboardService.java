@@ -1,8 +1,7 @@
 package com.rentex.dashboard.service;
 
-import com.rentex.dashboard.dto.ActivityDTO;
-import com.rentex.dashboard.dto.DashboardSummaryDTO;
-import com.rentex.dashboard.dto.TrendPointDTO;
+import com.rentex.dashboard.dto.*;
+import com.rentex.item.domain.Item;
 import com.rentex.item.domain.Item.ItemStatus;
 import com.rentex.item.repository.ItemRepository;
 import com.rentex.payment.repository.PaymentRepository;
@@ -17,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -29,10 +29,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class DashboardService {
 
+
     private final RentalRepository rentalRepository;
     private final ItemRepository itemRepository;
     private final RentalHistoryRepository rentalHistoryRepository;
     private final PaymentRepository paymentRepository; // 매출은 추후 연결
+
+    private static final DateTimeFormatter ISO_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     /** 요약 카드 */
     public DashboardSummaryDTO getSummary(Authentication auth) {
@@ -117,5 +120,27 @@ public class DashboardService {
             case SATURDAY -> "토";
             case SUNDAY -> "일";
         };
+    }
+
+    public HighlightsResponse getHighlights(int days) {
+        LocalDateTime to = LocalDateTime.now();
+        LocalDateTime from = to.minusDays(days);
+
+        // 1) 최근 7일 최다 대여 장비 (TOP 1)
+        List<TopRentedItemDTO> top = rentalRepository.findTopRentedItemsInPeriod(from, to, PageRequest.of(0, 1));
+        TopRentedItemDTO topRented = top.isEmpty() ? null : top.get(0);
+
+        // 2) 최근 등록 장비 1개 (폴백/보조)
+        Item latest = itemRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(0, 5))
+                .stream().findFirst().orElse(null);
+        SimpleItemDTO latestItem = null;
+        if (latest != null) {
+            latestItem = new SimpleItemDTO(
+                    latest.getId(), latest.getName(), latest.getThumbnailUrl(),
+                    latest.getCreatedAt() == null ? null : latest.getCreatedAt().format(ISO_FMT)
+            );
+        }
+
+        return new HighlightsResponse(topRented, latestItem);
     }
 }

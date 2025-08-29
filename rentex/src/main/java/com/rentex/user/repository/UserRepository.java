@@ -178,4 +178,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
         ORDER BY ym
         """, nativeQuery = true)
     List<Object[]> findMonthlyNewUsers(@Param("from") String from, @Param("to") String to);
+
 }

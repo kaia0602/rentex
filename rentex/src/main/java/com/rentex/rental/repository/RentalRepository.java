@@ -1,6 +1,7 @@
 package com.rentex.rental.repository;
 
 import com.rentex.category.dto.SubCategoryRevenueDTO;
+import com.rentex.dashboard.dto.TopRentedItemDTO;
 import com.rentex.item.domain.Item;
 import com.rentex.rental.domain.Rental;
 import com.rentex.rental.domain.RentalStatus;
@@ -13,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -132,5 +134,22 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
             "GROUP BY i.subCategory.name " +
             "ORDER BY SUM(i.dailyPrice * r.quantity) DESC")
     List<SubCategoryRevenueDTO> findTopSubCategoryRevenue();
+
+    @Query("""
+        select new com.rentex.dashboard.dto.TopRentedItemDTO(
+            i.id, i.name, i.thumbnailUrl, count(r)
+        )
+        from Rental r
+        join r.item i
+        where r.rentedAt between :from and :to
+        group by i.id, i.name, i.thumbnailUrl
+        order by count(r) desc
+        """)
+    List<TopRentedItemDTO> findTopRentedItemsInPeriod(
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            Pageable pageable
+    );
+
 }
 

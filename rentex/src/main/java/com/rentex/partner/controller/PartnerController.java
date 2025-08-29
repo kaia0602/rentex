@@ -67,4 +67,11 @@ public class PartnerController {
         return ResponseEntity.ok(dto);
     }
 
+    /** 등록 파트너 수 */
+    @GetMapping("/count")
+    public ResponseEntity<Long> countPartners() {
+        long count = userService.countByRole("PARTNER");
+        return ResponseEntity.ok(count);
+    }
+
 }

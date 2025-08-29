@@ -2,9 +2,11 @@ package com.rentex.dashboard.controller;
 
 import com.rentex.dashboard.dto.ActivityDTO;
 import com.rentex.dashboard.dto.DashboardSummaryDTO;
+import com.rentex.dashboard.dto.HighlightsResponse;
 import com.rentex.dashboard.dto.TrendPointDTO;
 import com.rentex.dashboard.service.DashboardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,5 +38,11 @@ public class DashboardController {
             @RequestParam(defaultValue = "10") int limit
     ) {
         return dashboardService.getActivities(auth, limit);
+    }
+
+    @GetMapping("/highlights")
+    public ResponseEntity<HighlightsResponse> getHighlights(@RequestParam(defaultValue = "7") int days) {
+        if (days <= 0) days = 7;
+        return ResponseEntity.ok(dashboardService.getHighlights(days));
     }
 }
