@@ -52,6 +52,7 @@ import PartnerRentalDetail from "layouts/partner/rentals/RentalDetail";
 import PartnerStatistics from "layouts/partner/statistics";
 import PartnerSettings from "layouts/partner/settings";
 import NewItemForm from "layouts/partner/items/new";
+import PartnerItemDetailView from "layouts/partner/items/ItemDetailView";
 
 // 관리자
 import AdminDashboard from "layouts/admin";
@@ -393,6 +394,15 @@ const routes = [
     name: "장비 상세 (숨김)",
     key: "partner-item-detail",
     route: "/partner/items/:id",
+    component: <PartnerItemDetailView />,
+    noCollapse: true,
+    display: false,
+  },
+  {
+    type: "route",
+    name: "장비 수정",
+    key: "partner-item-detail-edit",
+    route: "/partner/items/edit/:id",
     component: <PartnerItemDetail />,
     noCollapse: true,
     display: false,
