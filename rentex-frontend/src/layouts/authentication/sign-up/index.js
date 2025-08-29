@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
+import PersonIcon from "@mui/icons-material/Person";
+import BusinessIcon from "@mui/icons-material/Business";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -14,6 +16,7 @@ import MDButton from "components/MDButton";
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
+import rentexLogo from "assets/images/logos/rentex.png";
 import bgImage from "assets/images/bg-sign-up-cover.jpeg";
 import api from "api/client";
 
@@ -30,6 +33,7 @@ function SignUp() {
     contactEmail: "",
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handlePhoneChange = (e) => {
     const formattedPhoneNumber = e.target.value
@@ -72,6 +76,7 @@ function SignUp() {
       alert("회원가입이 완료되었습니다.");
       navigate("/authentication/sign-in");
     } catch (err) {
+      // 수정된 부분
       const msg = err.response?.data?.message || "회원가입 중 오류가 발생했습니다.";
       setError(msg);
     }
@@ -79,26 +84,63 @@ function SignUp() {
 
   const renderChooseType = () => (
     <>
-      <MDBox textAlign="center" mb={2}>
-        <MDTypography variant="h4" fontWeight="medium" mb={1}>
-          RENTEX와 함께 하세요!
+      <MDBox
+        variant="gradient"
+        bgColor="info"
+        borderRadius="lg"
+        coloredShadow="info"
+        mx={2}
+        mt={-3}
+        p={3}
+        mb={1}
+        textAlign="center"
+      >
+        <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
+          회원가입
         </MDTypography>
-        <MDTypography variant="body2" color="text">
+        <MDTypography display="block" variant="button" color="white" my={1}>
           가입할 회원 유형을 선택해주세요.
         </MDTypography>
       </MDBox>
-      <MDBox display="flex" justifyContent="center" gap={2} mt={2} mb={1}>
-        <MDButton variant="gradient" color="info" size="large" onClick={() => setStep("userForm")}>
-          일반 회원
-        </MDButton>
-        <MDButton
-          variant="gradient"
-          color="success"
-          size="large"
-          onClick={() => setStep("partnerForm")}
-        >
-          사업자 회원
-        </MDButton>
+      <MDBox pt={4} pb={3} px={3}>
+        <MDTypography variant="body2" color="text" display="block" textAlign="center" mx={3} mb={3}>
+          렌텍스에 오신 것을 환영합니다.
+        </MDTypography>
+        <MDBox display="flex" flexDirection="column" gap={3}>
+          {/* 일반 회원 섹션 */}
+          <MDBox textAlign="center">
+            <MDButton
+              variant="gradient"
+              color="info"
+              size="large"
+              onClick={() => setStep("userForm")}
+              startIcon={<PersonIcon />}
+              fullWidth
+            >
+              일반 회원
+            </MDButton>
+          </MDBox>
+
+          {/* 사업자 회원 섹션 */}
+          <MDBox textAlign="center">
+            <MDButton
+              variant="gradient"
+              color="success"
+              size="large"
+              onClick={() => setStep("partnerForm")}
+              startIcon={<BusinessIcon />}
+              fullWidth
+            >
+              사업자 회원
+            </MDButton>
+          </MDBox>
+        </MDBox>
+
+        <MDBox mt={3} textAlign="center">
+          <MDButton variant="text" color="info" onClick={() => navigate("/authentication/sign-in")}>
+            로그인창으로 돌아가기
+          </MDButton>
+        </MDBox>
       </MDBox>
     </>
   );
@@ -216,11 +258,21 @@ function SignUp() {
                 {error}
               </MDTypography>
             )}
-            <MDBox mt={4} mb={1}>
-              <MDButton type="submit" variant="gradient" color="info" fullWidth>
-                가입하기
+            <MDBox mt={4} mb={1} display="flex" flexDirection="column" gap={2}>
+              <MDButton type="submit" variant="gradient" color="info" fullWidth disabled={loading}>
+                {loading ? "가입 처리 중..." : "가입하기"}
+              </MDButton>
+              <MDButton
+                type="button"
+                variant="text"
+                color="info"
+                onClick={() => setStep("chooseType")}
+                fullWidth
+              >
+                뒤로가기
               </MDButton>
             </MDBox>
+
             <MDBox mt={3} mb={1} textAlign="center">
               <MDTypography variant="button" color="text">
                 이미 계정이 있으신가요?{" "}

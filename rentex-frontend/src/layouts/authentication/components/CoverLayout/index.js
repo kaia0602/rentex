@@ -1,62 +1,66 @@
+/**
+ =========================================================
+ * Material Dashboard 2 React - v2.2.0
+ =========================================================
+ */
+
 import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
 import PageLayout from "examples/LayoutContainers/PageLayout";
 import Footer from "layouts/authentication/components/Footer";
+
+import rentexLogo from "assets/images/logos/rentex.png";
 
 function CoverLayout({ coverHeight, image, children }) {
   return (
     <PageLayout>
-      <DefaultNavbar
-        action={{
-          type: "external",
-          route: "https://creative-tim.com/product/material-dashboard-react",
-          label: "free download",
-        }}
-        transparent
-        light
-      />
-
-      {/* 배경 이미지 */}
       <MDBox
-        width="calc(100% - 2rem)"
-        minHeight={coverHeight}
-        borderRadius="xl"
-        mx={2}
-        my={2}
-        pt={6}
-        pb={28} // 배경 영역 하단 여유
-        sx={{
-          backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
-            image &&
-            `${linearGradient(
-              rgba(gradients.dark.main, 0.4),
-              rgba(gradients.dark.state, 0.4),
-            )}, url(${image})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-        }}
-      />
-
-      {/* 카드(children) */}
-      <MDBox
-        mt={{ xs: -20, lg: -18 }}
-        px={1}
-        width="calc(100% - 2rem)"
-        mx="auto"
-        mb={12} // Footer와 겹치지 않게 하단 여유
+        display="flex"
+        flexDirection="column"
+        minHeight="100vh"
+        width="100%"
+        position="relative" // 자식 요소의 absolute 위치 기준
       >
-        <Grid container spacing={1} justifyContent="center">
-          <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
-            {children}
-          </Grid>
-        </Grid>
-      </MDBox>
+        {/* 배경 이미지 */}
+        <MDBox
+          position="absolute"
+          width="100%"
+          height="100%"
+          sx={{
+            backgroundImage: ({ functions: { linearGradient, rgba }, palette: { gradients } }) =>
+              image &&
+              `${linearGradient(
+                rgba(gradients.dark.main, 0.4),
+                rgba(gradients.dark.state, 0.4),
+              )}, url(${image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
 
-      {/* Footer */}
-      {/* <Footer /> */}
+        <MDBox component="header" textAlign="center" pt={6} pb={3}>
+          <img src={rentexLogo} alt="우리 회사 로고" style={{ width: "250px" }} />
+        </MDBox>
+
+        <MDBox
+          component="main"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ flexGrow: 1 }}
+        >
+          <Grid container justifyContent="center">
+            <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
+              {children}
+            </Grid>
+          </Grid>
+        </MDBox>
+      </MDBox>
+      <MDBox component="footer" pb={3}>
+        <Footer />
+      </MDBox>
     </PageLayout>
   );
 }

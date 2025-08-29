@@ -121,7 +121,7 @@ function DashboardNavbar({ absolute, light, isMini, showSearch, showMenuIcons })
                   {user && (
                     <MDBox display="flex" alignItems="center" pr={2}>
                       <MDAvatar
-                        src={user.profileImageUrl || "https://via.placeholder.com/150"}
+                        src={user.profileImageUrl || "https://placehold.co/150"}
                         alt="profile-image"
                         size="sm"
                         shadow="sm"

@@ -1,47 +1,18 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-// prop-types is a library for typechecking of props
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
-// @mui material components
 import Grid from "@mui/material/Grid";
-
-// Material Dashboard 2 React components
 import MDBox from "components/MDBox";
-
-// Material Dashboard 2 React example components
-import DefaultNavbar from "examples/Navbars/DefaultNavbar";
+import MDTypography from "components/MDTypography";
 import PageLayout from "examples/LayoutContainers/PageLayout";
-
-// Authentication pages components
 import Footer from "layouts/authentication/components/Footer";
 
 function BasicLayout({ image, children }) {
   return (
     <PageLayout>
-      <DefaultNavbar
-        action={{
-          type: "external",
-          route: "https://creative-tim.com/product/material-dashboard-react",
-          label: "free download",
-          color: "dark",
-        }}
-      />
+      {/* 배경 이미지 */}
       <MDBox
-        position="absolute"
+        position="fixed"
         width="100%"
         minHeight="100vh"
         sx={{
@@ -56,19 +27,66 @@ function BasicLayout({ image, children }) {
           backgroundRepeat: "no-repeat",
         }}
       />
-      <MDBox px={1} width="100%" height="100vh" mx="auto">
-        <Grid container spacing={1} justifyContent="center" alignItems="center" height="100%">
-          <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
-            {children}
+
+      {/* ✨ 1. 페이지 전체를 감싸는 Flexbox 컨테이너 */}
+      <MDBox display="flex" flexDirection="column" minHeight="100vh">
+        {/* 섹션 1: 로고 */}
+        <MDBox
+          component="header"
+          textAlign="center"
+          pt={10}
+          pb={3}
+          sx={{
+            position: "relative",
+            zIndex: 10,
+          }}
+        >
+          <Link to="/dashboard" style={{ textDecoration: "none" }}>
+            <MDTypography
+              variant="h1"
+              fontWeight="bold"
+              sx={(theme) => ({
+                fontSize: "8rem",
+                backgroundImage: `linear-gradient(to right, #33556F, ${theme.palette.info.main})`,
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              })}
+            >
+              RENTEX
+            </MDTypography>
+          </Link>
+        </MDBox>
+
+        {/* 섹션 2: 메인 콘텐츠 */}
+        <MDBox
+          component="main"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ flexGrow: 1 }}
+          mb={6}
+        >
+          <Grid container justifyContent="center">
+            <Grid item xs={11} sm={9} md={5} lg={4} xl={3}>
+              {children}
+            </Grid>
           </Grid>
-        </Grid>
+        </MDBox>
+
+        {/* ✨ 2. 푸터를 Flexbox 컨테이너 안으로 옮겨 오버랩 문제를 해결합니다. */}
+        <MDBox
+          component="footer"
+          sx={(theme) => ({
+            backgroundColor: theme.palette.background.default,
+          })}
+        >
+          <Footer />
+        </MDBox>
       </MDBox>
-      <Footer light />
     </PageLayout>
   );
 }
 
-// Typechecking props for the BasicLayout
 BasicLayout.propTypes = {
   image: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,

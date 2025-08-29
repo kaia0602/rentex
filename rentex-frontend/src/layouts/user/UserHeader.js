@@ -142,7 +142,7 @@ function UserHeader({
           <Grid item>
             <MDBox position="relative" display="inline-block">
               <MDAvatar
-                src={user?.profileImageUrl || "https://via.placeholder.com/150"}
+                src={user?.profileImageUrl || "https://placehold.co/150"}
                 alt="profile-image"
                 size="xl"
                 shadow="sm"

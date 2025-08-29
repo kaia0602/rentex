@@ -23,7 +23,7 @@ import MDSnackbar from "components/MDSnackbar";
 
 function EditProfile() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
 
   const formatPhoneNumberForDisplay = (numStr) => {
     if (!numStr) return "";
@@ -92,7 +92,6 @@ function EditProfile() {
     };
     const backendFieldName = fieldMapping[editingField];
 
-    // ✨ 수정된 부분: "phone" -> "contactPhone"
     const valueToSubmit =
       editingField === "contactPhone"
         ? tempValue.replace(/-/g, "") || null
@@ -105,6 +104,8 @@ function EditProfile() {
       // 서버로 전송한 값(valueToSubmit)과 동일한 형태로 로컬 상태를 업데이트합니다.
       const updatedValue = editingField === "contactPhone" ? valueToSubmit : tempValue;
       setForm((prev) => ({ ...prev, [editingField]: updatedValue }));
+      // refreshUser(); : 상단 헤더, 유저헤더에서 비밀번호 변경시 즉시 반응
+      refreshUser();
       setEditingField(null);
       setSnackbar({
         open: true,

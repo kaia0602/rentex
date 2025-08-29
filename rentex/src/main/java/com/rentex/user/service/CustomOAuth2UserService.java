@@ -46,22 +46,16 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private User saveOrUpdate(OAuthAttributes attributes) {
         return userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> {
-<<<<<<< HEAD
-                    // 소셜 로그인마다 기존 프로필을 덮어씌워숴 주석화.
-                    //  entity.updateNickname(attributes.getName());
-                    //  entity.updateProfileImage(attributes.getPicture());
-                    return entity;
-=======
                     // 탈퇴 회원이면 복구
                     if (entity.getWithdrawnAt() != null) {
                         entity.recover();
                     }
                     // 소셜 정보 최신화
                     entity.updateName(attributes.getName());
-                    entity.updateNickname(attributes.getName());
-                    entity.updateProfileImage(attributes.getPicture());
+                    // 로그인할 때 마다 소셜 정보를 구글과 네이버 기준으로 갱신해서 각주화
+//                    entity.updateNickname(attributes.getName());
+//                    entity.updateProfileImage(attributes.getPicture());
                     return entity; // 영속 상태라 save() 불필요(Dirty Checking)
->>>>>>> origin/feature/penalty-payment
                 })
                 .orElseGet(() -> {
                     // 신규 소셜 가입자 생성
