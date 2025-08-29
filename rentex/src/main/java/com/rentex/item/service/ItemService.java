@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,17 +127,32 @@ public class ItemService {
         }
         if (dto.getDetailDescription() != null) item.setDetailDescription(dto.getDetailDescription());
 
-        if (detailImages != null && !detailImages.isEmpty()) {
-            List<String> detailImageUrls = detailImages.stream()
-                    .filter(file -> !file.isEmpty())
-                    .map(fileUploadService::upload)
-                    .toList();
-            item.setDetailImages(detailImageUrls);
-        }
-
+        // 썸네일 수정 (있으면 교체)
         if (thumbnail != null && !thumbnail.isEmpty()) {
             String thumbnailUrl = fileUploadService.upload(thumbnail);
             item.setThumbnailUrl(thumbnailUrl);
+        }
+
+        if (dto.getDetailImages() != null || (detailImages != null && !detailImages.isEmpty())) {
+            // 상세 이미지 처리
+            List<String> newUrls = new ArrayList<>();
+
+            // ✅ 기존 이미지 유지: 클라이언트에서 넘어온 dto.detailImageUrls
+            if (dto.getDetailImages() != null) {
+                newUrls.addAll(dto.getDetailImages());
+            }
+
+            // ✅ 새 이미지 업로드
+            if (detailImages != null && !detailImages.isEmpty()) {
+                newUrls.addAll(
+                        detailImages.stream()
+                                .filter(file -> !file.isEmpty())
+                                .map(fileUploadService::upload)
+                                .toList()
+                );
+            }
+            // 최종 결과로 DB 업데이트 (삭제는 자동 반영됨)
+            item.setDetailImages(newUrls);
         }
     }
 
@@ -155,4 +171,19 @@ public class ItemService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + id));
         itemRepository.delete(item);
     }
+
+    @Transactional
+    public String uploadDetailImage(Long itemId, MultipartFile file) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 아이템입니다. id=" + itemId));
+
+        String url = fileUploadService.upload(file);
+        List<String> images = item.getDetailImages();
+        if (images == null) images = new ArrayList<>();
+        images.add(url);
+        item.setDetailImages(images);
+
+        return url; // 프론트에 반환
+    }
+
 }

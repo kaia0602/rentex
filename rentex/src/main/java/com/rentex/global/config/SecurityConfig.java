@@ -6,6 +6,7 @@ import com.rentex.global.jwt.OAuth2LoginSuccessHandler;
 import com.rentex.user.service.CustomOAuth2UserService;
 import com.rentex.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,6 +39,9 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final CustomUserDetailsService customUserDetailsService; // ✅ UserDetailsService 직접 주입
+
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
     // ✅ 비밀번호 인코더
     @Bean
@@ -85,6 +89,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/refresh").permitAll()
                         .requestMatchers("/uploads/**", "/oauth2/**").permitAll()
+                        .requestMatchers("/api/dashboard/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/partner/statistics/**").permitAll()
                         .requestMatchers("/api/partner/items/**").authenticated()
                         .anyRequest().permitAll() // ⚠️ 배포 시엔 authenticated()로 바꿔도 됨
@@ -103,7 +108,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 프론트 주소
+        cfg.setAllowedOrigins(Arrays.asList(frontendUrl));
         cfg.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(Arrays.asList("*"));
         cfg.setAllowCredentials(true);

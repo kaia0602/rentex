@@ -274,4 +274,8 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
         user.updateProfileImage(null);
     }
+
+    public long countByRole(String role) {
+        return userRepository.countByRole(role.toUpperCase());
+    }
 }

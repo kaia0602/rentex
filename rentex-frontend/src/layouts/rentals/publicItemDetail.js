@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "api/client";
 import { getImageUrl } from "utils/imageUrl";
+import { getCurrentUser } from "utils/auth";
 
 // MUI
 import { Grid, Card, CardMedia, CardContent, Button, Typography } from "@mui/material";
@@ -23,12 +24,27 @@ function PublicItemsDetail() {
   const [item, setItem] = useState(null);
   const [expanded, setExpanded] = useState(false);
 
+  const [currentUser, setCurrentUser] = useState(null);
+
   useEffect(() => {
     api
       .get(`/items/${id}`)
       .then((res) => setItem(res.data))
       .catch((err) => console.error("아이템 상세 불러오기 실패:", err));
   }, [id]);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await api.get("/users/me");
+        setCurrentUser(response.data);
+      } catch (error) {
+        console.error("로그인 사용자 정보 불러오기 실패", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   if (!item) {
     return (
@@ -46,6 +62,20 @@ function PublicItemsDetail() {
   const goBackToList = () => {
     navigate(`/items${queryString}`);
   };
+
+  const userPenaltyPoints = currentUser?.penaltyPoints ?? 0;
+
+  // 버튼 활성/비활성 조건
+  const isRentDisabled =
+    item.stockQuantity === 0 || item.status === "UNAVAILABLE" || userPenaltyPoints >= 3;
+  const rentButtonMessage =
+    item.stockQuantity === 0
+      ? "재고가 없습니다."
+      : item.status === "UNAVAILABLE"
+      ? "대여 불가 상태입니다."
+      : userPenaltyPoints >= 3
+      ? "벌점 3점 이상으로 대여 불가 상태입니다."
+      : "";
 
   return (
     <DashboardLayout>
@@ -145,16 +175,17 @@ function PublicItemsDetail() {
                   fullWidth
                   sx={{
                     maxWidth: "350px",
-                    backgroundColor: "#1976d2",
+                    backgroundColor: isRentDisabled ? "#bdbdbd" : "#1976d2",
                     color: "#fff",
                     fontSize: "1.2rem",
                     fontWeight: "bold",
                     py: 2.5,
-                    "&:hover": { backgroundColor: "#115293" },
+                    "&:hover": { backgroundColor: isRentDisabled ? "#bdbdbd" : "#115293" },
                   }}
+                  disabled={isRentDisabled}
                   onClick={() => navigate(`/rentals/request/${item.id}`)}
                 >
-                  대여 신청
+                  {isRentDisabled ? rentButtonMessage : "대여 신청"}
                 </Button>
                 <Button
                   variant="contained"

@@ -120,4 +120,5 @@ public class ItemController {
         Long count = itemRepository.countByPartnerId(partner.getId());
         return ResponseEntity.ok(count);
     }
+
 }

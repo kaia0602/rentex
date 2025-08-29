@@ -17,6 +17,7 @@ import NoticeDetail from "layouts/notice/NoticeDetail";
 import AdminNoticeForm from "layouts/notice/AdminNoticeForm";
 import OAuthRedirect from "layouts/authentication/sign-in/OAuthRedirect";
 import Guide from "layouts/guide/Guide";
+import OAuthPopupBridge from "layouts/authentication/sign-in/OAuthPopupBridge";
 
 // QnA
 import InquiryList from "layouts/qna/InquiryList";
@@ -51,6 +52,7 @@ import PartnerRentalDetail from "layouts/partner/rentals/RentalDetail";
 import PartnerStatistics from "layouts/partner/statistics";
 import PartnerSettings from "layouts/partner/settings";
 import NewItemForm from "layouts/partner/items/new";
+import PartnerItemDetailView from "layouts/partner/items/ItemDetailView";
 
 // 관리자
 import AdminDashboard from "layouts/admin";
@@ -392,6 +394,15 @@ const routes = [
     name: "장비 상세 (숨김)",
     key: "partner-item-detail",
     route: "/partner/items/:id",
+    component: <PartnerItemDetailView />,
+    noCollapse: true,
+    display: false,
+  },
+  {
+    type: "route",
+    name: "장비 수정",
+    key: "partner-item-detail-edit",
+    route: "/partner/items/edit/:id",
     component: <PartnerItemDetail />,
     noCollapse: true,
     display: false,
@@ -544,6 +555,14 @@ const routes = [
     key: "oauth-redirect",
     route: "/oauth-redirect",
     component: <OAuthRedirect />,
+    display: false,
+  },
+  {
+    type: "route",
+    name: "OAuth Popup Bridge",
+    key: "oauth-popup-bridge",
+    route: "/authentication/sign-in/popup-bridge",
+    component: <OAuthPopupBridge />,
     display: false,
   },
 ];
