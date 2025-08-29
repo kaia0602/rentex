@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * ⚠️ 임시용 ItemRepository
@@ -33,4 +34,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     long countByStatus(Item.ItemStatus status);       // AVAILABLE 개수
 
     List<Item> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    List<Item> findAllByOrderByIdDesc(Pageable pageable);
+
+    Optional<Item> findTopByOrderByCreatedAtDesc();
 }

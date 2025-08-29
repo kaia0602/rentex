@@ -126,21 +126,22 @@ public class DashboardService {
         LocalDateTime to = LocalDateTime.now();
         LocalDateTime from = to.minusDays(days);
 
-        // 1) 최근 7일 최다 대여 장비 (TOP 1)
-        List<TopRentedItemDTO> top = rentalRepository.findTopRentedItemsInPeriod(from, to, PageRequest.of(0, 1));
-        TopRentedItemDTO topRented = top.isEmpty() ? null : top.get(0);
+        // 1) 최근 7일 최다 대여 장비 5개
+        List<TopRentedItemDTO> topRentedItems =
+                rentalRepository.findTopRentedItemsInPeriod(from, to, PageRequest.of(0, 5));
 
-        // 2) 최근 등록 장비 1개 (폴백/보조)
-        Item latest = itemRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(0, 5))
-                .stream().findFirst().orElse(null);
-        SimpleItemDTO latestItem = null;
-        if (latest != null) {
-            latestItem = new SimpleItemDTO(
-                    latest.getId(), latest.getName(), latest.getThumbnailUrl(),
-                    latest.getCreatedAt() == null ? null : latest.getCreatedAt().format(ISO_FMT)
-            );
-        }
+        // 2) 최근 등록 장비 5개
+        List<Item> latestList = itemRepository.findAllByOrderByIdDesc(PageRequest.of(0, 5));
+        List<SimpleItemDTO> latestItems = latestList.stream()
+                .map(i -> new SimpleItemDTO(
+                        i.getId(),
+                        i.getName(),
+                        i.getThumbnailUrl(),
+                        i.getCreatedAt() == null ? null : i.getCreatedAt().format(ISO_FMT)
+                ))
+                .toList();
 
-        return new HighlightsResponse(topRented, latestItem);
+        return new HighlightsResponse(topRentedItems, latestItems);
     }
+
 }

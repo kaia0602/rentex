@@ -27,6 +27,7 @@ function Basic() {
   const { isLoggedIn, login } = useAuth();
   const nav = useNavigate();
   const location = useLocation();
+  const redirectTo = location.state?.from || "/dashboard";
 
   const popupRef = useRef(null);
 
@@ -66,7 +67,7 @@ function Basic() {
           title: "소셜 로그인 성공",
           content: "환영합니다!",
         });
-        setTimeout(() => nav("/dashboard"), 1000);
+        setTimeout(() => nav(redirectTo, { replace: true }), 800);
       } else if (event.data.type === "OAUTH_ERROR") {
         setSnackbar({
           open: true,
@@ -80,15 +81,15 @@ function Basic() {
 
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
-  }, [login, nav]);
+  }, [login, nav, redirectTo]);
 
   // 일반 로그인 성공 시 대시보드 이동
   useEffect(() => {
     if (!isLoggedIn) return;
     setSnackbar({ open: true, color: "success", title: "로그인 성공", content: "환영합니다!" });
-    const timer = setTimeout(() => nav("/dashboard"), 1000);
+    const timer = setTimeout(() => nav(redirectTo, { replace: true }), 800);
     return () => clearTimeout(timer);
-  }, [isLoggedIn, nav]);
+  }, [isLoggedIn, nav, redirectTo]);
 
   const closeSnackbar = () => setSnackbar((prev) => ({ ...prev, open: false }));
 

@@ -3,6 +3,7 @@
  */
 
 import { useEffect, useMemo, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -54,7 +55,7 @@ const statusLabels = {
 };
 
 /* -------------------------------------------------------
-   (NEW) 상단 이미지 슬라이더 (의존성 X, 순수 React)
+   상단 이미지 슬라이더
 --------------------------------------------------------*/
 function ImageCarousel({ images = [], height = 220, intervalMs = 4500 }) {
   const [idx, setIdx] = useState(0);
@@ -81,14 +82,12 @@ function ImageCarousel({ images = [], height = 220, intervalMs = 4500 }) {
         backgroundColor: "rgba(0,0,0,0.06)",
       }}
     >
-      {/* 이미지 */}
       <MDBox
         component="img"
         src={images[idx].src}
         alt={images[idx].alt || `slide-${idx}`}
         sx={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
-      {/* 캡션 */}
       {(images[idx].title || images[idx].desc) && (
         <MDBox
           position="absolute"
@@ -169,13 +168,19 @@ function ImageCarousel({ images = [], height = 220, intervalMs = 4500 }) {
   );
 }
 ImageCarousel.propTypes = {
-  images: PropTypes.array,
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      src: PropTypes.string,
+      alt: PropTypes.string,
+      title: PropTypes.string,
+      desc: PropTypes.string,
+    }),
+  ),
   height: PropTypes.number,
   intervalMs: PropTypes.number,
 };
-
 /* -------------------------------------------------------
-   (NEW) 공지사항 미리보기
+   공지사항 미리보기
 --------------------------------------------------------*/
 function NoticePreview({ notices = [], loading, error, onClickMore }) {
   return (
@@ -243,102 +248,105 @@ NoticePreview.propTypes = {
   error: PropTypes.any,
   onClickMore: PropTypes.func,
 };
-
 /* -------------------------------------------------------
-   (NEW) 하이라이트 카드
+   하이라이트 리스트
 --------------------------------------------------------*/
-function HighlightCard({ highlight }) {
-  if (!highlight) return null;
-  const { title, subtitle, imageUrl, rightText } = highlight;
+function HighlightList({ title, items, type }) {
+  if (!items?.length) return null;
   return (
     <Card>
-      <MDBox p={2} display="flex" alignItems="center" justifyContent="space-between">
+      <MDBox p={2}>
         <MDTypography variant="h6" fontWeight="bold">
-          오늘의 하이라이트
+          {title}
         </MDTypography>
       </MDBox>
       <Divider />
       <CardContent>
-        <MDBox display="flex" gap={2} alignItems="center">
-          {imageUrl && (
-            <MDBox
-              component="img"
-              src={imageUrl}
-              alt={title}
-              sx={{ width: 88, height: 88, objectFit: "cover", borderRadius: "12px" }}
-            />
-          )}
-          <MDBox flex={1}>
-            <MDTypography variant="button" fontWeight="bold" display="block">
-              {title}
-            </MDTypography>
-            {subtitle && (
-              <MDTypography variant="caption" color="text">
-                {subtitle}
+        <MDBox display="flex" flexDirection="column" gap={2}>
+          {items.map((h, idx) => (
+            <MDBox key={idx} display="flex" gap={2} alignItems="center">
+              {h.thumbnailUrl && (
+                <MDBox
+                  component="img"
+                  src={h.thumbnailUrl}
+                  alt={h.name}
+                  sx={{ width: 64, height: 64, objectFit: "cover", borderRadius: "8px" }}
+                />
+              )}
+              <MDBox flex={1}>
+                <MDTypography variant="button" fontWeight="bold" display="block">
+                  {h.name}
+                </MDTypography>
+                <MDTypography variant="caption" color="text">
+                  {type === "top"
+                    ? `최근 7일 대여 ${h.rentCountRecent7d}회`
+                    : fmtDateTime(h.createdAt)}
+                </MDTypography>
+              </MDBox>
+              <MDTypography
+                component={Link}
+                to={`/items/${h.itemId || h.id}`}
+                variant="button"
+                color="info"
+                fontWeight="bold"
+                sx={{ textDecoration: "none", cursor: "pointer" }}
+              >
+                자세히
               </MDTypography>
-            )}
-          </MDBox>
-          {rightText && (
-            <MDTypography variant="button" color="info" fontWeight="bold">
-              {rightText}
-            </MDTypography>
-          )}
+            </MDBox>
+          ))}
         </MDBox>
       </CardContent>
     </Card>
   );
 }
-HighlightCard.propTypes = {
-  highlight: PropTypes.shape({
-    title: PropTypes.string,
-    subtitle: PropTypes.string,
-    imageUrl: PropTypes.string,
-    rightText: PropTypes.string,
-  }),
+HighlightList.propTypes = {
+  title: PropTypes.string,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      itemId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+      name: PropTypes.string,
+      thumbnailUrl: PropTypes.string,
+      rentCountRecent7d: PropTypes.number,
+      createdAt: PropTypes.string,
+    }),
+  ),
+  type: PropTypes.string, // "top" | "latest"
 };
-
 /* -------------------------------------------------------
    메인 컴포넌트
 --------------------------------------------------------*/
 export default function Dashboard() {
-  // summary
   const [summary, setSummary] = useState(null);
   const [sumLoading, setSumLoading] = useState(true);
   const [sumError, setSumError] = useState(null);
 
-  // trends
   const [trends, setTrends] = useState([]);
   const [trendsLoading, setTrendsLoading] = useState(true);
   const [trendsError, setTrendsError] = useState(null);
 
-  // activities
   const [activities, setActivities] = useState([]);
   const [actLoading, setActLoading] = useState(true);
   const [actError, setActError] = useState(null);
 
-  // (NEW) notices
   const [notices, setNotices] = useState([]);
   const [noticeLoading, setNoticeLoading] = useState(true);
   const [noticeError, setNoticeError] = useState(null);
 
-  // (NEW) partners count
   const [partnerCount, setPartnerCount] = useState(0);
 
-  // (NEW) highlight
-  const [highlight, setHighlight] = useState(null);
+  // ✅ 하이라이트 배열
+  const [topHighlights, setTopHighlights] = useState([]);
+  const [latestHighlights, setLatestHighlights] = useState([]);
 
-  // (NEW) hero images (교체 가능)
   const heroImages = [
     {
       src: "/assets/hero/rental_flow.jpg",
       title: "간편한 대여 · 반납",
       desc: "요청부터 반납까지 한 화면에서.",
     },
-    {
-      src: "/assets/hero/partner.jpg",
-      title: "파트너 관리",
-      desc: "업체/장비/정산을 한 번에.",
-    },
+    { src: "/assets/hero/partner.jpg", title: "파트너 관리", desc: "업체/장비/정산을 한 번에." },
     {
       src: "/assets/hero/dashboard.jpg",
       title: "실시간 대시보드",
@@ -349,11 +357,10 @@ export default function Dashboard() {
   useEffect(() => {
     let mounted = true;
 
-    // summary
     (async () => {
       try {
         setSumLoading(true);
-        const { data } = await api.get("/dashboard/summary"); // { totalRentals, activeRentals, availableItems, partnerCount? }
+        const { data } = await api.get("/dashboard/summary");
         if (!mounted) return;
         setSummary(data);
         if (data?.partnerCount != null) setPartnerCount(data.partnerCount);
@@ -364,7 +371,6 @@ export default function Dashboard() {
       }
     })();
 
-    // trends
     (async () => {
       try {
         setTrendsLoading(true);
@@ -377,13 +383,10 @@ export default function Dashboard() {
       }
     })();
 
-    // activities
     (async () => {
       try {
         setActLoading(true);
-        const { data } = await api.get("/dashboard/activities", {
-          params: { limit: 5 },
-        });
+        const { data } = await api.get("/dashboard/activities", { params: { limit: 5 } });
         if (mounted) setActivities((data || []).slice(0, 5));
       } catch (e) {
         if (mounted) setActError(e);
@@ -392,21 +395,18 @@ export default function Dashboard() {
       }
     })();
 
-    // (NEW) notices: 5개 미리보기
     (async () => {
       try {
         setNoticeLoading(true);
-        // 1차 시도: 표준 목록
         let res = await api.get("/notices", {
-          params: { size: 5, sort: "createdAt,desc", page: 0 },
+          params: { size: 10, sort: "createdAt,desc", page: 0 },
         });
         let list = res?.data?.content || res?.data || [];
         if (!Array.isArray(list) || list.length === 0) {
-          // 2차 시도: preview 엔드포인트
           res = await api.get("/notices/preview", { params: { limit: 5 } });
           list = res?.data || [];
         }
-        if (mounted) setNotices(list.slice(0, 5));
+        if (mounted) setNotices(list.slice(0, 10));
       } catch (e) {
         if (mounted) setNoticeError(e);
       } finally {
@@ -414,97 +414,42 @@ export default function Dashboard() {
       }
     })();
 
-    // (NEW) partner count (summary에 없으면 별도 조회)
     (async () => {
       try {
         if (partnerCount) return;
         const { data } = await api.get("/admin/partners/count");
         if (mounted && Number.isFinite(Number(data))) setPartnerCount(Number(data));
-      } catch {
-        /* optional: 실패 무시 */
-      }
+      } catch {}
     })();
 
-    // (NEW) highlight
+    // ✅ 하이라이트 5개씩
     (async () => {
       try {
         const { data } = await api.get("/dashboard/highlights");
-        if (mounted && (data?.topRentedItem || data?.latestItem)) {
-          if (data.topRentedItem) {
-            setHighlight({
-              title: `요즘 가장 인기있는 장비: ${data.topRentedItem.name}`,
-              subtitle: `최근 7일 대여 ${data.topRentedItem.rentCountRecent7d}회`,
-              imageUrl: data.topRentedItem.thumbnailUrl,
-              rightText: "지금 보기",
-            });
-          } else {
-            setHighlight({
-              title: `새로 등록된 장비: ${data.latestItem.name}`,
-              subtitle: fmtDateTime(data.latestItem.createdAt),
-              imageUrl: data.latestItem.thumbnailUrl,
-              rightText: "자세히",
-            });
-          }
-          return;
+        if (mounted) {
+          setTopHighlights(data.topRentedItems || []);
+          setLatestHighlights(data.latestItems || []);
         }
-        // 폴백: 최근 등록 아이템
-        const fallback = await api.get("/items", {
-          params: { size: 6, sort: "createdAt,desc", page: 0 },
-        });
-        const first = fallback?.data?.content?.[0] || fallback?.data?.[0];
-        if (mounted && first) {
-          setHighlight({
-            title: `새로 등록된 장비: ${first.name}`,
-            subtitle: first.createdAt ? fmtDateTime(first.createdAt) : "최근 등록",
-            imageUrl: first.thumbnailUrl,
-            rightText: "자세히",
-          });
-        }
-      } catch {
-        /* 하이라이트는 없어도 치명적이지 않으니 무시 */
-      }
+      } catch {}
     })();
 
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* -------------------------------------------------------
-     차트 데이터 변환
-  --------------------------------------------------------*/
-  // 막대(요청/수령)
   const barChartData = useMemo(() => {
     const labels = trends.map((t) => t.label);
     const requested = trends.map((t) => t.requested || 0);
-
-    return {
-      labels,
-      datasets: {
-        label: "대여 요청",
-        data: requested,
-      },
-    };
+    return { labels, datasets: { label: "대여 요청", data: requested } };
   }, [trends]);
 
-  // 라인(반납)
   const lineChartData = useMemo(() => {
     const labels = trends.map((t) => t.label);
     const returned = trends.map((t) => t.returned || 0);
-
-    return {
-      labels,
-      datasets: {
-        label: "반납 완료",
-        data: returned,
-      },
-    };
+    return { labels, datasets: { label: "반납 완료", data: returned } };
   }, [trends]);
 
-  /* -------------------------------------------------------
-     스켈레톤
-  --------------------------------------------------------*/
   const BlockSkeleton = ({ height = 140 }) => (
     <MDBox
       display="flex"
@@ -518,10 +463,6 @@ export default function Dashboard() {
   BlockSkeleton.propTypes = {
     height: PropTypes.number,
   };
-
-  /* -------------------------------------------------------
-     최근 활동 카드
-  --------------------------------------------------------*/
   const ActivityFeed = () => (
     <Card>
       <MDBox p={2} display="flex" alignItems="center" justifyContent="space-between">
@@ -576,28 +517,22 @@ export default function Dashboard() {
     </Card>
   );
 
-  /* -------------------------------------------------------
-     렌더링
-  --------------------------------------------------------*/
   const goNoticeList = () => {
-    // 라우터 경로 맞춰서 이동 (예: /notice/list or /notice)
-    window.location.href = "/notice"; // 프로젝트의 공지 목록 라우트로 변경하세요.
+    window.location.href = "/notice";
   };
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
 
-      {/* 상단 히어로/설명 슬라이더 */}
       <MDBox px={2} pt={2}>
         <ImageCarousel images={heroImages} height={240} />
       </MDBox>
 
-      {/* (NEW) 히어로 아래: 공지 + 오늘의 하이라이트 */}
+      {/* 공지 + 인기장비 + 최근등록 */}
       <MDBox px={2} mt={2}>
         <Grid container spacing={3}>
-          {/* 공지사항 */}
-          <Grid item xs={12} md={6} lg={6}>
+          <Grid item xs={12} md={4}>
             <NoticePreview
               notices={notices}
               loading={noticeLoading}
@@ -605,16 +540,25 @@ export default function Dashboard() {
               onClickMore={goNoticeList}
             />
           </Grid>
-
-          {/* 오늘의 하이라이트 */}
-          <Grid item xs={12} md={6} lg={6}>
-            {!highlight ? <BlockSkeleton height={170} /> : <HighlightCard highlight={highlight} />}
+          <Grid item xs={12} md={4}>
+            {topHighlights.length === 0 ? (
+              <BlockSkeleton height={170} />
+            ) : (
+              <HighlightList title="인기 장비 TOP5" items={topHighlights} type="top" />
+            )}
+          </Grid>
+          <Grid item xs={12} md={4}>
+            {latestHighlights.length === 0 ? (
+              <BlockSkeleton height={170} />
+            ) : (
+              <HighlightList title="최근 등록 장비" items={latestHighlights} type="latest" />
+            )}
           </Grid>
         </Grid>
       </MDBox>
 
+      {/* 통계 카드 */}
       <MDBox py={3}>
-        {/* 상단 카드 (파트너 카드 포함) */}
         <Grid container spacing={3}>
           <Grid item xs={12} md={6} lg={3}>
             {sumLoading ? (
@@ -660,8 +604,6 @@ export default function Dashboard() {
               </MDBox>
             )}
           </Grid>
-
-          {/* 등록 파트너 카드 */}
           <Grid item xs={12} md={6} lg={3}>
             {sumLoading && !partnerCount ? (
               <BlockSkeleton />
@@ -683,7 +625,7 @@ export default function Dashboard() {
           </Grid>
         </Grid>
 
-        {/* 중앙 차트만 (공지/하이라이트는 위로 이동) */}
+        {/* 중앙 차트 */}
         <MDBox mt={4.5}>
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={6}>
@@ -719,7 +661,7 @@ export default function Dashboard() {
           </Grid>
         </MDBox>
 
-        {/* 하단 활동 */}
+        {/* 최근 활동 */}
         <MDBox>
           <Grid container spacing={3}>
             <Grid item xs={12}>
@@ -728,6 +670,7 @@ export default function Dashboard() {
           </Grid>
         </MDBox>
       </MDBox>
+
       <Footer />
     </DashboardLayout>
   );

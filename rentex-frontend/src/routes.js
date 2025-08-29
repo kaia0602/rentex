@@ -41,6 +41,8 @@ import PayPenalty from "layouts/user/PayPenalty";
 import PaymentHistory from "layouts/user/PaymentHistory";
 import PaymentDetail from "layouts/user/PaymentDetail";
 import UserGuide from "layouts/user/UserGuide";
+import MyFavorites from "layouts/user/MyFavorites";
+import FavoriteButton from "components/FavoriteButton";
 
 // 파트너
 import PartnerDashboard from "layouts/partner";
@@ -309,6 +311,15 @@ const routes = [
     component: <RentalPay />,
     noCollapse: true,
     display: false,
+  },
+  {
+    type: "route",
+    name: "찜한 장비",
+    key: "mypage-favorites",
+    route: "/mypage/favorites",
+    component: <MyFavorites />,
+    display: true,
+    section: "mypage",
   },
   {
     type: "collapse",

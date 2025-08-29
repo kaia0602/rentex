@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "api/client";
 import { getImageUrl } from "utils/imageUrl";
+import FavoriteButton from "components/FavoriteButton"; // 상단에 추가
+
 import { getCurrentUser } from "utils/auth";
 
 // MUI
@@ -25,6 +27,8 @@ function PublicItemsDetail() {
   const [expanded, setExpanded] = useState(false);
 
   const [currentUser, setCurrentUser] = useState(null);
+  const role = String(currentUser?.role || "").toUpperCase();
+  const isUser = role === "USER" || role === "ROLE_USER";
 
   useEffect(() => {
     api
@@ -127,12 +131,18 @@ function PublicItemsDetail() {
               }}
             >
               <CardContent sx={{ flexGrow: 1 }}>
-                <MDTypography variant="h1" fontWeight="bold" gutterBottom sx={{ mb: 2 }}>
-                  {item.name ?? "-"}
-                </MDTypography>
-                <MDTypography variant="h6" sx={{ mb: 2, color: "text.secondary" }}>
-                  {item.partnerName}
-                </MDTypography>
+                {/* 상품명 + 하트 버튼 */}
+                <MDBox
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ mb: 2 }}
+                >
+                  <MDTypography variant="h1" fontWeight="bold" gutterBottom>
+                    {item.name ?? "-"}
+                  </MDTypography>
+                  {isUser && <FavoriteButton itemId={item.id} />}
+                </MDBox>
 
                 {/* 가격 */}
                 <MDTypography variant="h2" color="text.primary" fontWeight="bold" sx={{ mb: 3 }}>
