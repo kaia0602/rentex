@@ -33,11 +33,6 @@ function PartnerDetail() {
     return [];
   }, []); // ✅ deps 없음 → 참조 안정화
 
-  useEffect(() => {
-    const list = pickList(apiResponse);
-    setList(list);
-  }, [pickList, apiResponse]); // ✅ 이제 경고 사라짐
-
   const fetchPartnerItems = async (pid) => {
     const candidates = [`/partner/items/partner/${pid}`, `/admin/partners/${pid}/items`];
     for (const url of candidates) {

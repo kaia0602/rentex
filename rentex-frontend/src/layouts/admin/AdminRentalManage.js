@@ -95,7 +95,7 @@ function AdminRentalManage() {
           color="primary"
           size="small"
           style={{ color: "#000", borderColor: "#1976d2" }} // ✅ 검은색 글자
-          onClick={() => navigate(`/partner/rentals/${row.original.id}`)}
+          onClick={() => navigate(`/admin/rentals/${row.original.id}`)}
         >
           상세보기
         </Button>

@@ -68,6 +68,7 @@ import StatementPdfPage from "layouts/admin/StatementPdf";
 import UserDetail from "layouts/admin/UserDetail";
 import PartnerDetail from "layouts/admin/PartnerDetail";
 import AdminRentalManage from "layouts/admin/AdminRentalManage";
+import AdminRentalDetail from "layouts/admin/AdminRentalDetail";
 
 const routes = [
   // =====================
@@ -488,6 +489,15 @@ const routes = [
     route: "/admin/rentals",
     component: <AdminRentalManage />,
     roles: ["ADMIN"],
+  },
+  {
+    type: "route",
+    name: "대여 상세",
+    key: "admin-rental-detail",
+    route: "/admin/rentals/:id",
+    component: <AdminRentalDetail />,
+    roles: ["ADMIN"],
+    display: false,
   },
   {
     // 잘못된 경로 수정: 디테일/설정 페이지는 개별 id 경로로
