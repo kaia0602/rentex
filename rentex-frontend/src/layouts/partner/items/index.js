@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCategories } from "components/Hooks/useCategories";
-import api from "api/client"; // Axios 인스턴스, JWT 자동 포함
+import api from "api/client";
 
-// MUI
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-
-// Material Dashboard
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -21,45 +18,63 @@ function PartnerItemList() {
   const { categories, subCategories } = useCategories();
   const navigate = useNavigate();
 
-  // 카테고리 ID → 이름 매핑
-  const categoriesMap = Object.fromEntries(categories.map((cat) => [cat.id, cat.name]));
-  const subCategoriesMap = Object.fromEntries(subCategories.map((sc) => [sc.id, sc.name]));
-
-  // 로그인한 업체 장비 불러오기
   useEffect(() => {
     api
-      .get("/partner/items") // JWT 토큰 자동 포함
-      .then((res) => {
-        console.log(res.data);
-        setItems(res.data);
-      })
+      .get("/partner/items")
+      .then((res) => setItems(res.data))
       .catch((err) => console.error("장비 목록 불러오기 실패:", err));
   }, []);
 
-  const columns = [
-    { Header: "장비명", accessor: "name" },
-    { Header: "카테고리", accessor: "category" },
-    { Header: "소분류", accessor: "subCategory" },
-    { Header: "재고", accessor: "stockQuantity", align: "center" },
-    { Header: "일일 대여가", accessor: "dailyPrice", align: "center" },
-    { Header: "상태", accessor: "status", align: "center" },
-    { Header: "액션", accessor: "actions", align: "center" },
-  ];
+  // ✅ 맵/컬럼/로우/테이블 모두 메모이제이션
+  const categoriesMap = useMemo(
+    () => Object.fromEntries(categories.map((c) => [c.id, c.name])),
+    [categories],
+  );
 
-  const rows = items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    category: categoriesMap[item.categoryId] || item.categoryName || "-",
-    subCategory: subCategoriesMap[item.subCategoryId] || item.subCategoryName || "-",
-    stockQuantity: item.stockQuantity,
-    dailyPrice: `${item.dailyPrice.toLocaleString()}원`,
-    status: item.status === "AVAILABLE" ? "✅ 사용 가능" : "❌ 사용 불가",
-    actions: (
-      <MDButton size="small" color="info" onClick={() => navigate(`/partner/items/${item.id}`)}>
-        상세보기
-      </MDButton>
-    ),
-  }));
+  const subCategoriesMap = useMemo(
+    () => Object.fromEntries(subCategories.map((sc) => [sc.id, sc.name])),
+    [subCategories],
+  );
+
+  const columns = useMemo(
+    () => [
+      { Header: "장비명", accessor: "name" },
+      { Header: "카테고리", accessor: "category" },
+      { Header: "소분류", accessor: "subCategory" },
+      { Header: "재고", accessor: "stockQuantity", align: "center" },
+      { Header: "일일 대여가", accessor: "dailyPrice", align: "center" },
+      { Header: "상태", accessor: "status", align: "center" },
+      { Header: "액션", accessor: "actions", align: "center" },
+    ],
+    [],
+  );
+
+  const rows = useMemo(
+    () =>
+      items.map((item) => ({
+        id: item.id, // 가능하면 key로도 쓰일 수 있게 고유값 유지
+        name: item.name,
+        category: categoriesMap[item.categoryId] || item.categoryName || "-",
+        subCategory: subCategoriesMap[item.subCategoryId] || item.subCategoryName || "-",
+        stockQuantity: item.stockQuantity,
+        dailyPrice:
+          typeof item.dailyPrice === "number" ? `${item.dailyPrice.toLocaleString()}원` : "-", // 방어코드
+        status: item.status === "AVAILABLE" ? "✅ 사용 가능" : "❌ 사용 불가",
+        actions: (
+          <MDButton
+            key={`act-${item.id}`} // 액션 컴포넌트도 안정성 강화
+            size="small"
+            color="info"
+            onClick={() => navigate(`/partner/items/${item.id}`)}
+          >
+            상세보기
+          </MDButton>
+        ),
+      })),
+    [items, categoriesMap, subCategoriesMap, navigate],
+  );
+
+  const table = useMemo(() => ({ columns, rows }), [columns, rows]);
 
   return (
     <DashboardLayout>
@@ -84,7 +99,7 @@ function PartnerItemList() {
               </MDBox>
               <MDBox pt={3}>
                 <DataTable
-                  table={{ columns, rows }}
+                  table={table}
                   isSorted={false}
                   entriesPerPage={false}
                   showTotalEntries={false}

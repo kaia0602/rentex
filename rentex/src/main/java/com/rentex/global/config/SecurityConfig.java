@@ -119,7 +119,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users/signup").permitAll()
 
                         // 파트너/관리자 구분 (복수/단수 경로 주의)
-                        .requestMatchers("/api/partners/**").hasRole("ADMIN")                // 업체 관리(ADMIN)
+                        .requestMatchers("/api/partners/dashboard").hasAnyRole("PARTNER","ADMIN")
+                        .requestMatchers("/api/partners/**").hasRole("ADMIN")  // 업체 관리(ADMIN)
                         .requestMatchers("/api/partner/**").hasAnyRole("PARTNER","ADMIN")    // 파트너 본인 영역
 
                         // 전체 관리자
