@@ -35,7 +35,18 @@ function EditProfile() {
     return numStr; // 포맷팅에 실패하면 원본 값 반환
   };
 
+  const renderStaticField = (label, value) => (
+    <MDBox display="flex" justifyContent="space-between" alignItems="center" py={2}>
+      <MDTypography variant="subtitle2" fontWeight="medium" sx={{ minWidth: "100px" }}>
+        {label}
+      </MDTypography>
+      <MDTypography variant="body2" sx={{ flexGrow: 1 }}>
+        {value || "-"}
+      </MDTypography>
+    </MDBox>
+  );
   const [form, setForm] = useState({
+    email: "",
     name: "",
     nickname: "",
     contactPhone: "",
@@ -64,6 +75,7 @@ function EditProfile() {
         const data = res.data;
 
         setForm({
+          email: data.email || data.userEmail || "",
           name: data.name || "",
           nickname: data.nickname || "",
           contactPhone: data.contact_phone || data.phone || "",
@@ -243,6 +255,8 @@ function EditProfile() {
                     기본 정보
                   </MDTypography>
 
+                  {renderStaticField("이메일", form.email)}
+                  <Divider />
                   {renderProfileField(form.role === "PARTNER" ? "사명" : "이름", "name")}
                   <Divider />
                   {renderProfileField("닉네임", "nickname")}
