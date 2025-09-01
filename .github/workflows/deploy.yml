@@ -1,0 +1,60 @@
+name: Deploy Rentex
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 소스코드 가져오기
+      - uses: actions/checkout@v3
+
+      # 2. JDK 세팅
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      # 3. Gradle 캐시 복원 (빌드 속도 향상)
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 4. Gradle 빌드 (Spring Boot 프로젝트는 ./rentex 폴더 안에 있음)
+      - name: Build Rentex (Spring Boot)
+        working-directory: ./rentex
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build -x test
+
+      # 5. 현재 시간 가져오기 (버전 라벨용)
+      - name: Get current time
+        uses: josStorer/get-current-time@v2.0.2
+        id: current-time
+        with:
+          format: YYYY-MM-DD_HHmmss
+          utcOffset: "+09:00"
+
+      # 6. 아티팩트 이름 추출
+      - name: Set artifact
+        working-directory: ./rentex
+        run: echo "artifact=$(basename $(ls ./build/libs/*.jar | grep -v plain))" >> $GITHUB_ENV
+
+      # 7. AWS Elastic Beanstalk 배포
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: Springboot-developer
+          environment_name: Springboot-developer-env
+          version_label: rentex-${{ steps.current-time.outputs.formattedTime }}
+          region: ap-northeast-2
+          deployment_package: rentex/build/libs/${{ env.artifact }}

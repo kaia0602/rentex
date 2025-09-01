@@ -4,7 +4,7 @@ import { getToken, clearToken } from "utils/auth"; // clearToken 반드시 impor
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE || "http://localhost:8080/api",
-  // withCredentials: true, // 쿠키 전략 쓸 때만 켜기
+  withCredentials: true,
 });
 
 // 요청 인터셉터: Authorization 자동 부착

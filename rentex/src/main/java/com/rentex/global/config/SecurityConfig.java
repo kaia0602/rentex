@@ -11,10 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -69,6 +67,8 @@ public class SecurityConfig {
     // ✅ 시큐리티 필터 체인 구성
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println(">>> STARTING SECURITY CONFIG <<<"); // ✅ 필터체인 시작 로그
+
         http
                 .authenticationProvider(authenticationProvider()) // ✅ 명시적 Provider 등록
 
@@ -89,11 +89,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // preflight
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // ✅ 헬스 체크 경로 허용
+                        .requestMatchers("/health").permitAll()
 
                         // 인증/소셜/패스워드 초기화
                         .requestMatchers("/api/auth/login", "/api/auth/refresh", "/api/auth/logout").permitAll()
                         .requestMatchers("/api/auth/password-reset/**").permitAll()
-                        .requestMatchers("/oauth2/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/**", "/error").permitAll()
 
                         // 정적 파일: GET만 허용
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
@@ -130,12 +132,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
-
                 // --- OAuth2 소셜 로그인 설정 ---
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .successHandler(oAuth2LoginSuccessHandler)
-                );
+                .oauth2Login(oauth2 -> {
+                    System.out.println(">>> CONFIGURING OAUTH2LOGIN <<<"); // ✅ 로그 추가
+                    oauth2
+                            .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                            .successHandler(oAuth2LoginSuccessHandler);
+                });
 
         return http.build();
     }
@@ -144,7 +147,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOrigins(Arrays.asList(frontendUrl));
+        cfg.setAllowedOrigins(Arrays.asList(
+                frontendUrl,                // 배포용 프론트 주소
+                "http://localhost:3000"     // 로컬 React 개발 서버
+        ));
         cfg.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(Arrays.asList("*"));
         cfg.setAllowCredentials(true);
@@ -154,4 +160,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", cfg);
         return source;
     }
+
 }

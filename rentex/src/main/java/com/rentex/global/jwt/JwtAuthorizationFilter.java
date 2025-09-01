@@ -21,10 +21,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        // ✅ 소셜 로그인 시작/콜백 경로는 JWT 필터 건너뜀
+        if (path.startsWith("/oauth2") || path.startsWith("/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 1. 요청 헤더에서 토큰 추출
         String token = resolveToken(request);
 
-        // 2. 토큰이 존재하고 JWT 구조( .이 2개 )인지 체크
+        // 2. 토큰이 존재하고 JWT 구조인지 체크
         if (StringUtils.hasText(token) && token.chars().filter(ch -> ch == '.').count() == 2) {
 
             // 3. 토큰 유효성 검증
@@ -32,14 +40,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 // 4. 인증 정보 세팅
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
             }
         }
 
         // 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
+
 
     // 요청 헤더에서 "Bearer " 접두사를 제거하고 토큰만 추출
     private String resolveToken(HttpServletRequest request) {

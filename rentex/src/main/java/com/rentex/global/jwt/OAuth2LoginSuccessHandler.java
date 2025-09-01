@@ -33,6 +33,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
+        System.out.println(">>> SUCCESS HANDLER CALLED <<<");
+
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
         // ── 1) 기본 정보 추출 (구글 OAuth2 표준 필드 사용)
@@ -88,7 +90,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         // ── 6) 프론트로 리다이렉트
         String encoded = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
-        response.sendRedirect(frontendUrl + "/authentication/sign-in/popup-bridge?token=" + encoded);    }
+        response.sendRedirect(frontendUrl + "/oauth/callback?token=" + encoded);    }
 
     private static String nvl(String v, String alt) {
         return v == null || v.isBlank() ? alt : v;

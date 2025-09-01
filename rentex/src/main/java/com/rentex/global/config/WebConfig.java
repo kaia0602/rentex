@@ -17,15 +17,6 @@ public class WebConfig implements WebMvcConfigurer {
     private String uploadDir;
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // 🚀 배포 시: 프론트 도메인으로 변경 필요 (ex. https://rentex.site)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
-    }
-
-    @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // ✅ 외부 경로에 저장된 파일을 /uploads/** URL로 접근할 수 있게 설정
         String fileLocation = Paths.get(uploadDir).toUri().toString();  // file:///C:/rentex-uploads/ 또는 file:/home/ubuntu/rentex/uploads/

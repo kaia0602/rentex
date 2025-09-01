@@ -585,6 +585,14 @@ const routes = [
     component: <OAuthPopupBridge />,
     display: false,
   },
+  {
+    type: "route",
+    name: "OAuth Callback",
+    key: "oauth-callback",
+    route: "/oauth/callback",
+    component: <OAuthRedirect />, // 기존 OAuthRedirect 컴포넌트 재사용 가능
+    display: false,
+  },
 ];
 
 export default routes;
