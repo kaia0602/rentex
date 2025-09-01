@@ -211,21 +211,18 @@ function Basic() {
     }
   };
 
-  // 팝업 열기 공통 함수
-  const openOAuthPopup = (provider) => {
+  // Google 로그인 (같은 탭 리다이렉트)
+  const handleGoogleLogin = () => {
     const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
     const serverBase = apiBase.replace(/\/api$/, "");
+    window.location.href = `${serverBase}/oauth2/authorization/google`;
+  };
 
-    const width = 520;
-    const height = 650;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-
-    popupRef.current = window.open(
-      `${serverBase}/oauth2/authorization/${provider}`,
-      `oauth_${provider}`,
-      `width=${width},height=${height},left=${left},top=${top},resizable=no,scrollbars=yes,status=no`,
-    );
+  // Naver 로그인 (같은 탭 리다이렉트)
+  const handleNaverLogin = () => {
+    const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:8080/api";
+    const serverBase = apiBase.replace(/\/api$/, "");
+    window.location.href = `${serverBase}/oauth2/authorization/naver`;
   };
 
   return (
@@ -309,26 +306,16 @@ function Basic() {
                 </MDBox>
               </MDBox>
 
-              {/* Google 로그인 (팝업) */}
+              {/* Google 로그인 */}
               <MDBox mt={2}>
-                <MDButton
-                  variant="outlined"
-                  color="info"
-                  fullWidth
-                  onClick={() => openOAuthPopup("google")}
-                >
+                <MDButton variant="outlined" color="info" fullWidth onClick={handleGoogleLogin}>
                   <GoogleIcon sx={{ mr: 1 }} /> Google로 로그인
                 </MDButton>
               </MDBox>
 
-              {/* Naver 로그인 (팝업) */}
+              {/* Naver 로그인 */}
               <MDBox mt={2}>
-                <MDButton
-                  variant="outlined"
-                  color="info"
-                  fullWidth
-                  onClick={() => openOAuthPopup("naver")}
-                >
+                <MDButton variant="outlined" color="info" fullWidth onClick={handleNaverLogin}>
                   <img
                     src={naverIconUrl}
                     alt="Naver"

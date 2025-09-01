@@ -1,13 +1,13 @@
 import React, { createContext, useCallback, useContext, useMemo, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { getToken, clearToken, setToken } from "utils/auth";
+import { getToken, clearToken, setToken, setRefreshToken, clearRefreshToken } from "utils/auth";
 import api from "api/client";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(!!getToken());
-  const [user, setUser] = useState(null); // [추가] user 상태
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -15,8 +15,8 @@ export function AuthProvider({ children }) {
         .get("/users/me")
         .then((res) => setUser(res.data))
         .catch(() => {
-          // 정보 불러오기 실패 시 강제 로그아웃
           clearToken();
+          clearRefreshToken();
           setIsLoggedIn(false);
           setUser(null);
         });
@@ -25,16 +25,21 @@ export function AuthProvider({ children }) {
     }
   }, [isLoggedIn]);
 
-  const login = useCallback((accessToken) => {
+  // ✅ accessToken + refreshToken 둘 다 지원
+  const login = useCallback((accessToken, refreshToken) => {
     if (accessToken) {
       setToken(accessToken);
       api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
-      setIsLoggedIn(true);
     }
+    if (refreshToken) {
+      setRefreshToken(refreshToken);
+    }
+    setIsLoggedIn(!!accessToken);
   }, []);
 
   const logout = useCallback(() => {
     clearToken();
+    clearRefreshToken();
     delete api.defaults.headers.common["Authorization"];
     setIsLoggedIn(false);
     setUser(null);

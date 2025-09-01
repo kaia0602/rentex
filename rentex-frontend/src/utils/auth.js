@@ -1,8 +1,15 @@
-const KEY = "ACCESS_TOKEN";
+const ACCESS_KEY = "ACCESS_TOKEN";
+const REFRESH_KEY = "REFRESH_TOKEN";
 
-export const setToken = (t) => localStorage.setItem(KEY, t);
-export const getToken = () => localStorage.getItem(KEY);
-export const clearToken = () => localStorage.removeItem(KEY);
+// Access Token 관리
+export const setToken = (t) => localStorage.setItem(ACCESS_KEY, t);
+export const getToken = () => localStorage.getItem(ACCESS_KEY);
+export const clearToken = () => localStorage.removeItem(ACCESS_KEY);
+
+// Refresh Token 관리
+export const setRefreshToken = (t) => localStorage.setItem(REFRESH_KEY, t);
+export const getRefreshToken = () => localStorage.getItem(REFRESH_KEY);
+export const clearRefreshToken = () => localStorage.removeItem(REFRESH_KEY);
 
 // 안전한 JWT 파서
 function parseJwt(token) {
@@ -47,7 +54,7 @@ export function getRoleFromToken(token) {
 
 export function getCurrentUser() {
   const token = getToken();
-  if (!token) return null; // null-safe
+  if (!token) return null;
   const id = getUserIdFromToken(token);
   const role = getRoleFromToken(token);
   if (!id || !role) return null;

@@ -8,21 +8,19 @@ function OAuthRedirect() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
+    const accessToken = params.get("accessToken");
+    const refreshToken = params.get("refreshToken");
 
-    if (!token) {
+    if (!accessToken) {
       nav("/authentication/sign-in", { replace: true });
       return;
     }
 
-    // 1) 토큰 저장 + isLoggedIn true (→ AuthProvider가 /users/me 자동 호출)
-    login(token);
+    // 토큰 저장
+    login(accessToken, refreshToken);
 
-    // 2) 로그인 페이지로 되돌아가면서 성공 state 전달
-    nav("/authentication/sign-in", {
-      replace: true,
-      state: { oauthSuccess: true },
-    });
+    // 로그인 성공 후 이동할 경로
+    nav("/mypage", { replace: true });
   }, [nav, login]);
 
   return <div>로그인 처리 중...</div>;
