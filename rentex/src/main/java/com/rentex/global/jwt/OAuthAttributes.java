@@ -53,14 +53,20 @@ public class OAuthAttributes {
     private static OAuthAttributes ofNaver(String userNameAttributeName, Map<String, Object> attributes) {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
         String email = (String) response.get("email");
-        // ✅ 이메일 null 체크 추가
+
+        // ✅ 이메일 null 체크
         if (email == null) {
             throw new IllegalArgumentException("네이버 로그인을 위해서는 이메일 정보 제공에 동의해야 합니다.");
         }
 
+        String name = (String) response.get("name");           // 이름
+        String nickname = (String) response.get("nickname");   // 닉네임 (없으면 name 대신)
+        String profileImage = (String) response.get("profile_image"); // ✅ 프로필 이미지
+
         return OAuthAttributes.builder()
-                .name((String) response.get("name"))
+                .name(nickname != null ? nickname : name)  // 닉네임 우선, 없으면 name
                 .email(email)
+                .picture(profileImage)                     // ✅ 프로필 이미지 매핑
                 .attributes(response)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
