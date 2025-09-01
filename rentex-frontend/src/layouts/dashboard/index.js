@@ -272,7 +272,7 @@ function HighlightList({ title, items, type }) {
                 </MDTypography>
                 <MDTypography variant="caption" color="text">
                   {type === "top"
-                    ? `최근 7일 대여 ${h.rentCountRecent7d}회`
+                    ? ` 최근 7일 대여 ${h.rentCountRecent7d}회`
                     : fmtDateTime(h.createdAt)}
                 </MDTypography>
               </MDBox>
