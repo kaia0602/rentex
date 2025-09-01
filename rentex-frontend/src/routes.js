@@ -264,7 +264,7 @@ const routes = [
     component: <EditProfile />,
     noCollapse: true,
     display: false,
-    roles: ["USER"],
+    roles: ["USER", "PARTNER"],
   },
   {
     type: "route",
