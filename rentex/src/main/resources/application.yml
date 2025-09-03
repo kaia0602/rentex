@@ -93,7 +93,7 @@ file:
   upload-dir: ${FILE_UPLOAD_DIR:./uploads}
 
 app:
-  frontend-url: ${APP_FRONTEND_URL:https://d27o3825w6jlji.cloudfront.net}
+  frontend-url: ${APP_FRONTEND_URL:https://d3th25hinug8yx.cloudfront.net}
 
 # ===================================
 # JWT
